@@ -26,6 +26,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	float ForwardInput;
+	float RightInput;
+
+	bool bCanZoom;
+	bool bCanOutZoom;
+	FTimerHandle CameraZoomTimerHandle;
+	
 	UPROPERTY(EditAnywhere)
 		float PlayerSpeed;
 
@@ -63,5 +70,13 @@ public:
 		void LookUp(float input);
 
 	UFUNCTION()
-		void LerpToRot();
+		void CameraZoom();
+
+	UFUNCTION()
+		void CameraOutZoom();
+
+	UFUNCTION()
+		void LerpPlayerToRot();
+
+
 };
