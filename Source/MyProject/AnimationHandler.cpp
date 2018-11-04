@@ -16,6 +16,6 @@ void UAnimationHandler::UpdateAnimationProperties()
 		bIdleAim = Character->bCanZoom;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found!")));
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found!")));
 	}
 }
