@@ -31,7 +31,8 @@ public:
 
 	bool bCanZoom;
 	bool bCanOutZoom;
-	FTimerHandle CameraZoomTimerHandle;
+
+	bool bHavePistol;
 	
 	UPROPERTY(EditAnywhere)
 		float PlayerSpeed;
@@ -56,6 +57,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere)
+		class ARevolver* RevolverRef;
 	
 	UFUNCTION()
 		void MoveForward(float input);
@@ -77,6 +81,9 @@ public:
 
 	UFUNCTION()
 		void LerpPlayerToRot();
+
+	UFUNCTION()
+		void Fire();
 
 
 };

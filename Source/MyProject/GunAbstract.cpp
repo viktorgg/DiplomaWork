@@ -25,8 +25,8 @@ AGunAbstract::AGunAbstract()
 
 	static ConstructorHelpers::FClassFinder<AProjectile>
 		ProjectileBP(TEXT("Blueprint'/Game/Blueprints/ProjectileBP.ProjectileBP_C'"));
-	if (ProjectileBP.Class) {
-		Projectile = (UClass*)ProjectileBP.Class;
+	if (ProjectileBP.Class != NULL) {
+		ProjectileRef = (UClass*)ProjectileBP.Class;
 	}
 
 }
@@ -38,11 +38,7 @@ void AGunAbstract::BeginPlay()
 	
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGunAbstract::OnEnterSphere);
 
-	Character = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-
-	for (TActorIterator<ARevolver> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
-		Revolver = *ActorItr;
-	}
+	CharacterRef = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
 // Called every frame
@@ -52,13 +48,8 @@ void AGunAbstract::Tick(float DeltaTime)
 
 }
 
-void AGunAbstract::SpawnProjectile()
-{
-}
+void AGunAbstract::SpawnProjectile(){}
 
-void AGunAbstract::OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	
-}
+void AGunAbstract::OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){}
 
 

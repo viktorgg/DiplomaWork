@@ -30,5 +30,13 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* ProjectileMesh;
 
+	UPROPERTY(VisibleAnywhere)
+		class AMyCharacter* CharacterRef;
+
+	UFUNCTION()
+		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+		void LineTrace();
 
 };

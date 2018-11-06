@@ -8,12 +8,12 @@
 
 void UAnimationHandler::UpdateAnimationProperties()
 {
-	AMyCharacter* Character = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	AMyCharacter* CharacterRef = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	if (Character) {
-		ForwardInput = Character->ForwardInput;
-		RightInput = Character->RightInput;
-		bIdleAim = Character->bCanZoom;
+	if (CharacterRef != NULL) {
+		ForwardInput = CharacterRef->ForwardInput;
+		RightInput = CharacterRef->RightInput;
+		bIdleAim = CharacterRef->bCanZoom;
 	}
 	else {
 		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found!")));

@@ -29,14 +29,14 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* GunMesh;
 
-	UPROPERTY(VisibleAnywhere)
-		class ARevolver* Revolver;
+	//UPROPERTY(VisibleAnywhere)
+		//class ARevolver* RevolverRef;
 
 	UPROPERTY(VisibleAnywhere)
-		TSubclassOf<class AProjectile> Projectile;
+		TSubclassOf<class AProjectile> ProjectileRef;
 
 	UPROPERTY(VisibleAnywhere)
-		class AMyCharacter* Character;
+		class AMyCharacter* CharacterRef;
 	
 	UFUNCTION()
 		virtual void SpawnProjectile();

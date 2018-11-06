@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MyCharacter.h"
+#include "Revolver.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
@@ -22,6 +23,8 @@ AMyCharacter::AMyCharacter()
 
 	bCanZoom = false;
 	bCanOutZoom = false;
+
+	bHavePistol = false;
 
 	PlayerSpeed = 400.0f;
 	LookSpeed = 150.0f;
@@ -74,6 +77,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("MouseY", this, &AMyCharacter::LookUp);
 	PlayerInputComponent->BindAction("CameraZoom", IE_Pressed, this, &AMyCharacter::CameraZoom);
 	PlayerInputComponent->BindAction("CameraZoom", IE_Released, this, &AMyCharacter::CameraOutZoom);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyCharacter::Fire);
 }
 
 void AMyCharacter::MoveForward(float input)
@@ -149,13 +153,18 @@ void AMyCharacter::CameraOutZoom()
 	Camera->RelativeLocation = FMath::VInterpTo(Camera->RelativeLocation, FVector(0.0f, 0.0f, 0.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
 }
 
-
-
 void AMyCharacter::LerpPlayerToRot()
 {
 	float CurrRot = PlayerMesh->GetRelativeTransform().GetRotation().Rotator().Yaw;
 	float NewRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Yaw;
 	PlayerMesh->SetRelativeRotation(FMath::Lerp(FRotator(0.0f, CurrRot, 0.0f), FRotator(0.0f, NewRot, 0.0f), 6.0f * GetWorld()->GetDeltaSeconds()));
+}
+
+void AMyCharacter::Fire()
+{
+	if (RevolverRef != NULL) {
+		RevolverRef->SpawnProjectile();
+	}
 }
 
 

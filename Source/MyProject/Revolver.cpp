@@ -3,6 +3,7 @@
 #include "Revolver.h"
 #include "Projectile.h"
 #include "MyCharacter.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/GameEngine.h"
@@ -35,20 +36,24 @@ void ARevolver::Tick(float DeltaTime)
 
 void ARevolver::SpawnProjectile()
 {
-	const FRotator SpawnRotation = GunMesh->GetRelativeTransform().GetRotation().Rotator();
-	const FVector SpawnLocation = GunMesh->GetSocketLocation("Muzzle");
+	FRotator SpawnRotation = CharacterRef->SpringArm->GetRelativeTransform().GetRotation().Rotator();
+	SpawnRotation.Pitch -= 7.0f;
+	FVector SpawnLocation = GunMesh->GetSocketLocation("Muzzle");
 	FActorSpawnParameters ActorSpawnParams;
 	// ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-	GetWorld()->SpawnActor<AProjectile>(Projectile, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	AProjectile* NewProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileRef, SpawnLocation, SpawnRotation, ActorSpawnParams);
+
 }
 
 void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	if(OtherActor == Character) {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Entered!")));
-	// Revolver->AttachToComponent(Character->PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RightHandMiddle1"));
-	Revolver->AttachToComponent(Character->PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
+	if(OtherActor == CharacterRef) {
+		if (CharacterRef->bHavePistol == false) {
+			CharacterRef->RevolverRef = this;
+			this->AttachToComponent(CharacterRef->PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
+			CharacterRef->bHavePistol = true;
+		}
 	}
 }
 
