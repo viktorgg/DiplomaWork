@@ -24,6 +24,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIdleAim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 WeaponInHand;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bShootPistol;
 	
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimationProperties();

@@ -23,7 +23,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
+//-----------------------------------
+
+	enum Damage { PistolDmg = 20, RifleDmg = 50 };
+	Damage Dmg;
+
+	enum Range { PistolRg = 1, RifleRg = 100 };
+	Range Rg;
+
+
+//-----------------------------------
+
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* SphereCollision;
 
@@ -32,6 +42,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class AMyCharacter* CharacterRef;
+
+	UPROPERTY(VisibleAnywhere)
+		class ACharacter* ActorFired;
+
+//-----------------------------------
 
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

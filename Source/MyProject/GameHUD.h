@@ -16,5 +16,11 @@ class MYPROJECT_API AGameHUD : public AHUD
 
 public:
 
-	virtual void ReceiveDrawHUD(int32 SizeX, int32 SizeY);
+	AGameHUD();
+
+
+	UPROPERTY(VisibleAnywhere)
+		class UTexture2D* CrosshairTex;
+
+
 };

@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GunAbstract.h"
+#include "GunBase.h"
 #include "Revolver.generated.h"
 
 UCLASS()
-class MYPROJECT_API ARevolver : public AGunAbstract
+class MYPROJECT_API ARevolver : public AGunBase
 {
 	GENERATED_BODY()
 	
@@ -24,7 +24,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void SpawnProjectile() override;
+	virtual void SpawnProjectile();
 
-	virtual void OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	virtual void OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

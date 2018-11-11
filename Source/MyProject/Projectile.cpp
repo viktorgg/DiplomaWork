@@ -22,6 +22,8 @@ AProjectile::AProjectile()
 
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
 	ProjectileMesh->SetupAttachment(SphereCollision);
+
+	Dmg = PistolDmg;
 }
 
 // Called when the game starts or when spawned
@@ -44,8 +46,15 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherActor != CharacterRef) {
-		LineTrace();
+	if (OtherActor == ActorFired) {
+		Destroy();
+	}
+	else if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL)) {
+		FVector Distance = OtherActor->GetActorLocation() - CharacterRef->GetActorLocation();
+
+		if (Distance.Size() < Rg) {
+			LineTrace();
+		}
 		Destroy();
 	}
 }
@@ -58,13 +67,25 @@ void AProjectile::LineTrace()
 	FVector EndLoc = (GetActorForwardVector() * 20.0f) + StartLoc;
 	FCollisionQueryParams CollisionParams;
 
-	if (GetWorld()->LineTraceSingleByChannel(OutHit, StartLoc, EndLoc, ECC_Camera, CollisionParams) != NULL)
-	{
-		if (OutHit.bBlockingHit == true)
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("You are hitting: %s"), *OutHit.BoneName.ToString()));
-			if (Cast<USkeletalMeshComponent>(OutHit.GetComponent()) != NULL && Cast<UCapsuleComponent>(OutHit.GetComponent()) == NULL) {
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Human HIT!")));
+	if (GetWorld()->LineTraceSingleByChannel(OutHit, StartLoc, EndLoc, ECC_Camera, CollisionParams) != NULL) {
+
+		if (OutHit.bBlockingHit == true) {
+
+			if (OutHit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass())) {
+
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy hit!")));
+
+				AActor* HitActor = OutHit.GetComponent()->GetOwner();
+
+				if (OutHit.BoneName.ToString() == "Head" || OutHit.BoneName.ToString() == "HeadTop_End" || OutHit.BoneName.ToString() == "Neck1") {
+				
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Headshot!")));
+
+					Cast<AMyCharacter>(HitActor)->Health -= Dmg * 4;
+				}
+				else {
+					Cast<AMyCharacter>(HitActor)->Health -= Dmg;
+				}
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GunAbstract.h"
+#include "GunBase.h"
 #include "Projectile.h"
 #include "MyCharacter.h"
 #include "Revolver.h"
@@ -12,9 +12,9 @@
 #include "EngineUtils.h"
 
 // Sets default values
-AGunAbstract::AGunAbstract()
+AGunBase::AGunBase()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
@@ -28,28 +28,32 @@ AGunAbstract::AGunAbstract()
 	if (ProjectileBP.Class != NULL) {
 		ProjectileRef = (UClass*)ProjectileBP.Class;
 	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Projectile Not Found!")));
+	}
 
 }
 
 // Called when the game starts or when spawned
-void AGunAbstract::BeginPlay()
+void AGunBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGunAbstract::OnEnterSphere);
+
+	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGunBase::OnEnterSphere);
 
 	CharacterRef = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
 // Called every frame
-void AGunAbstract::Tick(float DeltaTime)
+void AGunBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-void AGunAbstract::SpawnProjectile(){}
 
-void AGunAbstract::OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){}
+
+
+
 
 

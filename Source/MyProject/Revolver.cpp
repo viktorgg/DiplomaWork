@@ -43,6 +43,7 @@ void ARevolver::SpawnProjectile()
 	// ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
 	AProjectile* NewProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileRef, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	LastSpawnedProjectile = NewProjectile;
 
 }
 
@@ -51,7 +52,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * Oth
 	if(OtherActor == CharacterRef) {
 		if (CharacterRef->bHavePistol == false) {
 			CharacterRef->RevolverRef = this;
-			this->AttachToComponent(CharacterRef->PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
+			this->AttachToComponent(CharacterRef->PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 			CharacterRef->bHavePistol = true;
 		}
 	}

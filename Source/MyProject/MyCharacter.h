@@ -25,7 +25,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
+//-----------------------------------
+
 	float ForwardInput;
 	float RightInput;
 
@@ -33,7 +35,21 @@ public:
 	bool bCanOutZoom;
 
 	bool bHavePistol;
+	bool bHaveRifle;
 	
+	enum WeaponInHand { None = 0, Pistol = 1, Rifle = 2 };
+	WeaponInHand WInHand;
+
+//-----------------------------------
+
+	bool bCanFirePistol;
+	FTimerHandle PistolFireRate;
+
+//-----------------------------------
+
+	UPROPERTY(EditAnywhere)
+		int32 Health;
+
 	UPROPERTY(EditAnywhere)
 		float PlayerSpeed;
 
@@ -61,6 +77,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class ARevolver* RevolverRef;
 	
+//-----------------------------------
+
 	UFUNCTION()
 		void MoveForward(float input);
 
@@ -85,5 +103,12 @@ public:
 	UFUNCTION()
 		void Fire();
 
+	UFUNCTION()
+		void ChangeToPistol();
 
+	UFUNCTION()
+		void ChangeToRifle();
+
+	UFUNCTION()
+		void ResetPistolFire();
 };

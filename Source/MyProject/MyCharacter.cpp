@@ -2,6 +2,7 @@
 
 #include "MyCharacter.h"
 #include "Revolver.h"
+#include "Projectile.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
@@ -25,7 +26,13 @@ AMyCharacter::AMyCharacter()
 	bCanOutZoom = false;
 
 	bHavePistol = false;
+	bHaveRifle = false;
 
+	WInHand = None;
+
+	bCanFirePistol = true;
+
+	Health = 100;
 	PlayerSpeed = 400.0f;
 	LookSpeed = 150.0f;
 	LookUpperLimit = -50.0f;
@@ -64,6 +71,10 @@ void AMyCharacter::Tick(float DeltaTime)
 	if (bCanOutZoom == true && SpringArm->TargetArmLength <= 399.0f) {
 		CameraOutZoom();
 	}
+
+	if (Health <= 0) {
+		Destroy();
+	}
 }
 
 // Called to bind functionality to input
@@ -78,6 +89,8 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("CameraZoom", IE_Pressed, this, &AMyCharacter::CameraZoom);
 	PlayerInputComponent->BindAction("CameraZoom", IE_Released, this, &AMyCharacter::CameraOutZoom);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyCharacter::Fire);
+	PlayerInputComponent->BindAction("ChangeToPistol", IE_Pressed, this, &AMyCharacter::ChangeToPistol);
+	PlayerInputComponent->BindAction("ChangeToRifle", IE_Pressed, this, &AMyCharacter::ChangeToRifle);
 }
 
 void AMyCharacter::MoveForward(float input)
@@ -131,14 +144,16 @@ void AMyCharacter::LookUp(float input)
 
 void AMyCharacter::CameraZoom()
 {
-	bCanZoom = true;
-	bCanOutZoom = false;
+	if (WInHand != None) {
+		bCanZoom = true;
+		bCanOutZoom = false;
 
-	PlayerSpeed = 150.0f;
+		PlayerSpeed = 150.0f;
 
-	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 150.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
-	SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 80.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
-	Camera->RelativeLocation = FMath::VInterpTo(Camera->RelativeLocation, FVector(0.0f, 65.0f, 0.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
+		SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 150.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
+		SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 80.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
+		Camera->RelativeLocation = FMath::VInterpTo(Camera->RelativeLocation, FVector(0.0f, 65.0f, 0.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
+	}
 }
 
 void AMyCharacter::CameraOutZoom()
@@ -162,9 +177,38 @@ void AMyCharacter::LerpPlayerToRot()
 
 void AMyCharacter::Fire()
 {
-	if (RevolverRef != NULL) {
-		RevolverRef->SpawnProjectile();
+	if (WInHand == Pistol) {
+		if (RevolverRef != NULL && bCanFirePistol == true) {
+			RevolverRef->SpawnProjectile();
+			RevolverRef->LastSpawnedProjectile->ActorFired = this;
+			bCanFirePistol = false;
+			GetWorldTimerManager().SetTimer(PistolFireRate, this, &AMyCharacter::ResetPistolFire, 0.25f, false, 0.25f);
+		}
 	}
+	if (WInHand == Rifle) {
+
+	}
+}
+
+void AMyCharacter::ChangeToPistol()
+{
+	if (bHavePistol == true && WInHand != Pistol) {
+		RevolverRef->AttachToComponent(this->PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
+		WInHand = Pistol;
+	}
+}
+
+void AMyCharacter::ChangeToRifle()
+{
+	if (bHaveRifle == true && WInHand != Rifle) {
+
+	}
+}
+
+void AMyCharacter::ResetPistolFire()
+{
+	GetWorldTimerManager().ClearTimer(PistolFireRate);
+	bCanFirePistol = true;
 }
 
 

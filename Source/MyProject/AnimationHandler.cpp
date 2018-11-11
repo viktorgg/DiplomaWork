@@ -14,6 +14,8 @@ void UAnimationHandler::UpdateAnimationProperties()
 		ForwardInput = CharacterRef->ForwardInput;
 		RightInput = CharacterRef->RightInput;
 		bIdleAim = CharacterRef->bCanZoom;
+		WeaponInHand = CharacterRef->WInHand;
+		bShootPistol = !CharacterRef->bCanFirePistol;
 	}
 	else {
 		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found!")));
