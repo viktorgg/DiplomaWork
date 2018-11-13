@@ -13,11 +13,11 @@ void UAnimationHandler::UpdateAnimationProperties()
 	if (CharacterRef != NULL) {
 		ForwardInput = CharacterRef->ForwardInput;
 		RightInput = CharacterRef->RightInput;
-		bIdleAim = CharacterRef->bCanZoom;
+		bIdleAim = CharacterRef->bZooming;
 		WeaponInHand = CharacterRef->WInHand;
 		bShootPistol = !CharacterRef->bCanFirePistol;
 	}
 	else {
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found!")));
 	}
 }

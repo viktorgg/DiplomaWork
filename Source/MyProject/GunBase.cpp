@@ -9,6 +9,7 @@
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "EngineUtils.h"
 
 // Sets default values
@@ -25,11 +26,20 @@ AGunBase::AGunBase()
 
 	static ConstructorHelpers::FClassFinder<AProjectile>
 		ProjectileBP(TEXT("Blueprint'/Game/Blueprints/ProjectileBP.ProjectileBP_C'"));
-	if (ProjectileBP.Class != NULL) {
+	if (ProjectileBP.Succeeded() != NULL) {
 		ProjectileRef = (UClass*)ProjectileBP.Class;
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Projectile Not Found!")));
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem>
+		ParticleSystem(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
+	if (ParticleSystem.Succeeded() != NULL) {
+		FireExplosion = ParticleSystem.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Particle Not Found!")));
 	}
 
 }
@@ -41,7 +51,6 @@ void AGunBase::BeginPlay()
 
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGunBase::OnEnterSphere);
 
-	CharacterRef = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
 // Called every frame

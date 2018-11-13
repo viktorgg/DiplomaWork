@@ -22,8 +22,8 @@ AMyCharacter::AMyCharacter()
 	ForwardInput = 0.0f;
 	RightInput = 0.0f;
 
-	bCanZoom = false;
-	bCanOutZoom = false;
+	bZooming = false;
+	bOutZooming = false;
 
 	bHavePistol = false;
 	bHaveRifle = false;
@@ -63,17 +63,21 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bCanZoom == true && SpringArm->TargetArmLength != 151.0f) {
+	if (bZooming == true && SpringArm->TargetArmLength != 151.0f) {
 		CameraZoom();
-		LerpPlayerToRot();
+		LerpPlayerToCamera(6.0f);
 	}
 
-	if (bCanOutZoom == true && SpringArm->TargetArmLength <= 399.0f) {
+	if (bOutZooming == true && SpringArm->TargetArmLength <= 399.0f) {
 		CameraOutZoom();
 	}
 
 	if (Health <= 0) {
 		Destroy();
+	}
+
+	if (bCanFirePistol == false) {
+		LerpPlayerToCamera(15.0f);
 	}
 }
 
@@ -103,7 +107,7 @@ void AMyCharacter::MoveForward(float input)
 		FVector NewLoc = CurrLoc + (SpringArmForward * PlayerSpeed * input * GetWorld()->GetDeltaSeconds());
 		SetActorLocation(NewLoc);
 		
-		LerpPlayerToRot();
+		LerpPlayerToCamera(6.0f);
 	}
 }
 
@@ -116,7 +120,7 @@ void AMyCharacter::MoveRight(float input)
 		FVector NewLoc = CurrLoc + (SpringArm->GetRightVector() * PlayerSpeed * input * GetWorld()->GetDeltaSeconds());
 		SetActorLocation(NewLoc);
 
-		LerpPlayerToRot();
+		LerpPlayerToCamera(6.0f);
 	}
 }
 
@@ -145,8 +149,8 @@ void AMyCharacter::LookUp(float input)
 void AMyCharacter::CameraZoom()
 {
 	if (WInHand != None) {
-		bCanZoom = true;
-		bCanOutZoom = false;
+		bZooming = true;
+		bOutZooming = false;
 
 		PlayerSpeed = 150.0f;
 
@@ -158,8 +162,8 @@ void AMyCharacter::CameraZoom()
 
 void AMyCharacter::CameraOutZoom()
 {
-	bCanOutZoom = true;
-	bCanZoom = false;
+	bOutZooming = true;
+	bZooming = false;
 
 	PlayerSpeed = 400.0f;
 
@@ -168,19 +172,24 @@ void AMyCharacter::CameraOutZoom()
 	Camera->RelativeLocation = FMath::VInterpTo(Camera->RelativeLocation, FVector(0.0f, 0.0f, 0.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
 }
 
-void AMyCharacter::LerpPlayerToRot()
+void AMyCharacter::LerpPlayerToCamera(float Speed)
 {
 	float CurrRot = PlayerMesh->GetRelativeTransform().GetRotation().Rotator().Yaw;
 	float NewRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Yaw;
-	PlayerMesh->SetRelativeRotation(FMath::Lerp(FRotator(0.0f, CurrRot, 0.0f), FRotator(0.0f, NewRot, 0.0f), 6.0f * GetWorld()->GetDeltaSeconds()));
+	PlayerMesh->SetRelativeRotation(FMath::Lerp(FRotator(0.0f, CurrRot, 0.0f), FRotator(0.0f, NewRot, 0.0f), Speed * GetWorld()->GetDeltaSeconds()));
 }
 
 void AMyCharacter::Fire()
 {
 	if (WInHand == Pistol) {
 		if (RevolverRef != NULL && bCanFirePistol == true) {
-			RevolverRef->SpawnProjectile();
-			RevolverRef->LastSpawnedProjectile->ActorFired = this;
+			if (bZooming == false) {
+				GetWorldTimerManager().SetTimer(NoZoomFire, this, &AMyCharacter::FireAfterDelay, 0.25f, false, 0.25f);
+
+			}
+			else {
+				RevolverRef->SpawnProjectile();
+			}
 			bCanFirePistol = false;
 			GetWorldTimerManager().SetTimer(PistolFireRate, this, &AMyCharacter::ResetPistolFire, 0.25f, false, 0.25f);
 		}
@@ -210,5 +219,12 @@ void AMyCharacter::ResetPistolFire()
 	GetWorldTimerManager().ClearTimer(PistolFireRate);
 	bCanFirePistol = true;
 }
+
+void AMyCharacter::FireAfterDelay()
+{
+	GetWorldTimerManager().ClearTimer(NoZoomFire);
+	RevolverRef->SpawnProjectile();
+}
+
 
 

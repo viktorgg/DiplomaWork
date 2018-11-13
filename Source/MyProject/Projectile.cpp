@@ -31,8 +31,6 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CharacterRef = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-
 	SphereCollision->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 
 }
@@ -46,15 +44,14 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor == ActorFired) {
+	if (OtherActor == CharacterRef) {
 		Destroy();
 	}
-	else if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL)) {
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL)) {
 		FVector Distance = OtherActor->GetActorLocation() - CharacterRef->GetActorLocation();
 
-		if (Distance.Size() < Rg) {
-			LineTrace();
-		}
+		LineTrace();
+		
 		Destroy();
 	}
 }

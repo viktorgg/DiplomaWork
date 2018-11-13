@@ -41,10 +41,7 @@ public:
 		class UStaticMeshComponent* ProjectileMesh;
 
 	UPROPERTY(VisibleAnywhere)
-		class AMyCharacter* CharacterRef;
-
-	UPROPERTY(VisibleAnywhere)
-		class ACharacter* ActorFired;
+		class ACharacter* CharacterRef;
 
 //-----------------------------------
 

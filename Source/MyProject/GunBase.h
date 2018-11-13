@@ -35,10 +35,10 @@ public:
 		TSubclassOf<class AProjectile> ProjectileRef;
 
 	UPROPERTY(VisibleAnywhere)
-		class AProjectile* LastSpawnedProjectile;
+		class AMyCharacter* CharacterRef;
 
 	UPROPERTY(VisibleAnywhere)
-		class AMyCharacter* CharacterRef;
+		class UParticleSystem* FireExplosion;
 	
 //-----------------------------------
 

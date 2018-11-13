@@ -31,8 +31,9 @@ public:
 	float ForwardInput;
 	float RightInput;
 
-	bool bCanZoom;
-	bool bCanOutZoom;
+	UPROPERTY(BlueprintReadWrite)
+		bool bZooming;
+	bool bOutZooming;
 
 	bool bHavePistol;
 	bool bHaveRifle;
@@ -44,6 +45,8 @@ public:
 
 	bool bCanFirePistol;
 	FTimerHandle PistolFireRate;
+	
+	FTimerHandle NoZoomFire;
 
 //-----------------------------------
 
@@ -98,7 +101,7 @@ public:
 		void CameraOutZoom();
 
 	UFUNCTION()
-		void LerpPlayerToRot();
+		void LerpPlayerToCamera(float Speed);
 
 	UFUNCTION()
 		void Fire();
@@ -111,4 +114,7 @@ public:
 
 	UFUNCTION()
 		void ResetPistolFire();
+
+	UFUNCTION()
+		void FireAfterDelay();
 };
