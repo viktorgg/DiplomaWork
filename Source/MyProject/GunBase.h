@@ -15,15 +15,24 @@ public:
 	// Sets default values for this actor's properties
 	AGunBase();
 
+	UPROPERTY(EditAnywhere)
+		int32 Damage;
+
+	UPROPERTY(EditAnywhere)
+		float FireRate;
+
+	UPROPERTY(EditAnywhere)
+		float ProjectileOffset;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-//-----------------------------------
 
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* SphereCollision;
@@ -35,17 +44,14 @@ public:
 		TSubclassOf<class AProjectile> ProjectileRef;
 
 	UPROPERTY(VisibleAnywhere)
-		class AMyCharacter* CharacterRef;
+		class ACharacterBase* CharacterRef;
 
 	UPROPERTY(VisibleAnywhere)
 		class UParticleSystem* FireExplosion;
-	
-//-----------------------------------
 
-	UFUNCTION()
-		virtual void SpawnProjectile() PURE_VIRTUAL(AGunBase::SpawnProjectile,);
+	virtual void SpawnProjectile() PURE_VIRTUAL(AGunBase::SpawnProjectile, );
 
 	UFUNCTION()
 		virtual void OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp,
-			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) PURE_VIRTUAL(AGunBase::OnEnterSphere,);
+			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) PURE_VIRTUAL(AGunBase::OnEnterSphere, );
 };

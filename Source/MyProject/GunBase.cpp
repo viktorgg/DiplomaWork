@@ -26,7 +26,7 @@ AGunBase::AGunBase()
 
 	static ConstructorHelpers::FClassFinder<AProjectile>
 		ProjectileBP(TEXT("Blueprint'/Game/Blueprints/ProjectileBP.ProjectileBP_C'"));
-	if (ProjectileBP.Succeeded() != NULL) {
+	if (ProjectileBP.Succeeded() == true) {
 		ProjectileRef = (UClass*)ProjectileBP.Class;
 	}
 	else {
@@ -35,7 +35,7 @@ AGunBase::AGunBase()
 
 	static ConstructorHelpers::FObjectFinder<UParticleSystem>
 		ParticleSystem(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
-	if (ParticleSystem.Succeeded() != NULL) {
+	if (ParticleSystem.Succeeded() == true) {
 		FireExplosion = ParticleSystem.Object;
 	}
 	else {

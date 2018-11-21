@@ -5,10 +5,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
+#include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Runtime/Engine/Classes/GameFramework/ProjectileMovementComponent.h"
 
 
 // Sets default values
@@ -17,13 +19,18 @@ AProjectile::AProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	BulletSpeed = 5000.0f;
+	BulletDrop = 1.0f;
+
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
 	RootComponent = SphereCollision;
 
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
 	ProjectileMesh->SetupAttachment(SphereCollision);
 
-	Dmg = PistolDmg;
+	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
+	ProjectileMovement->InitialSpeed = BulletSpeed;
+	ProjectileMovement->MaxSpeed = BulletSpeed;
 }
 
 // Called when the game starts or when spawned
@@ -44,11 +51,12 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor == CharacterRef) {
-		Destroy();
-	}
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL)) {
-		FVector Distance = OtherActor->GetActorLocation() - CharacterRef->GetActorLocation();
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && (OtherActor != CharacterRef)) {
+
+		FVector DistanceVector = OtherActor->GetActorLocation() - CharacterRef->GetActorLocation();
+		float Distance = DistanceVector.Size();
+
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), Distance));
 
 		LineTrace();
 		
@@ -60,14 +68,17 @@ void AProjectile::LineTrace()
 {
 	FHitResult OutHit;
 
-	FVector StartLoc = GetActorLocation() + (GetActorForwardVector() * 3);
-	FVector EndLoc = (GetActorForwardVector() * 20.0f) + StartLoc;
+	FVector StartLoc = GetActorLocation() + (GetActorForwardVector() * 5.0f);
+	FVector EndLoc = (GetActorForwardVector() * 50.0f) + StartLoc;
 	FCollisionQueryParams CollisionParams;
+
+	DrawDebugLine(GetWorld(), GetActorLocation() + (GetActorForwardVector() * 5.0f), (GetActorForwardVector() * 50.0f) + StartLoc, FColor::Emerald, true, 999, 0, 10);
 
 	if (GetWorld()->LineTraceSingleByChannel(OutHit, StartLoc, EndLoc, ECC_Camera, CollisionParams) != NULL) {
 
 		if (OutHit.bBlockingHit == true) {
-
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Tracing!")));
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Hit: %s"), *OutHit.GetComponent()->GetName()));
 			if (OutHit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass())) {
 
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy hit!")));
@@ -78,10 +89,10 @@ void AProjectile::LineTrace()
 				
 					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Headshot!")));
 
-					Cast<AMyCharacter>(HitActor)->Health -= Dmg * 4;
+					//Cast<AMyCharacter>(HitActor)->Health -= Damage * 4;
 				}
 				else {
-					Cast<AMyCharacter>(HitActor)->Health -= Dmg;
+					//Cast<AMyCharacter>(HitActor)->Health -= Damage;
 				}
 			}
 		}

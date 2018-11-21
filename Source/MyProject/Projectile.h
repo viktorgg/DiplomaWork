@@ -15,6 +15,14 @@ public:
 	// Sets default values for this actor's properties
 	AProjectile();
 
+	UPROPERTY(EditAnywhere)
+		float BulletSpeed;
+
+	UPROPERTY(EditAnywhere)
+		float BulletDrop;
+
+	int32 Damage;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -23,16 +31,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-//-----------------------------------
-
-	enum Damage { PistolDmg = 20, RifleDmg = 50 };
-	Damage Dmg;
-
-	enum Range { PistolRg = 1, RifleRg = 100 };
-	Range Rg;
-
-
-//-----------------------------------
 
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* SphereCollision;
@@ -41,14 +39,14 @@ public:
 		class UStaticMeshComponent* ProjectileMesh;
 
 	UPROPERTY(VisibleAnywhere)
-		class ACharacter* CharacterRef;
+		class UProjectileMovementComponent* ProjectileMovement;
 
-//-----------------------------------
+	UPROPERTY(VisibleAnywhere)
+		class ACharacterBase* CharacterRef;
 
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-	UFUNCTION()
-		void LineTrace();
+	void LineTrace();
 
 };

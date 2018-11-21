@@ -4,16 +4,33 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "CharacterBase.h"
 #include "MyCharacter.generated.h"
 
 UCLASS()
-class MYPROJECT_API AMyCharacter : public ACharacter
+class MYPROJECT_API AMyCharacter : public ACharacterBase
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AMyCharacter();
+
+	float CharacterNormalSpeed;
+
+	UPROPERTY(EditAnywhere)
+		float LookSpeed;
+	float LookUpperLimit;
+	float LookLowerLimit;
+
+	bool bZooming;
+	bool bOutZooming;
+
+	bool bHavePistol;
+	bool bHaveRifle;
+
+	enum WeaponInHand { None = 0, Pistol = 1, Rifle = 2 };
+	WeaponInHand WInHand;
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,50 +43,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-//-----------------------------------
-
-	float ForwardInput;
-	float RightInput;
-
-	UPROPERTY(BlueprintReadWrite)
-		bool bZooming;
-	bool bOutZooming;
-
-	bool bHavePistol;
-	bool bHaveRifle;
-	
-	enum WeaponInHand { None = 0, Pistol = 1, Rifle = 2 };
-	WeaponInHand WInHand;
-
-//-----------------------------------
-
-	bool bCanFirePistol;
-	FTimerHandle PistolFireRate;
-	
-	FTimerHandle NoZoomFire;
-
-//-----------------------------------
-
-	UPROPERTY(EditAnywhere)
-		int32 Health;
-
-	UPROPERTY(EditAnywhere)
-		float PlayerSpeed;
-
-	UPROPERTY(EditAnywhere)
-		float LookSpeed;
-
-	UPROPERTY(EditAnywhere)
-		float LookUpperLimit;
-
-	UPROPERTY(EditAnywhere)
-		float LookLowerLimit;
-
-	UPROPERTY(VisibleAnywhere)
-		class UCapsuleComponent* CapsuleCollision;
-
-	UPROPERTY(VisibleAnywhere)
-		class USkeletalMeshComponent* PlayerMesh;
 
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -77,44 +50,28 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere)
-		class ARevolver* RevolverRef;
-	
-//-----------------------------------
+	virtual void MoveForward(float Input);
 
-	UFUNCTION()
-		void MoveForward(float input);
+	virtual void MoveRight(float Input);
 
-	UFUNCTION()
-		void MoveRight(float input);
+	virtual void Fire();
 
-	UFUNCTION()
-		void LookSide(float input);
+	virtual void ResetPistolFire();
 
-	UFUNCTION()
-		void LookUp(float input);
+	virtual void FireAfterDelay();
 
-	UFUNCTION()
-		void CameraZoom();
+	void LookSide(float Input);
 
-	UFUNCTION()
-		void CameraOutZoom();
+	void LookUp(float Input);
 
-	UFUNCTION()
-		void LerpPlayerToCamera(float Speed);
+	void CameraZoom();
 
-	UFUNCTION()
-		void Fire();
+	void CameraOutZoom();
 
-	UFUNCTION()
-		void ChangeToPistol();
+	void LerpPlayerToCamera(float Speed);
 
-	UFUNCTION()
-		void ChangeToRifle();
+	void ChangeToPistol();
 
-	UFUNCTION()
-		void ResetPistolFire();
+	void ChangeToRifle();
 
-	UFUNCTION()
-		void FireAfterDelay();
 };

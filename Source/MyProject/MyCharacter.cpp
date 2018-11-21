@@ -5,6 +5,7 @@
 #include "Projectile.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Engine/World.h"
@@ -16,39 +17,27 @@
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	ForwardInput = 0.0f;
-	RightInput = 0.0f;
-
-	bZooming = false;
-	bOutZooming = false;
-
-	bHavePistol = false;
-	bHaveRifle = false;
-
-	WInHand = None;
-
-	bCanFirePistol = true;
-
 	Health = 100;
-	PlayerSpeed = 400.0f;
+	CharacterSpeed = 400.0f;
+
 	LookSpeed = 150.0f;
 	LookUpperLimit = -50.0f;
 	LookLowerLimit = 65.0f;
 
-	CapsuleCollision = FindComponentByClass<UCapsuleComponent>();
-	RootComponent = CapsuleCollision;
+	bZooming = false;
+	bOutZooming = false;
 
-	PlayerMesh = FindComponentByClass<USkeletalMeshComponent>();
-	PlayerMesh->SetupAttachment(CapsuleCollision);
+	WInHand = None;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
-	SpringArm->SetupAttachment(CapsuleCollision);
+	SpringArm->SetupAttachment(GetCapsuleComponent());
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
+
 }
 
 // Called when the game starts or when spawned
@@ -56,12 +45,14 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	CharacterNormalSpeed = CharacterSpeed;
 }
 
 // Called every frame
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 
 	if (bZooming == true && SpringArm->TargetArmLength != 151.0f) {
 		CameraZoom();
@@ -72,13 +63,13 @@ void AMyCharacter::Tick(float DeltaTime)
 		CameraOutZoom();
 	}
 
-	if (Health <= 0) {
-		Destroy();
-	}
 
 	if (bCanFirePistol == false) {
 		LerpPlayerToCamera(15.0f);
 	}
+	
+	
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), WInHand));
 }
 
 // Called to bind functionality to input
@@ -97,49 +88,60 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("ChangeToRifle", IE_Pressed, this, &AMyCharacter::ChangeToRifle);
 }
 
-void AMyCharacter::MoveForward(float input)
+void AMyCharacter::MoveForward(float Input)
 {
-	ForwardInput = input;
+	ForwardInput = Input;
 
-	if (input != 0.0) {
+	if (Input != 0.0) {
 		FVector CurrLoc = GetActorLocation();
+		FVector NewLoc;
 		FVector SpringArmForward = SpringArm->GetForwardVector();
-		FVector NewLoc = CurrLoc + (SpringArmForward * PlayerSpeed * input * GetWorld()->GetDeltaSeconds());
+		if (RightInput != 0.0) {
+			NewLoc = CurrLoc + (SpringArmForward * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
+		}
+		else {
+			NewLoc = CurrLoc + (SpringArmForward * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
+		}
 		SetActorLocation(NewLoc);
 		
 		LerpPlayerToCamera(6.0f);
 	}
 }
 
-void AMyCharacter::MoveRight(float input)
+void AMyCharacter::MoveRight(float Input)
 {
-	RightInput = input;
+	RightInput = Input;
 
-	if (input != 0.0) {
+	if (Input != 0.0) {
 		FVector CurrLoc = GetActorLocation();
-		FVector NewLoc = CurrLoc + (SpringArm->GetRightVector() * PlayerSpeed * input * GetWorld()->GetDeltaSeconds());
+		FVector NewLoc;
+		if (ForwardInput != 0.0) {
+			NewLoc = CurrLoc + (SpringArm->GetRightVector() * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
+		}
+		else {
+			NewLoc = CurrLoc + (SpringArm->GetRightVector() * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
+		}
 		SetActorLocation(NewLoc);
 
 		LerpPlayerToCamera(6.0f);
 	}
 }
 
-void AMyCharacter::LookSide(float input)
+void AMyCharacter::LookSide(float Input)
 {
-	if (input != 0.0) {
-		float NewRot = LookSpeed * input * GetWorld()->GetDeltaSeconds();
+	if (Input != 0.0) {
+		float NewRot = LookSpeed * Input * GetWorld()->GetDeltaSeconds();
 		SpringArm->AddRelativeRotation(FRotator(0.0f, NewRot, 0.0f));
 	}
 }
 
-void AMyCharacter::LookUp(float input)
+void AMyCharacter::LookUp(float Input)
 {
-	if (input != 0.0f) {
+	if (Input != 0.0f) {
 		
 		float CurrRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Pitch;
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), CurrRot));
 
-		float NewRot = LookSpeed * input * GetWorld()->GetDeltaSeconds();
+		float NewRot = LookSpeed * Input * GetWorld()->GetDeltaSeconds();
 		if ((CurrRot + NewRot) > -50.0f && (CurrRot + NewRot) < 65.0f) {
 			SpringArm->AddRelativeRotation(FRotator(NewRot, 0.0f, 0.0f));
 		}
@@ -152,7 +154,7 @@ void AMyCharacter::CameraZoom()
 		bZooming = true;
 		bOutZooming = false;
 
-		PlayerSpeed = 150.0f;
+		CharacterSpeed = CharacterNormalSpeed / 2.6f;
 
 		SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 150.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
 		SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 80.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
@@ -165,7 +167,7 @@ void AMyCharacter::CameraOutZoom()
 	bOutZooming = true;
 	bZooming = false;
 
-	PlayerSpeed = 400.0f;
+	CharacterSpeed = CharacterNormalSpeed;
 
 	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 400.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
 	SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 150.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
@@ -174,9 +176,9 @@ void AMyCharacter::CameraOutZoom()
 
 void AMyCharacter::LerpPlayerToCamera(float Speed)
 {
-	float CurrRot = PlayerMesh->GetRelativeTransform().GetRotation().Rotator().Yaw;
+	float CurrRot = GetMesh()->GetRelativeTransform().GetRotation().Rotator().Yaw;
 	float NewRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Yaw;
-	PlayerMesh->SetRelativeRotation(FMath::Lerp(FRotator(0.0f, CurrRot, 0.0f), FRotator(0.0f, NewRot, 0.0f), Speed * GetWorld()->GetDeltaSeconds()));
+	GetMesh()->SetRelativeRotation(FMath::Lerp(FRotator(0.0f, CurrRot, 0.0f), FRotator(0.0f, NewRot, 0.0f), Speed * GetWorld()->GetDeltaSeconds()));
 }
 
 void AMyCharacter::Fire()
@@ -191,7 +193,7 @@ void AMyCharacter::Fire()
 				RevolverRef->SpawnProjectile();
 			}
 			bCanFirePistol = false;
-			GetWorldTimerManager().SetTimer(PistolFireRate, this, &AMyCharacter::ResetPistolFire, 0.25f, false, 0.25f);
+			GetWorldTimerManager().SetTimer(PistolFireRate, this, &AMyCharacter::ResetPistolFire, RevolverFireRate, false, RevolverFireRate);
 		}
 	}
 	if (WInHand == Rifle) {
@@ -201,8 +203,9 @@ void AMyCharacter::Fire()
 
 void AMyCharacter::ChangeToPistol()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Entering")));
 	if (bHavePistol == true && WInHand != Pistol) {
-		RevolverRef->AttachToComponent(this->PlayerMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
+		RevolverRef->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
 		WInHand = Pistol;
 	}
 }
