@@ -2,6 +2,7 @@
 
 #include "MyCharacter.h"
 #include "Revolver.h"
+#include "Rifle.h"
 #include "Projectile.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -20,8 +21,8 @@ AMyCharacter::AMyCharacter()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Health = 100;
-	CharacterSpeed = 400.0f;
+	SetHealth(100);
+	SetCharacterSpeed(400.0f);
 
 	LookSpeed = 150.0f;
 	LookUpperLimit = -50.0f;
@@ -45,7 +46,7 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CharacterNormalSpeed = CharacterSpeed;
+	CharacterNormalSpeed = GetCharacterSpeed();
 }
 
 // Called every frame
@@ -64,12 +65,11 @@ void AMyCharacter::Tick(float DeltaTime)
 	}
 
 
-	if (bCanFirePistol == false) {
+	if (GetCanFirePistol() == false) {
 		LerpPlayerToCamera(15.0f);
 	}
 	
-	
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), WInHand));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetWInHand()));
 }
 
 // Called to bind functionality to input
@@ -90,17 +90,17 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AMyCharacter::MoveForward(float Input)
 {
-	ForwardInput = Input;
+	SetForwardInput(Input);
 
 	if (Input != 0.0) {
 		FVector CurrLoc = GetActorLocation();
 		FVector NewLoc;
 		FVector SpringArmForward = SpringArm->GetForwardVector();
-		if (RightInput != 0.0) {
-			NewLoc = CurrLoc + (SpringArmForward * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
+		if (GetRightInput() != 0.0) {
+			NewLoc = CurrLoc + (SpringArmForward * (GetCharacterSpeed() / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
-			NewLoc = CurrLoc + (SpringArmForward * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
+			NewLoc = CurrLoc + (SpringArmForward * GetCharacterSpeed() * Input * GetWorld()->GetDeltaSeconds());
 		}
 		SetActorLocation(NewLoc);
 		
@@ -110,16 +110,16 @@ void AMyCharacter::MoveForward(float Input)
 
 void AMyCharacter::MoveRight(float Input)
 {
-	RightInput = Input;
+	SetRightInput(Input);
 
 	if (Input != 0.0) {
 		FVector CurrLoc = GetActorLocation();
 		FVector NewLoc;
-		if (ForwardInput != 0.0) {
-			NewLoc = CurrLoc + (SpringArm->GetRightVector() * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
+		if (GetForwardInput() != 0.0) {
+			NewLoc = CurrLoc + (SpringArm->GetRightVector() * (GetCharacterSpeed() / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
-			NewLoc = CurrLoc + (SpringArm->GetRightVector() * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
+			NewLoc = CurrLoc + (SpringArm->GetRightVector() * GetCharacterSpeed() * Input * GetWorld()->GetDeltaSeconds());
 		}
 		SetActorLocation(NewLoc);
 
@@ -154,7 +154,7 @@ void AMyCharacter::CameraZoom()
 		bZooming = true;
 		bOutZooming = false;
 
-		CharacterSpeed = CharacterNormalSpeed / 2.6f;
+		SetCharacterSpeed(CharacterNormalSpeed / 2.6f);
 
 		SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 150.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
 		SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 80.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
@@ -167,7 +167,7 @@ void AMyCharacter::CameraOutZoom()
 	bOutZooming = true;
 	bZooming = false;
 
-	CharacterSpeed = CharacterNormalSpeed;
+	SetCharacterSpeed(CharacterNormalSpeed);
 
 	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 400.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
 	SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 150.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
@@ -184,49 +184,69 @@ void AMyCharacter::LerpPlayerToCamera(float Speed)
 void AMyCharacter::Fire()
 {
 	if (WInHand == Pistol) {
-		if (RevolverRef != NULL && bCanFirePistol == true) {
-			if (bZooming == false) {
-				GetWorldTimerManager().SetTimer(NoZoomFire, this, &AMyCharacter::FireAfterDelay, 0.25f, false, 0.25f);
-
-			}
-			else {
-				RevolverRef->SpawnProjectile();
-			}
-			bCanFirePistol = false;
-			GetWorldTimerManager().SetTimer(PistolFireRate, this, &AMyCharacter::ResetPistolFire, RevolverFireRate, false, RevolverFireRate);
+		if (GetPistolRef() != NULL && GetCanFirePistol() == true) {
+			GetPistolRef()->SpawnProjectile();
+			SetCanFirePistol(false);
+			GetWorldTimerManager().SetTimer(GetPistolFireRateHandle(), this, &AMyCharacter::ResetPistolFire, GetPistolFireRate(), false, GetPistolFireRate());
 		}
 	}
 	if (WInHand == Rifle) {
-
+		if (GetRifleRef() != NULL && GetCanFireRifle() == true) {
+			GetRifleRef()->SpawnProjectile();
+			SetCanFireRifle(false);
+			GetWorldTimerManager().SetTimer(GetRifleFireRateHandle(), this, &AMyCharacter::ResetRifleFire, GetRifleFireRate(), false, GetRifleFireRate());
+		}
 	}
 }
 
 void AMyCharacter::ChangeToPistol()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Entering")));
-	if (bHavePistol == true && WInHand != Pistol) {
-		RevolverRef->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("WeaponSocket"));
+	if (GetHavePistol() == true && WInHand != Pistol && GetForwardInput() == 0.0f && GetRightInput() == 0.0f) {
+
+		if (WInHand == None) {
+			GetPistolRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
+		}
+
+		if(WInHand == Rifle){
+			GetPistolRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
+			GetRifleRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
+		}
 		WInHand = Pistol;
 	}
 }
 
 void AMyCharacter::ChangeToRifle()
 {
-	if (bHaveRifle == true && WInHand != Rifle) {
+	if (GetHaveRifle() == true && WInHand != Rifle && GetForwardInput() == 0.0f && GetRightInput() == 0.0f) {
 
+		if (WInHand == None) {
+			GetRifleRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
+		}
+
+		if (WInHand == Pistol) {
+			GetRifleRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
+			GetPistolRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
+		}
+		WInHand = Rifle;
 	}
 }
 
 void AMyCharacter::ResetPistolFire()
 {
-	GetWorldTimerManager().ClearTimer(PistolFireRate);
-	bCanFirePistol = true;
+	GetWorldTimerManager().ClearTimer(GetPistolFireRateHandle());
+	SetCanFirePistol(true);
+}
+
+void AMyCharacter::ResetRifleFire()
+{
+	GetWorldTimerManager().ClearTimer(GetRifleFireRateHandle());
+	SetCanFireRifle(true);
 }
 
 void AMyCharacter::FireAfterDelay()
 {
-	GetWorldTimerManager().ClearTimer(NoZoomFire);
-	RevolverRef->SpawnProjectile();
+	GetWorldTimerManager().ClearTimer(GetNoZoomFireHandle());
+	GetPistolRef()->SpawnProjectile();
 }
 
 

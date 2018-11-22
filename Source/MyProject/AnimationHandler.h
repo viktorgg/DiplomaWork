@@ -30,6 +30,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		bool bShootPistol;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		bool bShootRifle;
 	
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimationProperties();

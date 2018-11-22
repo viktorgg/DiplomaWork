@@ -15,14 +15,6 @@ public:
 	// Sets default values for this actor's properties
 	AGunBase();
 
-	UPROPERTY(EditAnywhere)
-		int32 Damage;
-
-	UPROPERTY(EditAnywhere)
-		float FireRate;
-
-	UPROPERTY(EditAnywhere)
-		float ProjectileOffset;
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,7 +24,21 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
 
+private:
+
+	UPROPERTY(EditAnywhere)
+		int32 Damage;
+
+	UPROPERTY(EditAnywhere)
+		float FireRate;
+
+	UPROPERTY(EditAnywhere)
+		float ProjectileOffsetNoZoom;
+
+	UPROPERTY(EditAnywhere)
+		float ProjectileOffsetZoom;
 
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* SphereCollision;
@@ -54,4 +60,28 @@ public:
 	UFUNCTION()
 		virtual void OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) PURE_VIRTUAL(AGunBase::OnEnterSphere, );
+
+public:
+
+	int32 GetDamage() const { return Damage; }
+	void SetDamage(int32 Input) { Damage = Input; }
+
+	float GetFireRate() const { return FireRate; }
+	void SetFireRate(float Input) { FireRate = Input; }
+
+	float GetProjectileOffsetNoZoom() const { return ProjectileOffsetNoZoom; }
+	void SetProjectileOffsetNoZoom(float Input) { ProjectileOffsetNoZoom = Input; }
+
+	float GetProjectileOffsetZoom() const { return ProjectileOffsetZoom; }
+	void SetProjectileOffsetZoom(float Input) { ProjectileOffsetZoom = Input; }
+
+	ACharacterBase* GetCharacterRef() const { return CharacterRef; }
+
+	TSubclassOf<AProjectile> GetProjectileRef() const { return ProjectileRef; }
+
+	void SetCharacterRef(ACharacterBase* Input) { CharacterRef = Input; }
+
+	UStaticMeshComponent* GetGunMesh() const { return GunMesh; }
+
+	UParticleSystem* GetFireExplosion() const { return FireExplosion; }
 };

@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Revolver.h"
+#include "Rifle.h"
 #include "Projectile.h"
 #include "MyCharacter.h"
 #include "CharacterBase.h"
@@ -14,33 +14,27 @@
 #include "EngineUtils.h"
 
 
-// Sets default values
-ARevolver::ARevolver()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ARifle::ARifle() {
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetDamage(20);
-	SetFireRate(0.25);
-	SetProjectileOffsetNoZoom(2.5f);
-	SetProjectileOffsetZoom(1.5f);
+	SetDamage(50);
+	SetFireRate(1);
+	SetProjectileOffsetNoZoom(2.0f);
+
 }
 
-// Called when the game starts or when spawned
-void ARevolver::BeginPlay()
+void ARifle::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
-void ARevolver::Tick(float DeltaTime)
+void ARifle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void ARevolver::SpawnProjectile()
+void ARifle::SpawnProjectile()
 {
 	FRotator SpawnRotation;
 	FVector SpawnLocation;
@@ -54,24 +48,13 @@ void ARevolver::SpawnProjectile()
 		if (MainCharacter->GetZooming() == true) {
 
 			SpawnLocation = MainCharacter->GetCamera()->GetComponentLocation() + (MainCharacter->GetCamera()->GetForwardVector() * 200);
-
-			if (ChanceToHit < 30) {
-				SpawnRotation = MainCharacter->GetCamera()->GetComponentRotation();
-			}
-			else {
-				float BulletOffsetPitch;
-				float BulletOffsetYaw;
-				BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
-				BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
-				FRotator CurrRot = MainCharacter->GetCamera()->GetComponentRotation();
-				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
-			}
+			SpawnRotation = MainCharacter->GetCamera()->GetComponentRotation();
 		}
 		else {
-			
+
 			SpawnLocation = MainCharacter->GetCamera()->GetComponentLocation() + (MainCharacter->GetCamera()->GetForwardVector() * 250);
 
-			if (ChanceToHit < 15) {
+			if (ChanceToHit < 50) {
 				SpawnRotation = MainCharacter->GetCamera()->GetComponentRotation();
 			}
 			else {
@@ -95,20 +78,16 @@ void ARevolver::SpawnProjectile()
 	UGameplayStatics::SpawnEmitterAtLocation(this, GetFireExplosion(), GetGunMesh()->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
 }
 
-void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+void ARifle::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (Cast<ACharacterBase>(OtherActor) != NULL) {
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
-		if (CharacterEntered->GetHavePistol() == false) {
-			CharacterEntered->SetPistolRef(this);
-			CharacterEntered->SetHavePistol(true);
+		if (CharacterEntered->GetHaveRifle() == false) {
+			CharacterEntered->SetRifleRef(this);
+			CharacterEntered->SetHaveRifle(true);
 			SetCharacterRef(CharacterEntered);
-			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
-			CharacterEntered->SetPistolFireRate(GetFireRate());
+			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
+			CharacterEntered->SetRifleFireRate(GetFireRate());
 		}
 	}
 }
-
-
-
-

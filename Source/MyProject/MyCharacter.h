@@ -16,22 +16,6 @@ public:
 	// Sets default values for this character's properties
 	AMyCharacter();
 
-	float CharacterNormalSpeed;
-
-	UPROPERTY(EditAnywhere)
-		float LookSpeed;
-	float LookUpperLimit;
-	float LookLowerLimit;
-
-	bool bZooming;
-	bool bOutZooming;
-
-	bool bHavePistol;
-	bool bHaveRifle;
-
-	enum WeaponInHand { None = 0, Pistol = 1, Rifle = 2 };
-	WeaponInHand WInHand;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -43,6 +27,21 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+private:
+
+	float CharacterNormalSpeed;
+
+	UPROPERTY(EditAnywhere)
+		float LookSpeed;
+	float LookUpperLimit;
+	float LookLowerLimit;
+
+	bool bZooming;
+	bool bOutZooming;
+
+	enum WeaponInHand { None = 0, Pistol = 1, Rifle = 2 };
+	WeaponInHand WInHand;
 
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -57,6 +56,8 @@ public:
 	virtual void Fire();
 
 	virtual void ResetPistolFire();
+
+	virtual void ResetRifleFire();
 
 	virtual void FireAfterDelay();
 
@@ -74,4 +75,11 @@ public:
 
 	void ChangeToRifle();
 
+public:
+
+	bool GetZooming() const { return bZooming; }
+
+	WeaponInHand GetWInHand() const { return WInHand; }
+
+	UCameraComponent* GetCamera() const { return Camera; }
 };

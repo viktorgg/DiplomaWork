@@ -15,6 +15,14 @@ public:
 	// Sets default values for this character's properties
 	ACharacterBase();
 
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+
+private:
+
 	UPROPERTY(EditAnywhere)
 		int32 Health;
 	UPROPERTY(EditAnywhere)
@@ -27,16 +35,27 @@ public:
 	bool bHaveRifle;
 
 	bool bCanFirePistol;
-	float RevolverFireRate;
-	FTimerHandle PistolFireRate;
+	float PistolFireRate;
+	FTimerHandle PistolFireRateHandle;
 
-	FTimerHandle NoZoomFire;
+	bool bCanFireRifle;
+	float RifleFireRate;
+	FTimerHandle RifleFireRateHandle;
 
-	class ARevolver* RevolverRef;
+	FTimerHandle NoZoomFireHandle;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	class ARevolver* PistolRef;
+	class ARifle* RifleRef;
+
+	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
+
+	virtual void MoveRight(float Input) PURE_VIRTUAL(ACharacterBase::MoveRight, );
+
+	virtual void Fire() PURE_VIRTUAL(ACharacterBase::Fire, );
+
+	virtual void ResetPistolFire() PURE_VIRTUAL(ACharacterBase::ResetPistolFire, );
+
+	virtual void ResetRifleFire() PURE_VIRTUAL(ACharacterBase::ResetRifleFire, );
 
 
 public:
@@ -47,15 +66,48 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
+	int32 GetHealth() const { return Health; }
+	void SetHealth(int32 Input) { Health = Input; }
 
-	virtual void MoveRight(float Input) PURE_VIRTUAL(ACharacterBase::MoveRight, );
+	float GetCharacterSpeed() const { return CharacterSpeed; }
+	void SetCharacterSpeed(float Input) { CharacterSpeed = Input; }
 
-	virtual void Fire() PURE_VIRTUAL(ACharacterBase::Fire, );
+	float GetForwardInput() const { return ForwardInput; }
+	void SetForwardInput(float Input) { ForwardInput = Input; }
 
-	virtual void ResetPistolFire() PURE_VIRTUAL(ACharacterBase::ResetPistolFire, );
+	float GetRightInput() const { return RightInput; }
+	void SetRightInput(float Input) { RightInput = Input; }
 
-	virtual void FireAfterDelay() PURE_VIRTUAL(ACharacterBase::FireAfterDelay(), );
+	bool GetHavePistol() const { return bHavePistol; }
+	void SetHavePistol(bool Input) { bHavePistol = Input; }
+
+	bool GetHaveRifle() const { return bHaveRifle; }
+	void SetHaveRifle(bool Input) { bHaveRifle = Input; }
+
+	bool GetCanFirePistol() const { return bCanFirePistol; }
+	void SetCanFirePistol(bool Input) { bCanFirePistol = Input; }
+
+	float GetPistolFireRate() const { return PistolFireRate; }
+	void SetPistolFireRate(float Input) { PistolFireRate = Input; }
+
+	bool GetCanFireRifle() const { return bCanFireRifle; }
+	void SetCanFireRifle(bool Input) { bCanFireRifle = Input; }
+
+	float GetRifleFireRate() const { return RifleFireRate; }
+	void SetRifleFireRate(float Input) { RifleFireRate = Input; }
+
+	FTimerHandle &GetPistolFireRateHandle() { return PistolFireRateHandle; }
+
+	FTimerHandle &GetRifleFireRateHandle() { return RifleFireRateHandle; }
+
+	FTimerHandle &GetNoZoomFireHandle() { return NoZoomFireHandle; }
+
+	ARevolver* GetPistolRef() const { return PistolRef; }
+	void SetPistolRef(ARevolver* Input) { PistolRef = Input; }
+
+	ARifle* GetRifleRef() const { return RifleRef; }
+	void SetRifleRef(ARifle* Input) { RifleRef = Input; }
+
 
 };
 

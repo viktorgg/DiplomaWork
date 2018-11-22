@@ -15,13 +15,6 @@ public:
 	// Sets default values for this actor's properties
 	AProjectile();
 
-	UPROPERTY(EditAnywhere)
-		float BulletSpeed;
-
-	UPROPERTY(EditAnywhere)
-		float BulletDrop;
-
-	int32 Damage;
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,6 +24,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+private:
+
+	UPROPERTY(EditAnywhere)
+		float BulletSpeed;
+
+	int32 Damage;
 
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* SphereCollision;
@@ -44,9 +44,20 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class ACharacterBase* CharacterRef;
 
+	UPROPERTY(VisibleAnywhere)
+		class UParticleSystem* HitSmoke;
+
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	void ProjectileTravel();
+
 	void LineTrace();
+
+public:
+
+	void SetDamage(int32 Input) { Damage = Input; }
+
+	void SetCharacterRef(ACharacterBase* Input) { CharacterRef = Input; }
 
 };

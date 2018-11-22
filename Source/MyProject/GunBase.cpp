@@ -18,11 +18,17 @@ AGunBase::AGunBase()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Damage = 0;
+	FireRate = 0.0f;
+	ProjectileOffsetNoZoom = 0.0f;
+	ProjectileOffsetZoom = 0.0f;
+	CharacterRef = nullptr;
+
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
 	RootComponent = SphereCollision;
 
 	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Mesh"));
-	GunMesh->SetupAttachment(SphereCollision);
+	GunMesh->SetupAttachment(RootComponent);
 
 	static ConstructorHelpers::FClassFinder<AProjectile>
 		ProjectileBP(TEXT("Blueprint'/Game/Blueprints/ProjectileBP.ProjectileBP_C'"));

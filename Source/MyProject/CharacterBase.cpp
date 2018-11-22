@@ -2,6 +2,7 @@
 
 #include "CharacterBase.h"
 #include "Revolver.h"
+#include "Rifle.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -15,11 +16,23 @@ ACharacterBase::ACharacterBase()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Health = 0.0f;
+	CharacterSpeed = 0.0f;
+
 	ForwardInput = 0.0f;
 	RightInput = 0.0f;
 
+	bHavePistol = false;
+	bHaveRifle = false;
+
 	bCanFirePistol = true;
-	RevolverFireRate = 0.25;
+	PistolFireRate = 0.25f;
+
+	bCanFireRifle = true;
+	RifleFireRate = 1.0f;
+
+	PistolRef = nullptr;
+	RifleRef = nullptr;
 
 	RootComponent = GetCapsuleComponent();
 
