@@ -68,6 +68,10 @@ void AMyCharacter::Tick(float DeltaTime)
 	if (GetCanFirePistol() == false) {
 		LerpPlayerToCamera(15.0f);
 	}
+
+	if (GetCanFireRifle() == false) {
+		LerpPlayerToCamera(15.0f);
+	}
 	
 	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetWInHand()));
 }
@@ -243,11 +247,6 @@ void AMyCharacter::ResetRifleFire()
 	SetCanFireRifle(true);
 }
 
-void AMyCharacter::FireAfterDelay()
-{
-	GetWorldTimerManager().ClearTimer(GetNoZoomFireHandle());
-	GetPistolRef()->SpawnProjectile();
-}
 
 
 

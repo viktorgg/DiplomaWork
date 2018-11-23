@@ -19,7 +19,7 @@ ARifle::ARifle() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetDamage(50);
-	SetFireRate(1);
+	SetFireRate(1.5);
 	SetProjectileOffsetNoZoom(2.0f);
 
 }

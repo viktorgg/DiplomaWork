@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "MyCharacter.h"
 #include "CharacterBase.h"
+#include "GroundEnemy.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
@@ -84,6 +85,26 @@ void ARevolver::SpawnProjectile()
 			}
 		}
 	}
+	else if (Cast<AGroundEnemy>(GetCharacterRef()) != NULL) {
+
+		AGroundEnemy* EnemyCharacter = Cast<AGroundEnemy>(GetCharacterRef());
+
+		int32 ChanceToHit = FMath::FRandRange(1, 100);
+
+		SpawnLocation = EnemyCharacter->GetActorLocation() + (EnemyCharacter->GetActorForwardVector() * 100);
+
+		if (ChanceToHit < 75) {
+			SpawnRotation = EnemyCharacter->LookAtRot();
+		}
+		else {
+			float BulletOffsetPitch;
+			float BulletOffsetYaw;
+			BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
+			BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
+			FRotator CurrRot = EnemyCharacter->GetActorRotation();
+			SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
+		}
+	}
 	FActorSpawnParameters ActorSpawnParams;
 	// ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
@@ -104,6 +125,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * Oth
 			CharacterEntered->SetHavePistol(true);
 			SetCharacterRef(CharacterEntered);
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
+			GetSphereCollision()->SetSimulatePhysics(false);
 			CharacterEntered->SetPistolFireRate(GetFireRate());
 		}
 	}

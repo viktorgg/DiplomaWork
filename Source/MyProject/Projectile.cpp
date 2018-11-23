@@ -69,20 +69,15 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		FVector DistanceVector = OtherActor->GetActorLocation() - CharacterRef->GetActorLocation();
 		float Distance = DistanceVector.Size();
 
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), Distance));
-
 		ACharacterBase* HitActor = Cast<ACharacterBase>(Hit.GetComponent()->GetOwner());
 
 		if (Hit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass()) == true) {
 
 			if (Hit.BoneName.ToString() == "Head" || Hit.BoneName.ToString() == "HeadTop_End" || Hit.BoneName.ToString() == "Neck1") {
-
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Headshot!")));
-
 				HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5);
 			}
 			else {
-
 				HitActor->SetHealth(HitActor->GetHealth() - Damage);
 			}
 		}
@@ -112,7 +107,6 @@ void AProjectile::LineTrace()
 	if (GetWorld()->LineTraceSingleByChannel(OutHit, StartLoc, EndLoc, ECC_Camera, CollisionParams) != NULL) {
 
 		if (OutHit.bBlockingHit == true) {
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Tracing!")));
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Hit: %s"), *OutHit.GetComponent()->GetName()));
 			if (OutHit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass())) {
 

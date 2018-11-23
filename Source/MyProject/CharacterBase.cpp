@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 
@@ -56,6 +57,7 @@ void ACharacterBase::Tick(float DeltaTime)
 
 	if (Health <= 0) {
 		Destroy();
+		PistolRef->GetSphereCollision()->SetSimulatePhysics(true);
 	}
 }
 

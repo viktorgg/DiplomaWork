@@ -72,7 +72,8 @@ public:
 	float GetCharacterSpeed() const { return CharacterSpeed; }
 	void SetCharacterSpeed(float Input) { CharacterSpeed = Input; }
 
-	float GetForwardInput() const { return ForwardInput; }
+	UFUNCTION(BlueprintCallable)
+		float GetForwardInput() const { return ForwardInput; }
 	void SetForwardInput(float Input) { ForwardInput = Input; }
 
 	float GetRightInput() const { return RightInput; }
@@ -84,7 +85,8 @@ public:
 	bool GetHaveRifle() const { return bHaveRifle; }
 	void SetHaveRifle(bool Input) { bHaveRifle = Input; }
 
-	bool GetCanFirePistol() const { return bCanFirePistol; }
+	UFUNCTION(BlueprintCallable)
+		bool GetCanFirePistol() const { return bCanFirePistol; }
 	void SetCanFirePistol(bool Input) { bCanFirePistol = Input; }
 
 	float GetPistolFireRate() const { return PistolFireRate; }

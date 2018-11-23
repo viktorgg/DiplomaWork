@@ -83,5 +83,7 @@ public:
 
 	UStaticMeshComponent* GetGunMesh() const { return GunMesh; }
 
+	USphereComponent* GetSphereCollision() const { return SphereCollision; }
+
 	UParticleSystem* GetFireExplosion() const { return FireExplosion; }
 };
