@@ -42,7 +42,8 @@ private:
 	float RifleFireRate;
 	FTimerHandle RifleFireRateHandle;
 
-	FTimerHandle NoZoomFireHandle;
+	bool bCanRifleSynch;
+	FTimerHandle RifleSynchHandle;
 
 	class ARevolver* PistolRef;
 	class ARifle* RifleRef;
@@ -56,6 +57,8 @@ private:
 	virtual void ResetPistolFire() PURE_VIRTUAL(ACharacterBase::ResetPistolFire, );
 
 	virtual void ResetRifleFire() PURE_VIRTUAL(ACharacterBase::ResetRifleFire, );
+
+	virtual void ResetRifleSynch() PURE_VIRTUAL(ACharacterBase::ResetRifleSynch, );
 
 
 public:
@@ -95,6 +98,9 @@ public:
 	bool GetCanFireRifle() const { return bCanFireRifle; }
 	void SetCanFireRifle(bool Input) { bCanFireRifle = Input; }
 
+	bool GetCanRifleSynch() const { return bCanRifleSynch; }
+	void SetCanRifleSynch(bool Input) { bCanRifleSynch = Input; }
+
 	float GetRifleFireRate() const { return RifleFireRate; }
 	void SetRifleFireRate(float Input) { RifleFireRate = Input; }
 
@@ -102,7 +108,7 @@ public:
 
 	FTimerHandle &GetRifleFireRateHandle() { return RifleFireRateHandle; }
 
-	FTimerHandle &GetNoZoomFireHandle() { return NoZoomFireHandle; }
+	FTimerHandle &GetRifleSynchHandle() { return RifleSynchHandle; }
 
 	ARevolver* GetPistolRef() const { return PistolRef; }
 	void SetPistolRef(ARevolver* Input) { PistolRef = Input; }

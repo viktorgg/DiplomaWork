@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
+#include "DrawDebugHelpers.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Public/TimerManager.h"
@@ -56,8 +57,17 @@ void AGroundEnemy::Tick(float DeltaTime)
 
 void AGroundEnemy::MoveForward(float Input)
 {
-	LerpRotToCharacter(LookAtRot());
-
+	if (LineTrace() == 1) {
+		Rotate(-1.0f);
+	}
+	if (LineTrace() == 2) {
+		Rotate(1.0f);
+	}
+	if (LineTrace() == 0) {
+		RotateToCharacter();
+	
+	}
+	
 	if (GetDistanceToMain() > DistanceToWalk) {
 		SetForwardInput(1.0f);
 		FVector CurrLoc = GetActorLocation();
@@ -104,7 +114,73 @@ FRotator AGroundEnemy::LookAtRot()
 	return LookAtRot;
 }
 
-void AGroundEnemy::LerpRotToCharacter(FRotator NewRot)
+void AGroundEnemy::RotateToCharacter()
 {
-	SetActorRotation(FMath::Lerp(GetActorRotation(), NewRot, 5 * GetWorld()->GetDeltaSeconds()));
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtRot(), GetWorld()->DeltaTimeSeconds, 40.0f));
+}
+
+void AGroundEnemy::Rotate(float Input)
+{
+	AddActorWorldRotation(FRotator(0.0f, 300.0f * Input * GetWorld()->DeltaTimeSeconds, 0.0f));
+}
+
+int32 AGroundEnemy::LineTrace()
+{
+	FHitResult OutHitFront, OutHitFrontL, OutHitFrontR;
+
+	FVector StartLocFront = GetActorLocation();
+	FVector EndLocFront = (GetActorForwardVector() * 500.0f) + StartLocFront;
+
+	FVector StartLocFrontL = (GetActorRightVector() * -1.0f * 75.0f) + StartLocFront;
+	FVector EndLocFrontL = (GetActorForwardVector() * 500.0f) + StartLocFrontL;
+
+	FVector StartLocFrontR = (GetActorRightVector() * 75.0f) + StartLocFront;
+	FVector EndLocFrontR = (GetActorForwardVector() * 500.0f) + StartLocFrontR;
+
+	float DistanceLeft = 0.0f;
+	float DistanceRight = 0.0f;
+
+	FCollisionQueryParams CollisionParams;
+
+	GetWorld()->LineTraceSingleByChannel(OutHitFront, StartLocFront, EndLocFront, ECC_Camera, CollisionParams);
+	GetWorld()->LineTraceSingleByChannel(OutHitFrontL, StartLocFrontL, EndLocFrontL, ECC_Camera, CollisionParams);
+	GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
+
+	//DrawDebugLine(GetWorld(), StartLocFront, EndLocFront, FColor::Emerald, true, 0.5f, 0, 10);
+	//DrawDebugLine(GetWorld(), StartLocFrontL, EndLocFrontL, FColor::Emerald, true, 0.5f, 0, 10);
+	//DrawDebugLine(GetWorld(), StartLocFrontR, EndLocFrontR, FColor::Emerald, true, 0.5f, 0, 10);
+
+	if (OutHitFront.bBlockingHit == true || OutHitFrontL.bBlockingHit == true || OutHitFrontR.bBlockingHit == true) {
+		
+		GetWorld()->LineTraceSingleByChannel(OutHitFrontL, StartLocFrontL, EndLocFrontL, ECC_Camera, CollisionParams);
+
+		if (OutHitFrontL.bBlockingHit == true) {
+
+			DistanceLeft = OutHitFrontL.Distance;
+			
+		}
+		else {
+			DistanceLeft = 0.0f;
+		}
+		GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
+
+		if (OutHitFrontR.bBlockingHit == true) {
+
+			DistanceRight = OutHitFrontR.Distance;
+			
+		}
+		else {
+			DistanceRight = 0.0f;
+		}
+	}
+
+	if (DistanceLeft < DistanceRight) {
+		return 1;
+	}
+	else if (DistanceRight < DistanceLeft) {
+		return 2;
+	}
+	else {
+		return 0;
+	}
 }

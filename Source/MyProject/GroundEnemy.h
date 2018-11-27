@@ -52,6 +52,10 @@ private:
 	
 	float GetDistanceToMain();
 
-	void LerpRotToCharacter(FRotator NewRot);
+	void RotateToCharacter();
+
+	void Rotate(float Input);
+
+	int32 LineTrace();
 
 };

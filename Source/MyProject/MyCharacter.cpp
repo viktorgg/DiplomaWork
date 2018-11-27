@@ -73,7 +73,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		LerpPlayerToCamera(15.0f);
 	}
 	
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetWInHand()));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetCanRifleSynch()));
 }
 
 // Called to bind functionality to input
@@ -197,7 +197,9 @@ void AMyCharacter::Fire()
 	if (WInHand == Rifle) {
 		if (GetRifleRef() != NULL && GetCanFireRifle() == true) {
 			GetRifleRef()->SpawnProjectile();
+			SetCanRifleSynch(false);
 			SetCanFireRifle(false);
+			GetWorldTimerManager().SetTimer(GetRifleSynchHandle(), this, &AMyCharacter::ResetRifleSynch, 0.5f, false, 0.5f);
 			GetWorldTimerManager().SetTimer(GetRifleFireRateHandle(), this, &AMyCharacter::ResetRifleFire, GetRifleFireRate(), false, GetRifleFireRate());
 		}
 	}
@@ -247,6 +249,8 @@ void AMyCharacter::ResetRifleFire()
 	SetCanFireRifle(true);
 }
 
-
-
-
+void AMyCharacter::ResetRifleSynch()
+{
+	GetWorldTimerManager().ClearTimer(GetRifleSynchHandle());
+	SetCanRifleSynch(true);
+}

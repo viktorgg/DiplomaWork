@@ -59,6 +59,8 @@ private:
 
 	virtual void ResetRifleFire();
 
+	virtual void ResetRifleSynch();
+
 	void LookSide(float Input);
 
 	void LookUp(float Input);

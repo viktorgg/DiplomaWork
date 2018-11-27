@@ -19,8 +19,8 @@ ARifle::ARifle() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetDamage(50);
-	SetFireRate(1.5);
-	SetProjectileOffsetNoZoom(2.0f);
+	SetFireRate(2.0f);
+	SetProjectileOffsetNoZoom(2.5f);
 
 }
 
@@ -54,7 +54,7 @@ void ARifle::SpawnProjectile()
 
 			SpawnLocation = MainCharacter->GetCamera()->GetComponentLocation() + (MainCharacter->GetCamera()->GetForwardVector() * 250);
 
-			if (ChanceToHit < 50) {
+			if (ChanceToHit < 35) {
 				SpawnRotation = MainCharacter->GetCamera()->GetComponentRotation();
 			}
 			else {

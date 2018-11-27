@@ -93,7 +93,7 @@ void ARevolver::SpawnProjectile()
 
 		SpawnLocation = EnemyCharacter->GetActorLocation() + (EnemyCharacter->GetActorForwardVector() * 100);
 
-		if (ChanceToHit < 75) {
+		if (ChanceToHit < 60) {
 			SpawnRotation = EnemyCharacter->LookAtRot();
 		}
 		else {
