@@ -17,9 +17,9 @@ void UAnimationHandler::UpdateAnimationProperties()
 		WeaponInHand = CharacterRef->GetWInHand();
 		bShootPistol = !CharacterRef->GetCanFirePistol();
 		bShootRifle = !CharacterRef->GetCanFireRifle();
-		bRifleSynch = CharacterRef->GetCanRifleSynch();
+		bRifleAnim = CharacterRef->GetCanRifleAnim();
 	}
 	else {
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found!")));
 	}
 }

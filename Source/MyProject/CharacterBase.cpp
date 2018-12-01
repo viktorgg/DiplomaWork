@@ -32,7 +32,7 @@ ACharacterBase::ACharacterBase()
 	bCanFireRifle = true;
 	RifleFireRate = 1.0f;
 
-	bCanRifleSynch = true;
+	bCanRifleAnim = true;
 
 	PistolRef = nullptr;
 	RifleRef = nullptr;

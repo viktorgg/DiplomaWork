@@ -35,7 +35,7 @@ protected:
 		bool bShootRifle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		bool bRifleSynch;
+		bool bRifleAnim;
 	
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimationProperties();

@@ -23,6 +23,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void Open();
+
+	void Close();
 	
 private:
 
@@ -37,9 +40,5 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* WindowRMesh;
-	
-	void Open();
-
-	void Close();
 
 };

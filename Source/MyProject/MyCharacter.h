@@ -40,8 +40,10 @@ private:
 	bool bZooming;
 	bool bOutZooming;
 
-	enum WeaponInHand { None = 0, Pistol = 1, Rifle = 2 };
+	enum WeaponInHand { None, Pistol, Rifle };
 	WeaponInHand WInHand;
+
+	FTimerHandle Handle;
 
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -59,7 +61,7 @@ private:
 
 	virtual void ResetRifleFire();
 
-	virtual void ResetRifleSynch();
+	virtual void ResetRifleAnim();
 
 	void LookSide(float Input);
 

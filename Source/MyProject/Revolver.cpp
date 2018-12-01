@@ -12,6 +12,7 @@
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 #include "EngineUtils.h"
 
 
@@ -113,6 +114,16 @@ void ARevolver::SpawnProjectile()
 	SpawnedProjectile->SetCharacterRef(GetCharacterRef());
 	SpawnedProjectile->SetDamage(GetDamage());
 
+	if (Cast<AMyCharacter>(GetCharacterRef())->GetZooming() == true){
+		SpawnEmitter();
+	}
+	else {
+		GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARevolver::SpawnEmitter, 0.2f, false, 0.2f);
+	}
+}
+
+void ARevolver::SpawnEmitter()
+{
 	UGameplayStatics::SpawnEmitterAtLocation(this, GetFireExplosion(), GetGunMesh()->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
 }
 

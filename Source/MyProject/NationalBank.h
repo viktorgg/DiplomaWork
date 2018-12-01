@@ -3,20 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GunBase.h"
-#include "Rifle.generated.h"
+#include "BuildingBase.h"
+#include "NationalBank.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MYPROJECT_API ARifle : public AGunBase
+class MYPROJECT_API ANationalBank : public ABuildingBase
 {
 	GENERATED_BODY()
 	
+
 public:
 	// Sets default values for this actor's properties
-	ARifle();
+	ANationalBank();
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,15 +27,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void SpawnProjectile();
-
-private:
-
-	virtual void SpawnEmitter();
-
-	virtual void OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-};
-
 	
-
+};

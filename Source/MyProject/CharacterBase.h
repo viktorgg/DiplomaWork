@@ -42,8 +42,8 @@ private:
 	float RifleFireRate;
 	FTimerHandle RifleFireRateHandle;
 
-	bool bCanRifleSynch;
-	FTimerHandle RifleSynchHandle;
+	bool bCanRifleAnim;
+	FTimerHandle RifleAnimHandle;
 
 	class ARevolver* PistolRef;
 	class ARifle* RifleRef;
@@ -98,8 +98,8 @@ public:
 	bool GetCanFireRifle() const { return bCanFireRifle; }
 	void SetCanFireRifle(bool Input) { bCanFireRifle = Input; }
 
-	bool GetCanRifleSynch() const { return bCanRifleSynch; }
-	void SetCanRifleSynch(bool Input) { bCanRifleSynch = Input; }
+	bool GetCanRifleAnim() const { return bCanRifleAnim; }
+	void SetCanRifleAnim(bool Input) { bCanRifleAnim = Input; }
 
 	float GetRifleFireRate() const { return RifleFireRate; }
 	void SetRifleFireRate(float Input) { RifleFireRate = Input; }
@@ -108,7 +108,7 @@ public:
 
 	FTimerHandle &GetRifleFireRateHandle() { return RifleFireRateHandle; }
 
-	FTimerHandle &GetRifleSynchHandle() { return RifleSynchHandle; }
+	FTimerHandle &GetRifleAnimHandle() { return RifleAnimHandle; }
 
 	ARevolver* GetPistolRef() const { return PistolRef; }
 	void SetPistolRef(ARevolver* Input) { PistolRef = Input; }

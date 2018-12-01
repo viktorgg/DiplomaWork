@@ -28,6 +28,8 @@ public:
 
 private:
 
+	FTimerHandle ParticleDelay;
+
 	UPROPERTY(EditAnywhere)
 		int32 Damage;
 
@@ -57,6 +59,8 @@ private:
 
 	virtual void SpawnProjectile() PURE_VIRTUAL(AGunBase::SpawnProjectile, );
 
+	virtual void SpawnEmitter() PURE_VIRTUAL(AGunBase::SpawnEmitter, );
+
 	UFUNCTION()
 		virtual void OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) PURE_VIRTUAL(AGunBase::OnEnterSphere, );
@@ -74,6 +78,8 @@ public:
 
 	float GetProjectileOffsetZoom() const { return ProjectileOffsetZoom; }
 	void SetProjectileOffsetZoom(float Input) { ProjectileOffsetZoom = Input; }
+
+	FTimerHandle &GetParticleDelayHandle() { return ParticleDelay; }
 
 	ACharacterBase* GetCharacterRef() const { return CharacterRef; }
 

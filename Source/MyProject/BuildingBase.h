@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BuildingBase.generated.h"
 
+
 UCLASS()
 class MYPROJECT_API ABuildingBase : public AActor
 {
@@ -26,22 +27,52 @@ public:
 
 private:
 
+	TArray<class AWindows*> WindowsArray;
+
 	UPROPERTY(VisibleAnywhere)
-		TArray<TSubclassOf<class AWindows>> WindowsArray;
+		class UChildActorComponent* WindowsChild;
+
+	UPROPERTY(VisibleAnywhere)
+		class UChildActorComponent* WindowsChild2;
+
+	UPROPERTY(VisibleAnywhere)
+		class UChildActorComponent* WindowsChild3;
+
+	UPROPERTY(VisibleAnywhere)
+		class UChildActorComponent* WindowsChild4;
 
 	TSubclassOf<class AWindows> WindowsRef;
 
 	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* MainBuildingMesh;
+		class UStaticMeshComponent* MainBuildingMesh;
 
 	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* WallMesh;
+		class UStaticMeshComponent* WallMesh;
 
 	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* FirstFloorMesh;
+		class UStaticMeshComponent* WallMesh2;
 
 	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* SecondFloorMesh;
+		class UStaticMeshComponent* WallMesh3;
+
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* WallMesh4;
+
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* FirstFloorMesh;
+
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* SecondFloorMesh;	
 	
-	
+public:
+
+	TArray<class AWindows*> GetWindowsArray() { return WindowsArray; }
+
+	UChildActorComponent* GetWindowsChild() const { return WindowsChild; }
+
+	UChildActorComponent* GetWindowsChild2() const { return WindowsChild2; }
+
+	UChildActorComponent* GetWindowsChild3() const { return WindowsChild3; }
+
+	UChildActorComponent* GetWindowsChild4() const { return WindowsChild4; }
 };

@@ -11,6 +11,7 @@
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 #include "EngineUtils.h"
 
 
@@ -75,6 +76,16 @@ void ARifle::SpawnProjectile()
 	SpawnedProjectile->SetCharacterRef(GetCharacterRef());
 	SpawnedProjectile->SetDamage(GetDamage());
 
+	if (Cast<AMyCharacter>(GetCharacterRef())->GetZooming() == true) {
+		SpawnEmitter();
+	}
+	else {
+		GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARifle::SpawnEmitter, 0.2f, false, 0.2f);
+	}
+}
+
+void ARifle::SpawnEmitter()
+{
 	UGameplayStatics::SpawnEmitterAtLocation(this, GetFireExplosion(), GetGunMesh()->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
 }
 

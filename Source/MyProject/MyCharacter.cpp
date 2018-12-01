@@ -73,7 +73,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		LerpPlayerToCamera(15.0f);
 	}
 	
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetCanRifleSynch()));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), GetForwardInput()));
 }
 
 // Called to bind functionality to input
@@ -146,7 +146,7 @@ void AMyCharacter::LookUp(float Input)
 		float CurrRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Pitch;
 
 		float NewRot = LookSpeed * Input * GetWorld()->GetDeltaSeconds();
-		if ((CurrRot + NewRot) > -50.0f && (CurrRot + NewRot) < 65.0f) {
+		if ((CurrRot + NewRot) > LookUpperLimit && (CurrRot + NewRot) < LookLowerLimit) {
 			SpringArm->AddRelativeRotation(FRotator(NewRot, 0.0f, 0.0f));
 		}
 	}
@@ -197,9 +197,9 @@ void AMyCharacter::Fire()
 	if (WInHand == Rifle) {
 		if (GetRifleRef() != NULL && GetCanFireRifle() == true) {
 			GetRifleRef()->SpawnProjectile();
-			SetCanRifleSynch(false);
+			SetCanRifleAnim(false);
 			SetCanFireRifle(false);
-			GetWorldTimerManager().SetTimer(GetRifleSynchHandle(), this, &AMyCharacter::ResetRifleSynch, 0.5f, false, 0.5f);
+			GetWorldTimerManager().SetTimer(GetRifleAnimHandle(), this, &AMyCharacter::ResetRifleAnim, 0.5f, false, 0.5f);
 			GetWorldTimerManager().SetTimer(GetRifleFireRateHandle(), this, &AMyCharacter::ResetRifleFire, GetRifleFireRate(), false, GetRifleFireRate());
 		}
 	}
@@ -207,7 +207,7 @@ void AMyCharacter::Fire()
 
 void AMyCharacter::ChangeToPistol()
 {
-	if (GetHavePistol() == true && WInHand != Pistol && GetForwardInput() == 0.0f && GetRightInput() == 0.0f) {
+	if ((GetHavePistol() == true) && (WInHand != Pistol) && (GetForwardInput() == 0.0f) && (GetRightInput() == 0.0f) && (bZooming == false)) {
 
 		if (WInHand == None) {
 			GetPistolRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
@@ -223,7 +223,7 @@ void AMyCharacter::ChangeToPistol()
 
 void AMyCharacter::ChangeToRifle()
 {
-	if (GetHaveRifle() == true && WInHand != Rifle && GetForwardInput() == 0.0f && GetRightInput() == 0.0f) {
+	if ((GetHaveRifle() == true) && (WInHand != Rifle) && (GetForwardInput() == 0.0f) && (GetRightInput() == 0.0f) && (bZooming == false)) {
 
 		if (WInHand == None) {
 			GetRifleRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
@@ -237,6 +237,7 @@ void AMyCharacter::ChangeToRifle()
 	}
 }
 
+
 void AMyCharacter::ResetPistolFire()
 {
 	GetWorldTimerManager().ClearTimer(GetPistolFireRateHandle());
@@ -249,8 +250,8 @@ void AMyCharacter::ResetRifleFire()
 	SetCanFireRifle(true);
 }
 
-void AMyCharacter::ResetRifleSynch()
+void AMyCharacter::ResetRifleAnim()
 {
-	GetWorldTimerManager().ClearTimer(GetRifleSynchHandle());
-	SetCanRifleSynch(true);
+	GetWorldTimerManager().ClearTimer(GetRifleAnimHandle());
+	SetCanRifleAnim(true);
 }

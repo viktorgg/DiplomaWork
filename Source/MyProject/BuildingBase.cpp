@@ -3,6 +3,7 @@
 #include "BuildingBase.h"
 #include "Windows.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/ChildActorComponent.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
@@ -19,6 +20,15 @@ ABuildingBase::ABuildingBase()
 	WallMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wall"));
 	WallMesh->SetupAttachment(MainBuildingMesh);
 
+	WallMesh2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wall 2"));
+	WallMesh2->SetupAttachment(MainBuildingMesh);
+
+	WallMesh3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wall 3"));
+	WallMesh3->SetupAttachment(MainBuildingMesh);
+
+	WallMesh4 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wall 4"));
+	WallMesh4->SetupAttachment(MainBuildingMesh);
+
 	FirstFloorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("First Floor"));
 	FirstFloorMesh->SetupAttachment(MainBuildingMesh);
 
@@ -34,10 +44,21 @@ ABuildingBase::ABuildingBase()
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Windows Not Found!")));
 	}
 
-	//for (int i = 0; i < 4; i++) {
-	//	WindowsRef->CreateDefaultSubobject<AWindows>(TEXT("Windows Ref"));
-	//	WindowsRef->SetupAttachment
-	//}
+	WindowsChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child"));
+	WindowsChild->SetChildActorClass(WindowsRef);
+	WindowsChild->SetupAttachment(MainBuildingMesh);
+
+	WindowsChild2 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 2"));
+	WindowsChild2->SetChildActorClass(WindowsRef);
+	WindowsChild2->SetupAttachment(MainBuildingMesh);
+
+	WindowsChild3 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 3"));
+	WindowsChild3->SetChildActorClass(WindowsRef);
+	WindowsChild3->SetupAttachment(MainBuildingMesh);
+
+	WindowsChild4 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 4"));
+	WindowsChild4->SetChildActorClass(WindowsRef);
+	WindowsChild4->SetupAttachment(MainBuildingMesh);
 }
 
 // Called when the game starts or when spawned
@@ -45,6 +66,15 @@ void ABuildingBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	WindowsChild->CreateChildActor();
+	WindowsChild2->CreateChildActor();
+	WindowsChild3->CreateChildActor();
+	WindowsChild4->CreateChildActor();
+
+	WindowsArray.Add(Cast<AWindows>(WindowsChild->GetChildActor()));
+	WindowsArray.Add(Cast<AWindows>(WindowsChild2->GetChildActor()));
+	WindowsArray.Add(Cast<AWindows>(WindowsChild3->GetChildActor()));
+	WindowsArray.Add(Cast<AWindows>(WindowsChild4->GetChildActor()));
 }
 
 // Called every frame
