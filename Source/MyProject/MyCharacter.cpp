@@ -64,7 +64,6 @@ void AMyCharacter::Tick(float DeltaTime)
 		CameraOutZoom();
 	}
 
-
 	if (GetCanFirePistol() == false) {
 		LerpPlayerToCamera(15.0f);
 	}
@@ -188,15 +187,15 @@ void AMyCharacter::LerpPlayerToCamera(float Speed)
 void AMyCharacter::Fire()
 {
 	if (WInHand == Pistol) {
-		if (GetPistolRef() != NULL && GetCanFirePistol() == true) {
-			GetPistolRef()->SpawnProjectile();
+		if ((GetPistolActor() != NULL) && (GetCanFirePistol() == true)) {
+			GetPistolActor()->SpawnProjectile();
 			SetCanFirePistol(false);
 			GetWorldTimerManager().SetTimer(GetPistolFireRateHandle(), this, &AMyCharacter::ResetPistolFire, GetPistolFireRate(), false, GetPistolFireRate());
 		}
 	}
 	if (WInHand == Rifle) {
-		if (GetRifleRef() != NULL && GetCanFireRifle() == true) {
-			GetRifleRef()->SpawnProjectile();
+		if ((GetRifleActor() != NULL) && (GetCanFireRifle() == true)) {
+			GetRifleActor()->SpawnProjectile();
 			SetCanRifleAnim(false);
 			SetCanFireRifle(false);
 			GetWorldTimerManager().SetTimer(GetRifleAnimHandle(), this, &AMyCharacter::ResetRifleAnim, 0.5f, false, 0.5f);
@@ -210,12 +209,12 @@ void AMyCharacter::ChangeToPistol()
 	if ((GetHavePistol() == true) && (WInHand != Pistol) && (GetForwardInput() == 0.0f) && (GetRightInput() == 0.0f) && (bZooming == false)) {
 
 		if (WInHand == None) {
-			GetPistolRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
+			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
 		}
 
 		if(WInHand == Rifle){
-			GetPistolRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
-			GetRifleRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
+			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
+			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
 		}
 		WInHand = Pistol;
 	}
@@ -226,12 +225,12 @@ void AMyCharacter::ChangeToRifle()
 	if ((GetHaveRifle() == true) && (WInHand != Rifle) && (GetForwardInput() == 0.0f) && (GetRightInput() == 0.0f) && (bZooming == false)) {
 
 		if (WInHand == None) {
-			GetRifleRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
+			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
 		}
 
 		if (WInHand == Pistol) {
-			GetRifleRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
-			GetPistolRef()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
+			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
+			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 		}
 		WInHand = Rifle;
 	}

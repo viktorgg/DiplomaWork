@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "MyCharacter.h"
 #include "CharacterBase.h"
+#include "WindowEnemy.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
@@ -40,9 +41,9 @@ void ARifle::SpawnProjectile()
 	FRotator SpawnRotation;
 	FVector SpawnLocation;
 
-	if (Cast<AMyCharacter>(GetCharacterRef()) != NULL) {
+	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
 
-		AMyCharacter* MainCharacter = Cast<AMyCharacter>(GetCharacterRef());
+		AMyCharacter* MainCharacter = Cast<AMyCharacter>(GetCharacterActor());
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
@@ -68,16 +69,36 @@ void ARifle::SpawnProjectile()
 			}
 		}
 	}
+	else if (Cast<AWindowEnemy>(GetCharacterActor()) != NULL) {
+
+		AWindowEnemy* EnemyCharacter = Cast<AWindowEnemy>(GetCharacterActor());
+
+		int32 ChanceToHit = FMath::FRandRange(1, 100);
+
+		SpawnLocation = EnemyCharacter->GetActorLocation() + (EnemyCharacter->GetActorForwardVector() * 100);
+
+		if (ChanceToHit < 50) {
+			SpawnRotation = EnemyCharacter->LookAtRot();
+		}
+		else {
+			float BulletOffsetPitch;
+			float BulletOffsetYaw;
+			BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
+			BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
+			FRotator CurrRot = EnemyCharacter->GetActorRotation();
+			SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
+		}
+	}
 	FActorSpawnParameters ActorSpawnParams;
-	// ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(GetProjectileClass(), SpawnLocation, SpawnRotation, ActorSpawnParams);
 
-	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(GetProjectileRef(), SpawnLocation, SpawnRotation, ActorSpawnParams);
-
-	SpawnedProjectile->SetCharacterRef(GetCharacterRef());
+	SpawnedProjectile->SetCharacterActor(GetCharacterActor());
 	SpawnedProjectile->SetDamage(GetDamage());
 
-	if (Cast<AMyCharacter>(GetCharacterRef())->GetZooming() == true) {
-		SpawnEmitter();
+	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
+		if (Cast<AMyCharacter>(GetCharacterActor())->GetZooming() == true) {
+			SpawnEmitter();
+		}
 	}
 	else {
 		GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARifle::SpawnEmitter, 0.2f, false, 0.2f);
@@ -94,9 +115,9 @@ void ARifle::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherA
 	if (Cast<ACharacterBase>(OtherActor) != NULL) {
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
 		if (CharacterEntered->GetHaveRifle() == false) {
-			CharacterEntered->SetRifleRef(this);
+			CharacterEntered->SetRifleActor(this);
 			CharacterEntered->SetHaveRifle(true);
-			SetCharacterRef(CharacterEntered);
+			SetCharacterActor(CharacterEntered);
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
 			CharacterEntered->SetRifleFireRate(GetFireRate());
 		}

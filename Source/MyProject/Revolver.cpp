@@ -47,9 +47,9 @@ void ARevolver::SpawnProjectile()
 	FRotator SpawnRotation;
 	FVector SpawnLocation;
 
-	if (Cast<AMyCharacter>(GetCharacterRef()) != NULL) {
+	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
 
-		AMyCharacter* MainCharacter = Cast<AMyCharacter>(GetCharacterRef());
+		AMyCharacter* MainCharacter = Cast<AMyCharacter>(GetCharacterActor());
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
@@ -86,9 +86,9 @@ void ARevolver::SpawnProjectile()
 			}
 		}
 	}
-	else if (Cast<AGroundEnemy>(GetCharacterRef()) != NULL) {
+	else if (Cast<AGroundEnemy>(GetCharacterActor()) != NULL) {
 
-		AGroundEnemy* EnemyCharacter = Cast<AGroundEnemy>(GetCharacterRef());
+		AGroundEnemy* EnemyCharacter = Cast<AGroundEnemy>(GetCharacterActor());
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
@@ -106,16 +106,17 @@ void ARevolver::SpawnProjectile()
 			SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
 		}
 	}
+	
 	FActorSpawnParameters ActorSpawnParams;
-	// ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(GetProjectileClass(), SpawnLocation, SpawnRotation, ActorSpawnParams);
 
-	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(GetProjectileRef(), SpawnLocation, SpawnRotation, ActorSpawnParams);
-
-	SpawnedProjectile->SetCharacterRef(GetCharacterRef());
+	SpawnedProjectile->SetCharacterActor(GetCharacterActor());
 	SpawnedProjectile->SetDamage(GetDamage());
-
-	if (Cast<AMyCharacter>(GetCharacterRef())->GetZooming() == true){
-		SpawnEmitter();
+	
+	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL){
+		if (Cast<AMyCharacter>(GetCharacterActor())->GetZooming() == true) {
+			SpawnEmitter();
+		}
 	}
 	else {
 		GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARevolver::SpawnEmitter, 0.2f, false, 0.2f);
@@ -132,9 +133,9 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * Oth
 	if (Cast<ACharacterBase>(OtherActor) != NULL) {
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
 		if (CharacterEntered->GetHavePistol() == false) {
-			CharacterEntered->SetPistolRef(this);
+			CharacterEntered->SetPistolActor(this);
 			CharacterEntered->SetHavePistol(true);
-			SetCharacterRef(CharacterEntered);
+			SetCharacterActor(CharacterEntered);
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 			GetSphereCollision()->SetSimulatePhysics(false);
 			CharacterEntered->SetPistolFireRate(GetFireRate());

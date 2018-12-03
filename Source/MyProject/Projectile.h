@@ -39,7 +39,7 @@ private:
 		class UStaticMeshComponent* ProjectileMesh;
 
 	UPROPERTY(VisibleAnywhere)
-		class ACharacterBase* CharacterRef;
+		class ACharacterBase* CharacterActor;
 
 	UPROPERTY(VisibleAnywhere)
 		class UParticleSystem* HitFire;
@@ -49,12 +49,10 @@ private:
 
 	void ProjectileTravel();
 
-	void LineTrace();
-
 public:
 
-	void SetDamage(int32 Input) { Damage = Input; }
+	void SetDamage(int32 NewDamage) { Damage = NewDamage; }
 
-	void SetCharacterRef(ACharacterBase* Input) { CharacterRef = Input; }
+	void SetCharacterActor(ACharacterBase* NewCharacterActor) { CharacterActor = NewCharacterActor; }
 
 };

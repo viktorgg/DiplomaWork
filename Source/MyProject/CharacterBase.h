@@ -45,8 +45,8 @@ private:
 	bool bCanRifleAnim;
 	FTimerHandle RifleAnimHandle;
 
-	class ARevolver* PistolRef;
-	class ARifle* RifleRef;
+	class ARevolver* PistolActor;
+	class ARifle* RifleActor;
 
 	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
 
@@ -70,10 +70,10 @@ public:
 
 
 	int32 GetHealth() const { return Health; }
-	void SetHealth(int32 Input) { Health = Input; }
+	void SetHealth(int32 NewHealth) { Health = NewHealth; }
 
 	float GetCharacterSpeed() const { return CharacterSpeed; }
-	void SetCharacterSpeed(float Input) { CharacterSpeed = Input; }
+	void SetCharacterSpeed(float NewCharacterSpeed) { CharacterSpeed = NewCharacterSpeed; }
 
 	UFUNCTION(BlueprintCallable)
 		float GetForwardInput() const { return ForwardInput; }
@@ -83,26 +83,27 @@ public:
 	void SetRightInput(float Input) { RightInput = Input; }
 
 	bool GetHavePistol() const { return bHavePistol; }
-	void SetHavePistol(bool Input) { bHavePistol = Input; }
+	void SetHavePistol(bool bNewHavePistol) { bHavePistol = bNewHavePistol; }
 
 	bool GetHaveRifle() const { return bHaveRifle; }
-	void SetHaveRifle(bool Input) { bHaveRifle = Input; }
+	void SetHaveRifle(bool bNewHaveRifle) { bHaveRifle = bNewHaveRifle; }
 
 	UFUNCTION(BlueprintCallable)
 		bool GetCanFirePistol() const { return bCanFirePistol; }
-	void SetCanFirePistol(bool Input) { bCanFirePistol = Input; }
+	void SetCanFirePistol(bool bNewCanFirePistol) { bCanFirePistol = bNewCanFirePistol; }
 
 	float GetPistolFireRate() const { return PistolFireRate; }
-	void SetPistolFireRate(float Input) { PistolFireRate = Input; }
+	void SetPistolFireRate(float NewPistolFireRate) { PistolFireRate = NewPistolFireRate; }
 
-	bool GetCanFireRifle() const { return bCanFireRifle; }
-	void SetCanFireRifle(bool Input) { bCanFireRifle = Input; }
+	UFUNCTION(BlueprintCallable)
+		bool GetCanFireRifle() const { return bCanFireRifle; }
+	void SetCanFireRifle(bool bNewCanFireRifle) { bCanFireRifle = bNewCanFireRifle; }
 
 	bool GetCanRifleAnim() const { return bCanRifleAnim; }
-	void SetCanRifleAnim(bool Input) { bCanRifleAnim = Input; }
+	void SetCanRifleAnim(bool bNewCanRifleAnim) { bCanRifleAnim = bNewCanRifleAnim; }
 
 	float GetRifleFireRate() const { return RifleFireRate; }
-	void SetRifleFireRate(float Input) { RifleFireRate = Input; }
+	void SetRifleFireRate(float NewRifleFireRate) { RifleFireRate = NewRifleFireRate; }
 
 	FTimerHandle &GetPistolFireRateHandle() { return PistolFireRateHandle; }
 
@@ -110,11 +111,11 @@ public:
 
 	FTimerHandle &GetRifleAnimHandle() { return RifleAnimHandle; }
 
-	ARevolver* GetPistolRef() const { return PistolRef; }
-	void SetPistolRef(ARevolver* Input) { PistolRef = Input; }
+	ARevolver* GetPistolActor() const { return PistolActor; }
+	void SetPistolActor(ARevolver* NewPistolActor) { PistolActor = NewPistolActor; }
 
-	ARifle* GetRifleRef() const { return RifleRef; }
-	void SetRifleRef(ARifle* Input) { RifleRef = Input; }
+	ARifle* GetRifleActor() const { return RifleActor; }
+	void SetRifleActor(ARifle* NewRifleActor) { RifleActor = NewRifleActor; }
 
 
 };

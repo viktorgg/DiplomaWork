@@ -34,15 +34,11 @@ ACharacterBase::ACharacterBase()
 
 	bCanRifleAnim = true;
 
-	PistolRef = nullptr;
-	RifleRef = nullptr;
-
 	RootComponent = GetCapsuleComponent();
 
 	GetArrowComponent()->SetupAttachment(RootComponent);
 
 	GetMesh()->SetupAttachment(RootComponent);
-
 }
 
 // Called when the game starts or when spawned
@@ -59,7 +55,7 @@ void ACharacterBase::Tick(float DeltaTime)
 
 	if (Health <= 0) {
 		Destroy();
-		PistolRef->GetSphereCollision()->SetSimulatePhysics(true);
+		PistolActor->GetSphereCollision()->SetSimulatePhysics(true);
 	}
 }
 

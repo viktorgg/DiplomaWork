@@ -59,13 +59,13 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor == CharacterRef) {
+	if (OtherActor == CharacterActor) {
 		Destroy();
 	}
 
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && (OtherActor != CharacterRef)) {
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && (OtherActor != CharacterActor)) {
 
-		FVector DistanceVector = OtherActor->GetActorLocation() - CharacterRef->GetActorLocation();
+		FVector DistanceVector = OtherActor->GetActorLocation() - CharacterActor->GetActorLocation();
 		float Distance = DistanceVector.Size();
 
 		ACharacterBase* HitActor = Cast<ACharacterBase>(Hit.GetComponent()->GetOwner());

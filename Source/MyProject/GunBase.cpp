@@ -22,7 +22,6 @@ AGunBase::AGunBase()
 	FireRate = 0.0f;
 	ProjectileOffsetNoZoom = 0.0f;
 	ProjectileOffsetZoom = 0.0f;
-	CharacterRef = nullptr;
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
 	RootComponent = SphereCollision;
@@ -33,7 +32,7 @@ AGunBase::AGunBase()
 	static ConstructorHelpers::FClassFinder<AProjectile>
 		ProjectileBP(TEXT("Blueprint'/Game/Blueprints/ProjectileBP.ProjectileBP_C'"));
 	if (ProjectileBP.Succeeded() == true) {
-		ProjectileRef = (UClass*)ProjectileBP.Class;
+		ProjectileClass = (UClass*)ProjectileBP.Class;
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Projectile Not Found!")));

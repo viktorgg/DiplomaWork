@@ -17,7 +17,7 @@ AGroundEnemy::AGroundEnemy() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetHealth(100);
-	SetCharacterSpeed(400.0f);
+	SetCharacterSpeed(300.0f);
 
 	DistanceToWalk = 700.0f;
 	FireRate = 1.0f;
@@ -25,7 +25,7 @@ AGroundEnemy::AGroundEnemy() {
 	static ConstructorHelpers::FClassFinder<ARevolver>
 		PistolBP(TEXT("Blueprint'/Game/Blueprints/RevolverBP.RevolverBP_C'"));
 	if (PistolBP.Succeeded() == true) {
-		PistolRef = (UClass*)PistolBP.Class;
+		PistolClass = (UClass*)PistolBP.Class;
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pistol Not Found!")));
@@ -38,13 +38,11 @@ void AGroundEnemy::BeginPlay()
 
 	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
 		if (ActorItr) {
-			MainCharacterRef = *ActorItr;
+			MainCharacterActor = *ActorItr;
 		}
 	}
 	FActorSpawnParameters ActorSpawnParams;
-	ARevolver* SpawnedPistol = GetWorld()->SpawnActor<ARevolver>(PistolRef, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
-	SpawnedPistol->SetCharacterRef(this);
-	SpawnedPistolRef = SpawnedPistol;
+	ARevolver* SpawnedPistol = GetWorld()->SpawnActor<ARevolver>(PistolClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
 }
 
 void AGroundEnemy::Tick(float DeltaTime)
@@ -57,17 +55,8 @@ void AGroundEnemy::Tick(float DeltaTime)
 
 void AGroundEnemy::MoveForward(float Input)
 {
-	if (LineTrace() == 1) {
-		Rotate(-1.0f);
-	}
-	if (LineTrace() == 2) {
-		Rotate(1.0f);
-	}
-	if (LineTrace() == 0) {
-		RotateToCharacter();
-	
-	}
-	
+	Rotate(LineTrace());
+
 	if (GetDistanceToMain() > DistanceToWalk) {
 		SetForwardInput(1.0f);
 		FVector CurrLoc = GetActorLocation();
@@ -81,16 +70,10 @@ void AGroundEnemy::MoveForward(float Input)
 
 void AGroundEnemy::Fire()
 {
-	if (PistolRef != NULL && GetCanFirePistol() == true) {
-
-		if (SpawnedPistolRef != NULL) {
-			SpawnedPistolRef->SpawnProjectile();
-			SetCanFirePistol(false);
-			GetWorldTimerManager().SetTimer(GetPistolFireRateHandle(), this, &AGroundEnemy::ResetPistolFire, FireRate, false, FireRate);
-		}
-		else {
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Error!")));
-		}
+	if ((GetPistolActor() != NULL) && (GetHavePistol() == true) && (GetCanFirePistol() == true)) {
+		GetPistolActor()->SpawnProjectile();
+		SetCanFirePistol(false);
+		GetWorldTimerManager().SetTimer(GetPistolFireRateHandle(), this, &AGroundEnemy::ResetPistolFire, FireRate, false, FireRate);
 	}
 }
 
@@ -102,7 +85,7 @@ void AGroundEnemy::ResetPistolFire()
 
 float AGroundEnemy::GetDistanceToMain()
 {
-	FVector DistanceVector = GetActorLocation() - MainCharacterRef->GetActorLocation();
+	FVector DistanceVector = GetActorLocation() - MainCharacterActor->GetActorLocation();
 	float Distance = DistanceVector.Size();
 
 	return Distance;
@@ -110,7 +93,7 @@ float AGroundEnemy::GetDistanceToMain()
 
 FRotator AGroundEnemy::LookAtRot()
 {
-	FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MainCharacterRef->GetActorLocation());
+	FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MainCharacterActor->GetActorLocation());
 	return LookAtRot;
 }
 
@@ -119,12 +102,17 @@ void AGroundEnemy::RotateToCharacter()
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtRot(), GetWorld()->DeltaTimeSeconds, 40.0f));
 }
 
-void AGroundEnemy::Rotate(float Input)
+void AGroundEnemy::Rotate(float Direction)
 {
-	AddActorWorldRotation(FRotator(0.0f, 300.0f * Input * GetWorld()->DeltaTimeSeconds, 0.0f));
+	if (Direction != 0.0f) {
+		AddActorWorldRotation(FRotator(0.0f, 300.0f * Direction * GetWorld()->DeltaTimeSeconds, 0.0f));
+	}
+	else {
+		RotateToCharacter();
+	}
 }
 
-int32 AGroundEnemy::LineTrace()
+float AGroundEnemy::LineTrace()
 {
 	FHitResult OutHitFront, OutHitFrontL, OutHitFrontR;
 
@@ -169,14 +157,15 @@ int32 AGroundEnemy::LineTrace()
 			DistanceRight = 0.0f;
 		}
 	}
-
+	// Go Right
 	if (DistanceLeft < DistanceRight) {
-		return 1;
+		return -1.0f;
 	}
+	// Go Left
 	else if (DistanceRight < DistanceLeft) {
-		return 2;
+		return 1.0f;
 	}
 	else {
-		return 0;
+		return 0.0f;
 	}
 }

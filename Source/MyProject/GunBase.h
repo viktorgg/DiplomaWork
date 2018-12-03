@@ -49,10 +49,10 @@ private:
 		class UStaticMeshComponent* GunMesh;
 
 	UPROPERTY(VisibleAnywhere)
-		TSubclassOf<class AProjectile> ProjectileRef;
+		TSubclassOf<class AProjectile> ProjectileClass;
 
 	UPROPERTY(VisibleAnywhere)
-		class ACharacterBase* CharacterRef;
+		class ACharacterBase* CharacterActor;
 
 	UPROPERTY(VisibleAnywhere)
 		class UParticleSystem* FireExplosion;
@@ -68,24 +68,24 @@ private:
 public:
 
 	int32 GetDamage() const { return Damage; }
-	void SetDamage(int32 Input) { Damage = Input; }
+	void SetDamage(int32 NewDamage) { Damage = NewDamage; }
 
 	float GetFireRate() const { return FireRate; }
-	void SetFireRate(float Input) { FireRate = Input; }
+	void SetFireRate(float NewFireRate) { FireRate = NewFireRate; }
 
 	float GetProjectileOffsetNoZoom() const { return ProjectileOffsetNoZoom; }
-	void SetProjectileOffsetNoZoom(float Input) { ProjectileOffsetNoZoom = Input; }
+	void SetProjectileOffsetNoZoom(float NewProjectileOffset) { ProjectileOffsetNoZoom = NewProjectileOffset; }
 
 	float GetProjectileOffsetZoom() const { return ProjectileOffsetZoom; }
-	void SetProjectileOffsetZoom(float Input) { ProjectileOffsetZoom = Input; }
+	void SetProjectileOffsetZoom(float NewProjectileOffset) { ProjectileOffsetZoom = NewProjectileOffset; }
 
 	FTimerHandle &GetParticleDelayHandle() { return ParticleDelay; }
 
-	ACharacterBase* GetCharacterRef() const { return CharacterRef; }
+	ACharacterBase* GetCharacterActor() const { return CharacterActor; }
 
-	TSubclassOf<AProjectile> GetProjectileRef() const { return ProjectileRef; }
+	TSubclassOf<AProjectile> GetProjectileClass() const { return ProjectileClass; }
 
-	void SetCharacterRef(ACharacterBase* Input) { CharacterRef = Input; }
+	void SetCharacterActor(ACharacterBase* NewCharacterActor) { CharacterActor = NewCharacterActor; }
 
 	UStaticMeshComponent* GetGunMesh() const { return GunMesh; }
 

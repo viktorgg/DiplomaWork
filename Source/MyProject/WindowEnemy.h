@@ -4,21 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
-#include "GroundEnemy.generated.h"
+#include "WindowEnemy.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MYPROJECT_API AGroundEnemy : public ACharacterBase
+class MYPROJECT_API AWindowEnemy : public ACharacterBase
 {
 	GENERATED_BODY()
-	
+
+
 public:
 
-	AGroundEnemy();
+	AWindowEnemy();
 
-	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,33 +28,21 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
 	FRotator LookAtRot();
 
 private:
 
 	UPROPERTY(EditAnywhere)
-		float DistanceToWalk;
-
-	UPROPERTY(EditAnywhere)
 		float FireRate;
 
-	TSubclassOf<class ARevolver> PistolClass;
+	TSubclassOf<class ARifle> RifleClass;
 
 	class AMyCharacter* MainCharacterActor;
 
-	virtual void MoveForward(float Input);
-
 	virtual void Fire();
 
-	virtual void ResetPistolFire();
-	
-	float GetDistanceToMain();
+	virtual void ResetRifleFire();
 
 	void RotateToCharacter();
-
-	void Rotate(float Direction);
-
-	float LineTrace();
-
+	
 };

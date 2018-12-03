@@ -29,6 +29,8 @@ private:
 
 	TArray<class AWindows*> WindowsArray;
 
+	TSubclassOf<class AWindows> WindowsClass;
+
 	UPROPERTY(VisibleAnywhere)
 		class UChildActorComponent* WindowsChild;
 
@@ -40,8 +42,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 		class UChildActorComponent* WindowsChild4;
-
-	TSubclassOf<class AWindows> WindowsRef;
 
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* MainBuildingMesh;
@@ -62,11 +62,13 @@ private:
 		class UStaticMeshComponent* FirstFloorMesh;
 
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* SecondFloorMesh;	
+		class UStaticMeshComponent* SecondFloorMesh;
+
+	virtual void SpawnEnemy(int32 Place) PURE_VIRTUAL(ABuildingBase::SpawnEnemy, );
 	
 public:
 
-	TArray<class AWindows*> GetWindowsArray() { return WindowsArray; }
+	TArray<class AWindows*> GetWindowsArray() const { return WindowsArray; }
 
 	UChildActorComponent* GetWindowsChild() const { return WindowsChild; }
 

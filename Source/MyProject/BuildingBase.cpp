@@ -38,26 +38,26 @@ ABuildingBase::ABuildingBase()
 	static ConstructorHelpers::FClassFinder<AWindows>
 		WindowsBP(TEXT("Blueprint'/Game/Blueprints/WindowsBP.WindowsBP_C'"));
 	if (WindowsBP.Succeeded() == true) {
-		WindowsRef = (UClass*)WindowsBP.Class;
+		WindowsClass = (UClass*)WindowsBP.Class;
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Windows Not Found!")));
 	}
 
 	WindowsChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child"));
-	WindowsChild->SetChildActorClass(WindowsRef);
+	WindowsChild->SetChildActorClass(WindowsClass);
 	WindowsChild->SetupAttachment(MainBuildingMesh);
 
 	WindowsChild2 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 2"));
-	WindowsChild2->SetChildActorClass(WindowsRef);
+	WindowsChild2->SetChildActorClass(WindowsClass);
 	WindowsChild2->SetupAttachment(MainBuildingMesh);
 
 	WindowsChild3 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 3"));
-	WindowsChild3->SetChildActorClass(WindowsRef);
+	WindowsChild3->SetChildActorClass(WindowsClass);
 	WindowsChild3->SetupAttachment(MainBuildingMesh);
 
 	WindowsChild4 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 4"));
-	WindowsChild4->SetChildActorClass(WindowsRef);
+	WindowsChild4->SetChildActorClass(WindowsClass);
 	WindowsChild4->SetupAttachment(MainBuildingMesh);
 }
 
