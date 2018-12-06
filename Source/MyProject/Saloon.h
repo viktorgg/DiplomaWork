@@ -3,22 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CharacterBase.h"
-#include "WindowEnemy.generated.h"
+#include "BuildingBase.h"
+#include "Saloon.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MYPROJECT_API AWindowEnemy : public ACharacterBase
+class MYPROJECT_API ASaloon : public ABuildingBase
 {
 	GENERATED_BODY()
-
-
+	
+	
 public:
-
-	AWindowEnemy();
-
+	// Sets default values for this actor's properties
+	ASaloon();
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,16 +27,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
-
-	TSubclassOf<class ARifle> RifleClass;
-
-	class AMyCharacter* MainCharacterActor;
-
-	virtual void Fire();
-
-	virtual void ResetRifleFire();
-
-	virtual void RotateToCharacter();
+	virtual void SpawnEnemy(int32 Place);
 	
 };

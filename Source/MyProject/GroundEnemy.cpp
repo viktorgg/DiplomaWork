@@ -20,7 +20,6 @@ AGroundEnemy::AGroundEnemy() {
 	SetCharacterSpeed(300.0f);
 
 	DistanceToWalk = 700.0f;
-	FireRate = 1.0f;
 
 	static ConstructorHelpers::FClassFinder<ARevolver>
 		PistolBP(TEXT("Blueprint'/Game/Blueprints/RevolverBP.RevolverBP_C'"));
@@ -73,7 +72,7 @@ void AGroundEnemy::Fire()
 	if ((GetPistolActor() != NULL) && (GetHavePistol() == true) && (GetCanFirePistol() == true)) {
 		GetPistolActor()->SpawnProjectile();
 		SetCanFirePistol(false);
-		GetWorldTimerManager().SetTimer(GetPistolFireRateHandle(), this, &AGroundEnemy::ResetPistolFire, FireRate, false, FireRate);
+		GetWorldTimerManager().SetTimer(GetPistolFireRateHandle(), this, &AGroundEnemy::ResetPistolFire, GetPistolFireRate(), false, GetPistolFireRate());
 	}
 }
 
@@ -91,15 +90,9 @@ float AGroundEnemy::GetDistanceToMain()
 	return Distance;
 }
 
-FRotator AGroundEnemy::LookAtRot()
-{
-	FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MainCharacterActor->GetActorLocation());
-	return LookAtRot;
-}
-
 void AGroundEnemy::RotateToCharacter()
 {
-	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtRot(), GetWorld()->DeltaTimeSeconds, 40.0f));
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, 40.0f));
 }
 
 void AGroundEnemy::Rotate(float Direction)

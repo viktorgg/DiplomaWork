@@ -16,7 +16,7 @@ AWindowEnemy::AWindowEnemy() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetHealth(100);
-	FireRate = 2.0f;
+	SetRifleFireRate(2.0f);
 
 	static ConstructorHelpers::FClassFinder<ARifle>
 		RifleBP(TEXT("Blueprint'/Game/Blueprints/RifleBP.RifleBP_C'"));
@@ -33,11 +33,6 @@ void AWindowEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
-		if (ActorItr) {
-			MainCharacterActor = *ActorItr;
-		}
-	}
 	FActorSpawnParameters ActorSpawnParams;
 	ARifle* SpawnedRifle = GetWorld()->SpawnActor<ARifle>(RifleClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
 }
@@ -50,18 +45,12 @@ void AWindowEnemy::Tick(float DeltaTime)
 	RotateToCharacter();
 }
 
-FRotator AWindowEnemy::LookAtRot()
-{
-	FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MainCharacterActor->GetActorLocation());
-	return LookAtRot;
-}
-
 void AWindowEnemy::Fire()
 {
 	if ((GetRifleActor() != NULL) && (GetHaveRifle() == true) && (GetCanFireRifle() == true)) {
 		GetRifleActor()->SpawnProjectile();
 		SetCanFireRifle(false);
-		GetWorldTimerManager().SetTimer(GetRifleFireRateHandle(), this, &AWindowEnemy::ResetRifleFire, FireRate, false, FireRate);
+		GetWorldTimerManager().SetTimer(GetRifleFireRateHandle(), this, &AWindowEnemy::ResetRifleFire, GetRifleFireRate(), false, GetRifleFireRate());
 	}
 }
 
@@ -73,5 +62,5 @@ void AWindowEnemy::ResetRifleFire()
 
 void AWindowEnemy::RotateToCharacter()
 {
-	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtRot(), GetWorld()->DeltaTimeSeconds, 40.0f));
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, 40.0f));
 }

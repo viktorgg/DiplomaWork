@@ -28,15 +28,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
-	FRotator LookAtRot();
-
 private:
 
 	UPROPERTY(EditAnywhere)
 		float DistanceToWalk;
-
-	UPROPERTY(EditAnywhere)
-		float FireRate;
 
 	TSubclassOf<class ARevolver> PistolClass;
 
@@ -47,10 +42,10 @@ private:
 	virtual void Fire();
 
 	virtual void ResetPistolFire();
+
+	virtual void RotateToCharacter();
 	
 	float GetDistanceToMain();
-
-	void RotateToCharacter();
 
 	void Rotate(float Direction);
 

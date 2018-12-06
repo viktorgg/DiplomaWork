@@ -15,6 +15,7 @@ public:
 	// Sets default values for this character's properties
 	ACharacterBase();
 
+	FRotator LookAtChar();
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,12 +48,15 @@ private:
 
 	class ARevolver* PistolActor;
 	class ARifle* RifleActor;
+	class AMyCharacter* MainCharacterActor;
 
 	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
 
 	virtual void MoveRight(float Input) PURE_VIRTUAL(ACharacterBase::MoveRight, );
 
 	virtual void Fire() PURE_VIRTUAL(ACharacterBase::Fire, );
+
+	virtual void RotateToMainChar() PURE_VIRTUAL(ACharacterBase::RotateToMainChar, );
 
 	virtual void ResetPistolFire() PURE_VIRTUAL(ACharacterBase::ResetPistolFire, );
 
@@ -116,6 +120,8 @@ public:
 
 	ARifle* GetRifleActor() const { return RifleActor; }
 	void SetRifleActor(ARifle* NewRifleActor) { RifleActor = NewRifleActor; }
+
+	AMyCharacter* GetMainCharacterActor() const { return MainCharacterActor; }
 
 
 };

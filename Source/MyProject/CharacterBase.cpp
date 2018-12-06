@@ -3,11 +3,16 @@
 #include "CharacterBase.h"
 #include "Revolver.h"
 #include "Rifle.h"
+#include "MyCharacter.h"
+#include "GroundEnemy.h"
+#include "WindowEnemy.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Runtime/Engine/Public/EngineUtils.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
 
 
@@ -46,6 +51,17 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (ActorItr) {
+			MainCharacterActor = *ActorItr;
+		}
+	}
+}
+
+FRotator ACharacterBase::LookAtChar()
+{
+	FRotator LookAtChar = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MainCharacterActor->GetActorLocation());
+	return LookAtChar;
 }
 
 // Called every frame
@@ -55,7 +71,12 @@ void ACharacterBase::Tick(float DeltaTime)
 
 	if (Health <= 0) {
 		Destroy();
-		PistolActor->GetSphereCollision()->SetSimulatePhysics(true);
+		if (Cast<AGroundEnemy>(this) != NULL) {
+			PistolActor->GetSphereCollision()->SetSimulatePhysics(true);
+		}
+		else if(Cast<AWindowEnemy>(this) != NULL){
+			RifleActor->GetSphereCollision()->SetSimulatePhysics(true);
+		}
 	}
 }
 

@@ -78,7 +78,7 @@ void ARifle::SpawnProjectile()
 		SpawnLocation = EnemyCharacter->GetActorLocation() + (EnemyCharacter->GetActorForwardVector() * 100);
 
 		if (ChanceToHit < 50) {
-			SpawnRotation = EnemyCharacter->LookAtRot();
+			SpawnRotation = EnemyCharacter->LookAtChar();
 		}
 		else {
 			float BulletOffsetPitch;
@@ -99,9 +99,9 @@ void ARifle::SpawnProjectile()
 		if (Cast<AMyCharacter>(GetCharacterActor())->GetZooming() == true) {
 			SpawnEmitter();
 		}
-	}
-	else {
-		GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARifle::SpawnEmitter, 0.2f, false, 0.2f);
+		else {
+			GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARifle::SpawnEmitter, 0.2f, false, 0.2f);
+		}
 	}
 }
 
@@ -120,6 +120,7 @@ void ARifle::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherA
 			SetCharacterActor(CharacterEntered);
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
 			CharacterEntered->SetRifleFireRate(GetFireRate());
+			GetSphereCollision()->SetSimulatePhysics(false);
 		}
 	}
 }

@@ -31,6 +31,8 @@ private:
 
 	TSubclassOf<class AWindows> WindowsClass;
 
+	TSubclassOf<class AWindowEnemy> WindowEnemyClass;
+
 	UPROPERTY(VisibleAnywhere)
 		class UChildActorComponent* WindowsChild;
 
@@ -69,6 +71,8 @@ private:
 public:
 
 	TArray<class AWindows*> GetWindowsArray() const { return WindowsArray; }
+
+	TSubclassOf<class AWindowEnemy> GetWindowEnemyClass() const { return WindowEnemyClass; }
 
 	UChildActorComponent* GetWindowsChild() const { return WindowsChild; }
 

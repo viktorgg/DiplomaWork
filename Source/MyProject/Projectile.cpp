@@ -65,23 +65,25 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && (OtherActor != CharacterActor)) {
 
-		FVector DistanceVector = OtherActor->GetActorLocation() - CharacterActor->GetActorLocation();
-		float Distance = DistanceVector.Size();
-
-		ACharacterBase* HitActor = Cast<ACharacterBase>(Hit.GetComponent()->GetOwner());
-
-		if (Hit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass()) == true) {
-
-			if ((Hit.BoneName.ToString() == "Head") || (Hit.BoneName.ToString() == "HeadTop_End")) {
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Headshot!")));
-				HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5);
-			}
-			else {
-				HitActor->SetHealth(HitActor->GetHealth() - Damage);
-			}
+		if (Cast<AMyCharacter>(CharacterActor) == NULL && Cast<AMyCharacter>(Hit.GetActor()) == NULL) {
+			Destroy();
 		}
 		else {
-			UGameplayStatics::SpawnEmitterAtLocation(this, HitFire, Hit.Location, FRotator(0.0f, 0.0f, 0.0f), FVector(0.1f, 0.1f, 0.1f), true);
+			ACharacterBase* HitActor = Cast<ACharacterBase>(Hit.GetComponent()->GetOwner());
+
+			if (Hit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass()) == true) {
+
+				if ((Hit.BoneName.ToString() == "Head") || (Hit.BoneName.ToString() == "HeadTop_End")) {
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Headshot!")));
+					HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5);
+				}
+				else {
+					HitActor->SetHealth(HitActor->GetHealth() - Damage);
+				}
+			}
+			else {
+				UGameplayStatics::SpawnEmitterAtLocation(this, HitFire, Hit.Location, FRotator(0.0f, 0.0f, 0.0f), FVector(0.1f, 0.1f, 0.1f), true);
+			}
 		}
 		
 		Destroy();

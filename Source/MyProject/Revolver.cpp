@@ -95,7 +95,7 @@ void ARevolver::SpawnProjectile()
 		SpawnLocation = EnemyCharacter->GetActorLocation() + (EnemyCharacter->GetActorForwardVector() * 100);
 
 		if (ChanceToHit < 60) {
-			SpawnRotation = EnemyCharacter->LookAtRot();
+			SpawnRotation = EnemyCharacter->LookAtChar();
 		}
 		else {
 			float BulletOffsetPitch;
@@ -113,13 +113,13 @@ void ARevolver::SpawnProjectile()
 	SpawnedProjectile->SetCharacterActor(GetCharacterActor());
 	SpawnedProjectile->SetDamage(GetDamage());
 	
-	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL){
+	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
 		if (Cast<AMyCharacter>(GetCharacterActor())->GetZooming() == true) {
 			SpawnEmitter();
 		}
-	}
-	else {
-		GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARevolver::SpawnEmitter, 0.2f, false, 0.2f);
+		else {
+			GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARevolver::SpawnEmitter, 0.2f, false, 0.2f);
+		}
 	}
 }
 
@@ -138,7 +138,13 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * Oth
 			SetCharacterActor(CharacterEntered);
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 			GetSphereCollision()->SetSimulatePhysics(false);
-			CharacterEntered->SetPistolFireRate(GetFireRate());
+
+			if (Cast<AMyCharacter>(OtherActor) != NULL) {
+				CharacterEntered->SetPistolFireRate(GetFireRate());
+			}
+			else {
+				CharacterEntered->SetPistolFireRate(1.0f);
+			}
 		}
 	}
 }

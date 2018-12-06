@@ -2,6 +2,7 @@
 
 #include "BuildingBase.h"
 #include "Windows.h"
+#include "WindowEnemy.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "Engine/GameEngine.h"
@@ -42,6 +43,15 @@ ABuildingBase::ABuildingBase()
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Windows Not Found!")));
+	}
+
+	static ConstructorHelpers::FClassFinder<AWindowEnemy>
+		WindowEnemyBP(TEXT("Blueprint'/Game/Blueprints/WindowEnemyBP.WindowEnemyBP_C'"));
+	if (WindowEnemyBP.Succeeded() == true) {
+		WindowEnemyClass = (UClass*)WindowEnemyBP.Class;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Window Enemy Not Found!")));
 	}
 
 	WindowsChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child"));
