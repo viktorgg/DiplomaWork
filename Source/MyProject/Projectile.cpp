@@ -11,6 +11,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Classes/Particles/ParticleSystem.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 
 
@@ -35,9 +36,17 @@ AProjectile::AProjectile()
 		HitFire = ParticleSystem.Object;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Particle Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Fire Particle Not Found!")));
 	}
 
+	static ConstructorHelpers::FObjectFinder<UParticleSystem>
+		ParticleSystem2(TEXT("ParticleSystem'/Game/Assets/Particles/BloodSplatter.BloodSplatter'"));
+	if (ParticleSystem2.Succeeded() == true) {
+		HitBlood = ParticleSystem2.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Blood Particle Not Found!")));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -73,6 +82,9 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 
 			if (Hit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass()) == true) {
 
+				FVector BloodSplatterLoc = Hit.GetActor()->GetActorLocation() + (Hit.GetActor()->GetActorUpVector() * 20.0f);
+				UGameplayStatics::SpawnEmitterAtLocation(this, HitBlood, BloodSplatterLoc, FRotator(0.0f, 0.0f, 0.0f), FVector(1.2f, 1.2f, 1.2f), true);
+
 				if ((Hit.BoneName.ToString() == "Head") || (Hit.BoneName.ToString() == "HeadTop_End")) {
 					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Headshot!")));
 					HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5);
@@ -94,5 +106,6 @@ void AProjectile::ProjectileTravel()
 {
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * 20000.0f),GetWorld()->DeltaTimeSeconds, BulletSpeed));
 }
+
 
 

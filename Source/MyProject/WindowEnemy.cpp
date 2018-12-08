@@ -41,8 +41,10 @@ void AWindowEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Fire();
+	// Fire();
 	RotateToCharacter();
+	SetActorRotation(FRotator(GetActorRotation().Pitch, FMath::Clamp(GetActorRotation().Yaw, -40.0f, 40.0f), 0.0f));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rot: %f"), GetActorRotation().Yaw));
 }
 
 void AWindowEnemy::Fire()
@@ -62,5 +64,6 @@ void AWindowEnemy::ResetRifleFire()
 
 void AWindowEnemy::RotateToCharacter()
 {
-	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, 40.0f));
+	SetActorRotation(FRotator(-40.0f, (FMath::FInterpConstantTo(GetActorRotation().Yaw, LookAtChar().Yaw, GetWorld()->DeltaTimeSeconds, 40.0f)), 0.0f));
 }
+

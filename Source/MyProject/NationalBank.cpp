@@ -18,8 +18,8 @@ void ANationalBank::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (int32 i = 0; i < 2; i++) {
-		//SpawnEnemy(i);
+	for (int32 i = 0; i < 4; i++) {
+		SpawnEnemy(i);
 	}
 }
 
@@ -31,9 +31,9 @@ void ANationalBank::Tick(float DeltaTime)
 void ANationalBank::SpawnEnemy(int32 Place)
 {
 	GetWindowsArray()[Place]->Open();
-	FVector LocOffset = (GetWindowsArray()[Place]->GetActorRightVector() * -50.0f) + (GetWindowsArray()[Place]->GetActorUpVector() * 10);
+	FVector LocOffset = (GetWindowsArray()[Place]->GetActorRightVector() * -25.0f) + (GetWindowsArray()[Place]->GetActorUpVector() * 10) + (GetWindowsArray()[Place]->GetActorForwardVector() * 10.0f);
 	FRotator RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(GetWindowEnemyClass(), GetWindowsArray()[Place]->GetActorLocation() + LocOffset, GetActorRotation() +RotOffset, ActorSpawnParams);
+	AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(GetWindowEnemyClass(), GetWindowsArray()[Place]->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
 }

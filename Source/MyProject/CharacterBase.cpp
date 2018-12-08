@@ -58,12 +58,6 @@ void ACharacterBase::BeginPlay()
 	}
 }
 
-FRotator ACharacterBase::LookAtChar()
-{
-	FRotator LookAtChar = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MainCharacterActor->GetActorLocation());
-	return LookAtChar;
-}
-
 // Called every frame
 void ACharacterBase::Tick(float DeltaTime)
 {
@@ -85,5 +79,11 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+FRotator ACharacterBase::LookAtChar()
+{
+	FRotator LookAtChar = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MainCharacterActor->GetActorLocation());
+	return LookAtChar;
 }
 

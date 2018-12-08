@@ -15,7 +15,6 @@ public:
 	// Sets default values for this character's properties
 	ACharacterBase();
 
-	FRotator LookAtChar();
 
 protected:
 	// Called when the game starts or when spawned
@@ -72,6 +71,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	FRotator LookAtChar();
 
 	int32 GetHealth() const { return Health; }
 	void SetHealth(int32 NewHealth) { Health = NewHealth; }

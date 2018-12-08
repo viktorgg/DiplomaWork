@@ -83,8 +83,8 @@ void ARifle::SpawnProjectile()
 		else {
 			float BulletOffsetPitch;
 			float BulletOffsetYaw;
-			BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
-			BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
+			BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetZoom() * 2, GetProjectileOffsetZoom() * 2);
+			BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetZoom() * 2, GetProjectileOffsetZoom() * 2);
 			FRotator CurrRot = EnemyCharacter->GetActorRotation();
 			SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
 		}
@@ -102,6 +102,9 @@ void ARifle::SpawnProjectile()
 		else {
 			GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARifle::SpawnEmitter, 0.2f, false, 0.2f);
 		}
+	}
+	else {
+		SpawnEmitter();
 	}
 }
 

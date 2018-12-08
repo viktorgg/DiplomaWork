@@ -121,6 +121,9 @@ void ARevolver::SpawnProjectile()
 			GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARevolver::SpawnEmitter, 0.2f, false, 0.2f);
 		}
 	}
+	else {
+		SpawnEmitter();
+	}
 }
 
 void ARevolver::SpawnEmitter()

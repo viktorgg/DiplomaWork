@@ -28,6 +28,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
 private:
 
 	TSubclassOf<class ARifle> RifleClass;

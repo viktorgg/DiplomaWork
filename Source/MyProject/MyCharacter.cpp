@@ -72,7 +72,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		LerpPlayerToCamera(15.0f);
 	}
 	
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetHealth()));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetHealth()));
 }
 
 // Called to bind functionality to input
