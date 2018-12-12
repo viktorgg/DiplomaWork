@@ -3,6 +3,8 @@
 #include "WindowEnemy.h"
 #include "MyCharacter.h"
 #include "Rifle.h"
+#include "Windows.h"
+#include "BuildingBase.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
@@ -17,6 +19,8 @@ AWindowEnemy::AWindowEnemy() {
 
 	SetHealth(100);
 	SetRifleFireRate(2.0f);
+
+	WindowsPlace = 0;
 
 	static ConstructorHelpers::FClassFinder<ARifle>
 		RifleBP(TEXT("Blueprint'/Game/Blueprints/RifleBP.RifleBP_C'"));
@@ -64,6 +68,11 @@ void AWindowEnemy::ResetRifleFire()
 
 void AWindowEnemy::RotateToCharacter()
 {
-	SetActorRotation(FRotator(-40.0f, (FMath::FInterpConstantTo(GetActorRotation().Yaw, LookAtChar().Yaw, GetWorld()->DeltaTimeSeconds, 40.0f)), 0.0f));
+	if (WindowsPlace < 2) {
+		SetActorRotation(FRotator(-40.0f, (FMath::FInterpConstantTo(GetActorRotation().Yaw, LookAtChar().Yaw, GetWorld()->DeltaTimeSeconds, 40.0f)), 0.0f));
+	}
+	else {
+		SetActorRotation(FRotator(-20.0f, (FMath::FInterpConstantTo(GetActorRotation().Yaw, LookAtChar().Yaw, GetWorld()->DeltaTimeSeconds, 40.0f)), 0.0f));
+	}
 }
 

@@ -45,6 +45,14 @@ private:
 
 	FTimerHandle Handle;
 
+	int32 CurrPistolMagazine;
+	UPROPERTY(EditAnywhere)
+		int32 PistolMagazineLimit;
+
+	int32 CurrRifleMagazine;
+	UPROPERTY(EditAnywhere)
+		int32 RifleMagazineLimit;
+
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
 
@@ -84,4 +92,14 @@ public:
 	WeaponInHand GetWInHand() const { return WInHand; }
 
 	UCameraComponent* GetCamera() const { return Camera; }
+
+	int32 GetCurrPistolMagazine() const { return CurrPistolMagazine; }
+	void SetCurrPistolMagazine(int32 NewCurrPistolMagazine) { CurrPistolMagazine = NewCurrPistolMagazine; }
+
+	int32 GetPistolMagazineLimit() const { return PistolMagazineLimit; }
+
+	int32 GetCurrRifleMagazine() const { return CurrRifleMagazine; }
+	void SetCurrRifleMagazine(int32 NewCurrRifleMagazine) { CurrRifleMagazine = NewCurrRifleMagazine; }
+
+	int32 GetRifleMagazineLimit() const { return RifleMagazineLimit; }
 };

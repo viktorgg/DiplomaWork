@@ -12,6 +12,7 @@
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Math/UnrealMathUtility.h"
+#include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 
 
@@ -33,6 +34,11 @@ AMyCharacter::AMyCharacter()
 
 	WInHand = None;
 
+	PistolMagazineLimit = 20;
+	CurrPistolMagazine = 20;
+	RifleMagazineLimit = 5;
+	CurrRifleMagazine = 5;
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 
@@ -47,6 +53,7 @@ void AMyCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	CharacterNormalSpeed = GetCharacterSpeed();
+	// UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.5f);
 }
 
 // Called every frame
@@ -71,7 +78,9 @@ void AMyCharacter::Tick(float DeltaTime)
 	if (GetCanRifleAnim() == false) {
 		LerpPlayerToCamera(15.0f);
 	}
-	
+	if (GetPistolActor() != NULL) {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), CurrPistolMagazine));
+	}
 	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetHealth()));
 }
 
@@ -187,17 +196,19 @@ void AMyCharacter::LerpPlayerToCamera(float Speed)
 void AMyCharacter::Fire()
 {
 	if (WInHand == Pistol) {
-		if ((GetPistolActor() != NULL) && (GetCanFirePistol() == true)) {
+		if ((GetPistolActor() != NULL) && (GetCanFirePistol() == true) && (CurrPistolMagazine > 0)) {
 			GetPistolActor()->SpawnProjectile();
 			SetCanFirePistol(false);
+			CurrPistolMagazine--;
 			GetWorldTimerManager().SetTimer(GetPistolFireRateHandle(), this, &AMyCharacter::ResetPistolFire, GetPistolFireRate(), false, GetPistolFireRate());
 		}
 	}
 	if (WInHand == Rifle) {
-		if ((GetRifleActor() != NULL) && (GetCanFireRifle() == true)) {
+		if ((GetRifleActor() != NULL) && (GetCanFireRifle() == true) && (CurrRifleMagazine > 0)) {
 			GetRifleActor()->SpawnProjectile();
 			SetCanRifleAnim(false);
 			SetCanFireRifle(false);
+			CurrRifleMagazine--;
 			GetWorldTimerManager().SetTimer(GetRifleAnimHandle(), this, &AMyCharacter::ResetRifleAnim, 0.4f, false, 0.4f);
 			GetWorldTimerManager().SetTimer(GetRifleFireRateHandle(), this, &AMyCharacter::ResetRifleFire, GetRifleFireRate(), false, GetRifleFireRate());
 		}

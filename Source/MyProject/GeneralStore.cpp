@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "NationalBank.h"
+#include "GeneralStore.h"
 #include "Windows.h"
 #include "WindowEnemy.h"
 #include "Engine/GameEngine.h"
@@ -8,13 +8,13 @@
 
 
 // Sets default values
-ANationalBank::ANationalBank() {
+AGeneralStore::AGeneralStore() {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-void ANationalBank::BeginPlay()
+void AGeneralStore::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -23,12 +23,12 @@ void ANationalBank::BeginPlay()
 	}
 }
 
-void ANationalBank::Tick(float DeltaTime)
+void AGeneralStore::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void ANationalBank::SpawnEnemy(int32 Place)
+void AGeneralStore::SpawnEnemy(int32 Place)
 {
 	GetWindowsArray()[Place]->Open();
 	FVector LocOffset;
@@ -47,3 +47,5 @@ void ANationalBank::SpawnEnemy(int32 Place)
 	SpawnedEnemy->SetWindowsPlace(Place);
 	// SpawnedEnemy->SetBuildingBaseActor(this);
 }
+
+

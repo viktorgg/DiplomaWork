@@ -116,7 +116,9 @@ void ARifle::SpawnEmitter()
 void ARifle::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (Cast<ACharacterBase>(OtherActor) != NULL) {
+
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
+
 		if (CharacterEntered->GetHaveRifle() == false) {
 			CharacterEntered->SetRifleActor(this);
 			CharacterEntered->SetHaveRifle(true);
@@ -124,6 +126,13 @@ void ARifle::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherA
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
 			CharacterEntered->SetRifleFireRate(GetFireRate());
 			GetSphereCollision()->SetSimulatePhysics(false);
+		}
+		else {
+			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
+				AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterEntered);
+				MainChar->SetCurrRifleMagazine(MainChar->GetRifleMagazineLimit());
+				Destroy();
+			}
 		}
 	}
 }

@@ -35,10 +35,20 @@ private:
 
 	class AMyCharacter* MainCharacterActor;
 
+	class ABuildingBase* BuildingBaseActor;
+
+	int32 WindowsPlace;
+
 	virtual void Fire();
 
 	virtual void ResetRifleFire();
 
 	virtual void RotateToCharacter();
+
+public:
+
+	void SetWindowsPlace(int32 NewWindowsPlace) { WindowsPlace = NewWindowsPlace; }
+
+	void SetBuildingBaseActor(class ABuildingBase* NewBuildingBaseActor) { BuildingBaseActor = NewBuildingBaseActor; }
 	
 };

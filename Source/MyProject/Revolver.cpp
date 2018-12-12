@@ -66,11 +66,10 @@ void ARevolver::SpawnProjectile()
 				BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
 				BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
 				FRotator CurrRot = MainCharacter->GetCamera()->GetComponentRotation();
-				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
-			}
+				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);					}
 		}
 		else {
-			
+
 			SpawnLocation = MainCharacter->GetCamera()->GetComponentLocation() + (MainCharacter->GetCamera()->GetForwardVector() * 250);
 
 			if (ChanceToHit < 15) {
@@ -106,13 +105,13 @@ void ARevolver::SpawnProjectile()
 			SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
 		}
 	}
-	
+
 	FActorSpawnParameters ActorSpawnParams;
 	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(GetProjectileClass(), SpawnLocation, SpawnRotation, ActorSpawnParams);
 
 	SpawnedProjectile->SetCharacterActor(GetCharacterActor());
 	SpawnedProjectile->SetDamage(GetDamage());
-	
+
 	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
 		if (Cast<AMyCharacter>(GetCharacterActor())->GetZooming() == true) {
 			SpawnEmitter();
@@ -134,7 +133,9 @@ void ARevolver::SpawnEmitter()
 void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (Cast<ACharacterBase>(OtherActor) != NULL) {
+
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
+
 		if (CharacterEntered->GetHavePistol() == false) {
 			CharacterEntered->SetPistolActor(this);
 			CharacterEntered->SetHavePistol(true);
@@ -147,6 +148,13 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * Oth
 			}
 			else {
 				CharacterEntered->SetPistolFireRate(1.0f);
+			}
+		}
+		else {
+			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
+				AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterEntered);
+				MainChar->SetCurrPistolMagazine(MainChar->GetPistolMagazineLimit());
+				Destroy();
 			}
 		}
 	}
