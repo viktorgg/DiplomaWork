@@ -6,6 +6,7 @@
 #include "MyCharacter.h"
 #include "GroundEnemy.h"
 #include "WindowEnemy.h"
+#include "Windows.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -64,13 +65,14 @@ void ACharacterBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (Health <= 0) {
-		Destroy();
 		if (Cast<AGroundEnemy>(this) != NULL) {
 			PistolActor->GetSphereCollision()->SetSimulatePhysics(true);
 		}
 		else if(Cast<AWindowEnemy>(this) != NULL){
+			Cast<AWindowEnemy>(this)->GetWindowsActor()->Close();
 			RifleActor->GetSphereCollision()->SetSimulatePhysics(true);
 		}
+		Destroy();
 	}
 }
 

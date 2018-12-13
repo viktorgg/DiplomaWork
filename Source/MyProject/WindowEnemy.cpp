@@ -30,7 +30,6 @@ AWindowEnemy::AWindowEnemy() {
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rifle Not Found!")));
 	}
-
 }
 
 void AWindowEnemy::BeginPlay()
@@ -45,9 +44,9 @@ void AWindowEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Fire();
+	Fire();
 	RotateToCharacter();
-	SetActorRotation(FRotator(GetActorRotation().Pitch, FMath::Clamp(GetActorRotation().Yaw, -40.0f, 40.0f), 0.0f));
+	// SetActorRotation(FRotator(GetActorRotation().Pitch, FMath::Clamp(GetActorRotation().Yaw, -40.0f, 40.0f), 0.0f));
 	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rot: %f"), GetActorRotation().Yaw));
 }
 
@@ -69,10 +68,10 @@ void AWindowEnemy::ResetRifleFire()
 void AWindowEnemy::RotateToCharacter()
 {
 	if (WindowsPlace < 2) {
-		SetActorRotation(FRotator(-40.0f, (FMath::FInterpConstantTo(GetActorRotation().Yaw, LookAtChar().Yaw, GetWorld()->DeltaTimeSeconds, 40.0f)), 0.0f));
+		SetActorRotation(FMath::Lerp(FRotator(-40.0f, GetActorRotation().Yaw, 0.0f), FRotator(-40.0f, LookAtChar().Yaw, 0.0f), 15 * GetWorld()->GetDeltaSeconds()));
 	}
 	else {
-		SetActorRotation(FRotator(-20.0f, (FMath::FInterpConstantTo(GetActorRotation().Yaw, LookAtChar().Yaw, GetWorld()->DeltaTimeSeconds, 40.0f)), 0.0f));
+		SetActorRotation(FMath::Lerp(FRotator(-20.0f, GetActorRotation().Yaw, 0.0f), FRotator(-20.0f, LookAtChar().Yaw, 0.0f), 15 * GetWorld()->GetDeltaSeconds()));
 	}
 }
 

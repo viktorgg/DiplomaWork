@@ -18,7 +18,7 @@ void AGeneralStore::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (int32 i = 0; i < 4; i++) {
+	for (int32 i = 2; i < 4; i++) {
 		SpawnEnemy(i);
 	}
 }
@@ -44,8 +44,8 @@ void AGeneralStore::SpawnEnemy(int32 Place)
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(GetWindowEnemyClass(), GetWindowsArray()[Place]->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
+	SpawnedEnemy->SetWindowsActor(GetWindowsArray()[Place]);
 	SpawnedEnemy->SetWindowsPlace(Place);
-	// SpawnedEnemy->SetBuildingBaseActor(this);
 }
 
 

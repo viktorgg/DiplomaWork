@@ -35,7 +35,7 @@ private:
 
 	class AMyCharacter* MainCharacterActor;
 
-	class ABuildingBase* BuildingBaseActor;
+	class AWindows* WindowsActor;
 
 	int32 WindowsPlace;
 
@@ -49,6 +49,7 @@ public:
 
 	void SetWindowsPlace(int32 NewWindowsPlace) { WindowsPlace = NewWindowsPlace; }
 
-	void SetBuildingBaseActor(class ABuildingBase* NewBuildingBaseActor) { BuildingBaseActor = NewBuildingBaseActor; }
+	class AWindows* GetWindowsActor() const { return WindowsActor; }
+	void SetWindowsActor(class AWindows* NewWindowsActor) { WindowsActor = NewWindowsActor; }
 	
 };

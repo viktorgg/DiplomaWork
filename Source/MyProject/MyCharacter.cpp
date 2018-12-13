@@ -32,6 +32,8 @@ AMyCharacter::AMyCharacter()
 	bZooming = false;
 	bOutZooming = false;
 
+	bSlowMo = false;
+
 	WInHand = None;
 
 	PistolMagazineLimit = 20;
@@ -53,7 +55,6 @@ void AMyCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	CharacterNormalSpeed = GetCharacterSpeed();
-	// UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.5f);
 }
 
 // Called every frame
@@ -78,10 +79,7 @@ void AMyCharacter::Tick(float DeltaTime)
 	if (GetCanRifleAnim() == false) {
 		LerpPlayerToCamera(15.0f);
 	}
-	if (GetPistolActor() != NULL) {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), CurrPistolMagazine));
-	}
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetHealth()));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), GetWorld()->DeltaTimeSeconds));
 }
 
 // Called to bind functionality to input
@@ -98,6 +96,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyCharacter::Fire);
 	PlayerInputComponent->BindAction("ChangeToPistol", IE_Pressed, this, &AMyCharacter::ChangeToPistol);
 	PlayerInputComponent->BindAction("ChangeToRifle", IE_Pressed, this, &AMyCharacter::ChangeToRifle);
+	PlayerInputComponent->BindAction("SlowMo", IE_Pressed, this, &AMyCharacter::EnterSlowMo);
 }
 
 void AMyCharacter::MoveForward(float Input)
@@ -223,7 +222,7 @@ void AMyCharacter::ChangeToPistol()
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
 		}
 
-		if(WInHand == Rifle){
+		if (WInHand == Rifle){
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
 		}
@@ -244,6 +243,24 @@ void AMyCharacter::ChangeToRifle()
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 		}
 		WInHand = Rifle;
+	}
+}
+
+void AMyCharacter::EnterSlowMo()
+{
+	if (bSlowMo == false) {
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.5f);
+		SetCharacterSpeed(GetCharacterSpeed() * 2);
+		SetPistolFireRate(GetPistolFireRate() / 2);
+		SetRifleFireRate(GetRifleFireRate() / 2);
+		bSlowMo = true;
+	}
+	else {
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+		SetCharacterSpeed(GetCharacterSpeed() / 2);
+		SetPistolFireRate(GetPistolFireRate() * 2);
+		SetRifleFireRate(GetRifleFireRate() * 2);
+		bSlowMo = false;
 	}
 }
 

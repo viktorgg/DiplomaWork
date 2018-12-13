@@ -40,6 +40,8 @@ private:
 	bool bZooming;
 	bool bOutZooming;
 
+	bool bSlowMo;
+
 	enum WeaponInHand { None, Pistol, Rifle };
 	WeaponInHand WInHand;
 
@@ -84,6 +86,8 @@ private:
 	void ChangeToPistol();
 
 	void ChangeToRifle();
+
+	void EnterSlowMo();
 
 public:
 

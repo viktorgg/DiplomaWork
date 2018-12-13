@@ -74,10 +74,10 @@ void AWindows::Close()
 		bClosing = true;
 
 		FRotator WindowRCurrRot = WindowRMesh->GetRelativeTransform().GetRotation().Rotator();
-		FRotator WindowRNewRot = FRotator(0.0f, -110.0f, 0.0f);
+		FRotator WindowRNewRot = FRotator(0.0f, -90.0f, 0.0f);
 
 		FRotator WindowLCurrRot = WindowLMesh->GetRelativeTransform().GetRotation().Rotator();
-		FRotator WindowLNewRot = FRotator(0.0f, 110.0f, 0.0f);
+		FRotator WindowLNewRot = FRotator(0.0f, 90.0f, 0.0f);
 
 		WindowRMesh->SetRelativeRotation(FMath::RInterpConstantTo(WindowRCurrRot, WindowRNewRot, GetWorld()->DeltaTimeSeconds, 150.0f));
 		WindowLMesh->SetRelativeRotation(FMath::RInterpConstantTo(WindowLCurrRot, WindowLNewRot, GetWorld()->DeltaTimeSeconds, 150.0f));
