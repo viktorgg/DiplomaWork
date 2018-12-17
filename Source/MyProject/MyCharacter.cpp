@@ -22,15 +22,19 @@ AMyCharacter::AMyCharacter()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetHealth(100);
-	SetCharacterSpeed(400.0f);
+	Health = 500;
+	CharacterSpeed = 450.0f;
+	ZoomedCharSpeed = CharacterSpeed / 2.5;
+	NotZoomedCharSpeed = CharacterSpeed;
+
+	PistolFireRate = 0.25f;
+	RifleFireRate = 1.0f;
 
 	LookSpeed = 150.0f;
 	LookUpperLimit = -50.0f;
 	LookLowerLimit = 65.0f;
 
 	bZooming = false;
-	bOutZooming = false;
 
 	bSlowMo = false;
 
@@ -54,7 +58,6 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CharacterNormalSpeed = GetCharacterSpeed();
 }
 
 // Called every frame
@@ -68,7 +71,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		LerpPlayerToCamera(6.0f);
 	}
 
-	if (bOutZooming == true && SpringArm->TargetArmLength <= 399.0f) {
+	if (bZooming == false && SpringArm->TargetArmLength <= 399.0f) {
 		CameraOutZoom();
 	}
 
@@ -79,7 +82,6 @@ void AMyCharacter::Tick(float DeltaTime)
 	if (GetCanRifleAnim() == false) {
 		LerpPlayerToCamera(15.0f);
 	}
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), GetWorld()->DeltaTimeSeconds));
 }
 
 // Called to bind functionality to input
@@ -107,11 +109,11 @@ void AMyCharacter::MoveForward(float Input)
 		FVector CurrLoc = GetActorLocation();
 		FVector NewLoc;
 		FVector SpringArmForward = SpringArm->GetForwardVector();
-		if (GetRightInput() != 0.0) {
-			NewLoc = CurrLoc + (SpringArmForward * (GetCharacterSpeed() / 1.3) * Input * GetWorld()->GetDeltaSeconds());
+		if (RightInput != 0.0) {
+			NewLoc = CurrLoc + (SpringArmForward * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
-			NewLoc = CurrLoc + (SpringArmForward * GetCharacterSpeed() * Input * GetWorld()->GetDeltaSeconds());
+			NewLoc = CurrLoc + (SpringArmForward * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
 		}
 		SetActorLocation(NewLoc);
 		
@@ -121,16 +123,16 @@ void AMyCharacter::MoveForward(float Input)
 
 void AMyCharacter::MoveRight(float Input)
 {
-	SetRightInput(Input);
+	RightInput = Input;
 
 	if (Input != 0.0) {
 		FVector CurrLoc = GetActorLocation();
 		FVector NewLoc;
 		if (GetForwardInput() != 0.0) {
-			NewLoc = CurrLoc + (SpringArm->GetRightVector() * (GetCharacterSpeed() / 1.3) * Input * GetWorld()->GetDeltaSeconds());
+			NewLoc = CurrLoc + (SpringArm->GetRightVector() * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
-			NewLoc = CurrLoc + (SpringArm->GetRightVector() * GetCharacterSpeed() * Input * GetWorld()->GetDeltaSeconds());
+			NewLoc = CurrLoc + (SpringArm->GetRightVector() * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
 		}
 		SetActorLocation(NewLoc);
 
@@ -162,27 +164,33 @@ void AMyCharacter::LookUp(float Input)
 void AMyCharacter::CameraZoom()
 {
 	if (WInHand != None) {
-		bZooming = true;
-		bOutZooming = false;
-
-		SetCharacterSpeed(CharacterNormalSpeed / 2.6f);
-
+		if (bSlowMo == true) {
+			CharacterSpeed = ZoomedCharSpeed * 2.5;
+		}
+		else {
+			CharacterSpeed = ZoomedCharSpeed;
+		}
 		SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 150.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
 		SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 80.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
 		Camera->RelativeLocation = FMath::VInterpTo(Camera->RelativeLocation, FVector(0.0f, 65.0f, 0.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
+
+		bZooming = true;
 	}
 }
 
 void AMyCharacter::CameraOutZoom()
 {
-	bOutZooming = true;
-	bZooming = false;
-
-	SetCharacterSpeed(CharacterNormalSpeed);
-
+	if (bSlowMo == true) {
+		CharacterSpeed = NotZoomedCharSpeed * 2.5;
+	}
+	else {
+		CharacterSpeed = NotZoomedCharSpeed;
+	}
 	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 400.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
 	SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 150.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
 	Camera->RelativeLocation = FMath::VInterpTo(Camera->RelativeLocation, FVector(0.0f, 0.0f, 0.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
+
+	bZooming = false;
 }
 
 void AMyCharacter::LerpPlayerToCamera(float Speed)
@@ -195,28 +203,28 @@ void AMyCharacter::LerpPlayerToCamera(float Speed)
 void AMyCharacter::Fire()
 {
 	if (WInHand == Pistol) {
-		if ((GetPistolActor() != NULL) && (GetCanFirePistol() == true) && (CurrPistolMagazine > 0)) {
-			GetPistolActor()->SpawnProjectile();
-			SetCanFirePistol(false);
+		if ((PistolActor != NULL) && (bCanFirePistol == true) && (CurrPistolMagazine > 0)) {
+			PistolActor->SpawnProjectile();
+			bCanFirePistol = false;
 			CurrPistolMagazine--;
-			GetWorldTimerManager().SetTimer(GetPistolFireRateHandle(), this, &AMyCharacter::ResetPistolFire, GetPistolFireRate(), false, GetPistolFireRate());
+			GetWorldTimerManager().SetTimer(PistolFireRateHandle, this, &AMyCharacter::ResetPistolFire, PistolFireRate, false, PistolFireRate);
 		}
 	}
 	if (WInHand == Rifle) {
-		if ((GetRifleActor() != NULL) && (GetCanFireRifle() == true) && (CurrRifleMagazine > 0)) {
-			GetRifleActor()->SpawnProjectile();
-			SetCanRifleAnim(false);
-			SetCanFireRifle(false);
+		if ((RifleActor != NULL) && (bCanFireRifle == true) && (CurrRifleMagazine > 0)) {
+			RifleActor->SpawnProjectile();
+			bCanRifleAnim = false;
+			bCanFireRifle = false;
 			CurrRifleMagazine--;
-			GetWorldTimerManager().SetTimer(GetRifleAnimHandle(), this, &AMyCharacter::ResetRifleAnim, 0.4f, false, 0.4f);
-			GetWorldTimerManager().SetTimer(GetRifleFireRateHandle(), this, &AMyCharacter::ResetRifleFire, GetRifleFireRate(), false, GetRifleFireRate());
+			GetWorldTimerManager().SetTimer(RifleAnimHandle, this, &AMyCharacter::ResetRifleAnim, 0.4f, false, 0.4f);
+			GetWorldTimerManager().SetTimer(RifleFireRateHandle, this, &AMyCharacter::ResetRifleFire, RifleFireRate, false, RifleFireRate);
 		}
 	}
 }
 
 void AMyCharacter::ChangeToPistol()
 {
-	if ((GetHavePistol() == true) && (WInHand != Pistol) && (bOutZooming == true)) {
+	if ((bHavePistol == true) && (WInHand != Pistol) && (bZooming == false)) {
 
 		if (WInHand == None) {
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
@@ -232,7 +240,7 @@ void AMyCharacter::ChangeToPistol()
 
 void AMyCharacter::ChangeToRifle()
 {
-	if ((GetHaveRifle() == true) && (WInHand != Rifle) && (bOutZooming == true)) {
+	if ((bHaveRifle == true) && (WInHand != Rifle) && (bZooming == false)) {
 
 		if (WInHand == None) {
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
@@ -249,17 +257,19 @@ void AMyCharacter::ChangeToRifle()
 void AMyCharacter::EnterSlowMo()
 {
 	if (bSlowMo == false) {
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.5f);
-		SetCharacterSpeed(GetCharacterSpeed() * 2);
-		SetPistolFireRate(GetPistolFireRate() / 2);
-		SetRifleFireRate(GetRifleFireRate() / 2);
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.4f);
+		CharacterSpeed *= 2.5f;
+		PistolFireRate /= 2.5f;
+		RifleFireRate /= 2.5f;
+		LookSpeed *= 2.5f;
 		bSlowMo = true;
 	}
 	else {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
-		SetCharacterSpeed(GetCharacterSpeed() / 2);
-		SetPistolFireRate(GetPistolFireRate() * 2);
-		SetRifleFireRate(GetRifleFireRate() * 2);
+		CharacterSpeed /= 2.5f;
+		PistolFireRate *= 2.5f;
+		RifleFireRate *= 2.5f;
+		LookSpeed /= 2.5;
 		bSlowMo = false;
 	}
 }
@@ -267,18 +277,18 @@ void AMyCharacter::EnterSlowMo()
 
 void AMyCharacter::ResetPistolFire()
 {
-	GetWorldTimerManager().ClearTimer(GetPistolFireRateHandle());
-	SetCanFirePistol(true);
+	GetWorldTimerManager().ClearTimer(PistolFireRateHandle);
+	bCanFirePistol = true;
 }
 
 void AMyCharacter::ResetRifleFire()
 {
-	GetWorldTimerManager().ClearTimer(GetRifleFireRateHandle());
-	SetCanFireRifle(true);
+	GetWorldTimerManager().ClearTimer(RifleFireRateHandle);
+	bCanFireRifle = true;
 }
 
 void AMyCharacter::ResetRifleAnim()
 {
-	GetWorldTimerManager().ClearTimer(GetRifleAnimHandle());
-	SetCanRifleAnim(true);
+	GetWorldTimerManager().ClearTimer(RifleAnimHandle);
+	bCanRifleAnim = true;
 }

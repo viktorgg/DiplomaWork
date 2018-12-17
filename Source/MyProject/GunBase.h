@@ -20,21 +20,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	
-
-private:
-
-	FTimerHandle ParticleDelay;
+	FTimerHandle ParticleDelayHandle;
 
 	UPROPERTY(EditAnywhere)
 		int32 Damage;
-
-	UPROPERTY(EditAnywhere)
-		float FireRate;
 
 	UPROPERTY(EditAnywhere)
 		float ProjectileOffsetNoZoom;
@@ -65,27 +54,28 @@ private:
 		virtual void OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) PURE_VIRTUAL(AGunBase::OnEnterSphere, );
 
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	
+
 public:
 
 	int32 GetDamage() const { return Damage; }
-	void SetDamage(int32 NewDamage) { Damage = NewDamage; }
-
-	float GetFireRate() const { return FireRate; }
-	void SetFireRate(float NewFireRate) { FireRate = NewFireRate; }
+	void SetDamage(int32 Damage) { this->Damage = Damage; }
 
 	float GetProjectileOffsetNoZoom() const { return ProjectileOffsetNoZoom; }
-	void SetProjectileOffsetNoZoom(float NewProjectileOffset) { ProjectileOffsetNoZoom = NewProjectileOffset; }
+	void SetProjectileOffsetNoZoom(float ProjectileOffset) { this->ProjectileOffsetNoZoom = ProjectileOffset; }
 
 	float GetProjectileOffsetZoom() const { return ProjectileOffsetZoom; }
-	void SetProjectileOffsetZoom(float NewProjectileOffset) { ProjectileOffsetZoom = NewProjectileOffset; }
-
-	FTimerHandle &GetParticleDelayHandle() { return ParticleDelay; }
+	void SetProjectileOffsetZoom(float ProjectileOffset) { this->ProjectileOffsetZoom = ProjectileOffset; }
 
 	ACharacterBase* GetCharacterActor() const { return CharacterActor; }
 
 	TSubclassOf<AProjectile> GetProjectileClass() const { return ProjectileClass; }
 
-	void SetCharacterActor(ACharacterBase* NewCharacterActor) { CharacterActor = NewCharacterActor; }
+	void SetCharacterActor(ACharacterBase* CharacterActor) { this->CharacterActor = CharacterActor; }
 
 	UStaticMeshComponent* GetGunMesh() const { return GunMesh; }
 

@@ -19,7 +19,6 @@ AGunBase::AGunBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Damage = 0;
-	FireRate = 0.0f;
 	ProjectileOffsetNoZoom = 0.0f;
 	ProjectileOffsetZoom = 0.0f;
 

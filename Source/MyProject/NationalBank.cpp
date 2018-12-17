@@ -21,29 +21,35 @@ void ANationalBank::BeginPlay()
 	for (int32 i = 0; i < 2; i++) {
 		SpawnEnemy(i);
 	}
+	
 }
 
 void ANationalBank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 }
 
 void ANationalBank::SpawnEnemy(int32 Place)
 {
-	GetWindowsArray()[Place]->Open();
+	EnemyHandlerArray[Place].GetWindowsActor()->Open();
 	FVector LocOffset;
 	FRotator RotOffset;
 	if (Place < 2) {
-		LocOffset = (GetWindowsArray()[Place]->GetActorRightVector() * -25.0f) + (GetWindowsArray()[Place]->GetActorUpVector() * 10) + (GetWindowsArray()[Place]->GetActorForwardVector() * 10.0f);
+		LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10)
+			+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
 		RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 	}
 	else {
-		LocOffset = (GetWindowsArray()[Place]->GetActorRightVector() * -35.0f) + (GetWindowsArray()[Place]->GetActorUpVector() * 10) + (GetWindowsArray()[Place]->GetActorForwardVector() * 10.0f);
+		LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10) 
+			+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
 		RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 	}
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(GetWindowEnemyClass(), GetWindowsArray()[Place]->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
-	SpawnedEnemy->SetWindowsActor(GetWindowsArray()[Place]);
+	AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place].GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
+	
 	SpawnedEnemy->SetWindowsPlace(Place);
+	EnemyHandlerArray[Place].SetWindowEnemyActor(SpawnedEnemy);
 }
+

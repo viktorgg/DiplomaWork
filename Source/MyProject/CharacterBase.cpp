@@ -33,10 +33,10 @@ ACharacterBase::ACharacterBase()
 	bHaveRifle = false;
 
 	bCanFirePistol = true;
-	PistolFireRate = 0.25f;
+	PistolFireRate = 0.0f;
 
 	bCanFireRifle = true;
-	RifleFireRate = 1.0f;
+	RifleFireRate = 0.0f;
 
 	bCanRifleAnim = true;
 
@@ -67,10 +67,12 @@ void ACharacterBase::Tick(float DeltaTime)
 	if (Health <= 0) {
 		if (Cast<AGroundEnemy>(this) != NULL) {
 			PistolActor->GetSphereCollision()->SetSimulatePhysics(true);
+			PistolActor->SetCharacterActor(NULL);
 		}
 		else if(Cast<AWindowEnemy>(this) != NULL){
-			Cast<AWindowEnemy>(this)->GetWindowsActor()->Close();
 			RifleActor->GetSphereCollision()->SetSimulatePhysics(true);
+			RifleActor->GetSphereCollision()->AddForce(GetActorForwardVector() * 100000.0f * RifleActor->GetSphereCollision()->GetMass());
+			RifleActor->SetCharacterActor(NULL);
 		}
 		Destroy();
 	}

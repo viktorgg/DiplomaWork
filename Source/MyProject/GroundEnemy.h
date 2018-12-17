@@ -35,8 +35,6 @@ private:
 
 	TSubclassOf<class ARevolver> PistolClass;
 
-	class AMyCharacter* MainCharacterActor;
-
 	virtual void MoveForward(float Input);
 
 	virtual void Fire();

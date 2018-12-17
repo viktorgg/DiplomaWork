@@ -20,13 +20,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-
-private:
-
 	UPROPERTY(EditAnywhere)
 		float BulletSpeed;
 
@@ -52,12 +45,14 @@ private:
 
 	void ProjectileTravel();
 
-	void DeactivateParticle();
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
 public:
 
-	void SetDamage(int32 NewDamage) { Damage = NewDamage; }
+	void SetDamage(int32 Damage) { this->Damage = Damage; }
 
-	void SetCharacterActor(ACharacterBase* NewCharacterActor) { CharacterActor = NewCharacterActor; }
+	void SetCharacterActor(ACharacterBase* CharacterActor) { this->CharacterActor = CharacterActor; }
 
 };

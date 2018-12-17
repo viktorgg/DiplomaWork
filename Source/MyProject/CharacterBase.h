@@ -20,9 +20,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
-private:
-
 	UPROPERTY(EditAnywhere)
 		int32 Health;
 	UPROPERTY(EditAnywhere)
@@ -63,6 +60,8 @@ private:
 
 	virtual void ResetRifleSynch() PURE_VIRTUAL(ACharacterBase::ResetRifleSynch, );
 
+private:
+
 
 public:
 	// Called every frame
@@ -74,10 +73,10 @@ public:
 	FRotator LookAtChar();
 
 	int32 GetHealth() const { return Health; }
-	void SetHealth(int32 NewHealth) { Health = NewHealth; }
+	void SetHealth(int32 Health) { this->Health = Health; }
 
 	float GetCharacterSpeed() const { return CharacterSpeed; }
-	void SetCharacterSpeed(float NewCharacterSpeed) { CharacterSpeed = NewCharacterSpeed; }
+	void SetCharacterSpeed(float CharacterSpeed) { this->CharacterSpeed = CharacterSpeed; }
 
 	UFUNCTION(BlueprintCallable)
 		float GetForwardInput() const { return ForwardInput; }
@@ -87,42 +86,35 @@ public:
 	void SetRightInput(float Input) { RightInput = Input; }
 
 	bool GetHavePistol() const { return bHavePistol; }
-	void SetHavePistol(bool bNewHavePistol) { bHavePistol = bNewHavePistol; }
+	void SetHavePistol(bool bHavePistol) { this->bHavePistol = bHavePistol; }
 
 	bool GetHaveRifle() const { return bHaveRifle; }
-	void SetHaveRifle(bool bNewHaveRifle) { bHaveRifle = bNewHaveRifle; }
+	void SetHaveRifle(bool bHaveRifle) { this->bHaveRifle = bHaveRifle; }
 
 	UFUNCTION(BlueprintCallable)
 		bool GetCanFirePistol() const { return bCanFirePistol; }
-	void SetCanFirePistol(bool bNewCanFirePistol) { bCanFirePistol = bNewCanFirePistol; }
+	void SetCanFirePistol(bool bCanFirePistol) { this->bCanFirePistol = bCanFirePistol; }
 
-	float GetPistolFireRate() const { return PistolFireRate; }
-	void SetPistolFireRate(float NewPistolFireRate) { PistolFireRate = NewPistolFireRate; }
+	float GetPistolFireRate() { return PistolFireRate; }
+	void SetPistolFireRate(float PistolFireRate) { this->PistolFireRate = PistolFireRate; }
 
 	UFUNCTION(BlueprintCallable)
 		bool GetCanFireRifle() const { return bCanFireRifle; }
-	void SetCanFireRifle(bool bNewCanFireRifle) { bCanFireRifle = bNewCanFireRifle; }
+	void SetCanFireRifle(bool bCanFireRifle) { this->bCanFireRifle = bCanFireRifle; }
 
 	bool GetCanRifleAnim() const { return bCanRifleAnim; }
-	void SetCanRifleAnim(bool bNewCanRifleAnim) { bCanRifleAnim = bNewCanRifleAnim; }
+	void SetCanRifleAnim(bool bCanRifleAnim) { this->bCanRifleAnim = bCanRifleAnim; }
 
 	float GetRifleFireRate() const { return RifleFireRate; }
-	void SetRifleFireRate(float NewRifleFireRate) { RifleFireRate = NewRifleFireRate; }
-
-	FTimerHandle &GetPistolFireRateHandle() { return PistolFireRateHandle; }
-
-	FTimerHandle &GetRifleFireRateHandle() { return RifleFireRateHandle; }
-
-	FTimerHandle &GetRifleAnimHandle() { return RifleAnimHandle; }
+	void SetRifleFireRate(float RifleFireRate) { this->RifleFireRate = RifleFireRate; }
 
 	ARevolver* GetPistolActor() const { return PistolActor; }
-	void SetPistolActor(ARevolver* NewPistolActor) { PistolActor = NewPistolActor; }
+	void SetPistolActor(ARevolver* PistolActor) { this->PistolActor = PistolActor; }
 
 	ARifle* GetRifleActor() const { return RifleActor; }
-	void SetRifleActor(ARifle* NewRifleActor) { RifleActor = NewRifleActor; }
+	void SetRifleActor(ARifle* RifleActor) { this->RifleActor = RifleActor; }
 
 	AMyCharacter* GetMainCharacterActor() const { return MainCharacterActor; }
-
 
 };
 

@@ -22,8 +22,7 @@ ARevolver::ARevolver()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetDamage(20);
-	SetFireRate(0.25);
+	Damage = 20;
 	SetProjectileOffsetNoZoom(2.5f);
 	SetProjectileOffsetZoom(1.5f);
 }
@@ -47,9 +46,9 @@ void ARevolver::SpawnProjectile()
 	FRotator SpawnRotation;
 	FVector SpawnLocation;
 
-	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
+	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
 
-		AMyCharacter* MainCharacter = Cast<AMyCharacter>(GetCharacterActor());
+		AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor);
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
@@ -63,8 +62,8 @@ void ARevolver::SpawnProjectile()
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
-				BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
-				BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
+				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
+				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
 				FRotator CurrRot = MainCharacter->GetCamera()->GetComponentRotation();
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);					}
 		}
@@ -78,8 +77,8 @@ void ARevolver::SpawnProjectile()
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
-				BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetNoZoom(), GetProjectileOffsetNoZoom());
-				BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetNoZoom(), GetProjectileOffsetNoZoom());
+				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
+				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
 				FRotator CurrRot = MainCharacter->GetCamera()->GetComponentRotation();
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
 			}
@@ -87,7 +86,7 @@ void ARevolver::SpawnProjectile()
 	}
 	else if (Cast<AGroundEnemy>(GetCharacterActor()) != NULL) {
 
-		AGroundEnemy* EnemyCharacter = Cast<AGroundEnemy>(GetCharacterActor());
+		AGroundEnemy* EnemyCharacter = Cast<AGroundEnemy>(CharacterActor);
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
@@ -99,25 +98,24 @@ void ARevolver::SpawnProjectile()
 		else {
 			float BulletOffsetPitch;
 			float BulletOffsetYaw;
-			BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
-			BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetZoom(), GetProjectileOffsetZoom());
-			FRotator CurrRot = EnemyCharacter->GetActorRotation();
-			SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
+			BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
+			BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
+			SpawnRotation = FRotator(EnemyCharacter->LookAtChar().Pitch + BulletOffsetPitch, EnemyCharacter->LookAtChar().Yaw + BulletOffsetYaw, EnemyCharacter->LookAtChar().Roll);
 		}
 	}
 
 	FActorSpawnParameters ActorSpawnParams;
-	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(GetProjectileClass(), SpawnLocation, SpawnRotation, ActorSpawnParams);
+	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 
 	SpawnedProjectile->SetCharacterActor(GetCharacterActor());
-	SpawnedProjectile->SetDamage(GetDamage());
+	SpawnedProjectile->SetDamage(Damage);
 
-	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
-		if (Cast<AMyCharacter>(GetCharacterActor())->GetZooming() == true) {
+	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+		if (Cast<AMyCharacter>(CharacterActor)->GetZooming() == true) {
 			SpawnEmitter();
 		}
 		else {
-			GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARevolver::SpawnEmitter, 0.2f, false, 0.2f);
+			GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARevolver::SpawnEmitter, 0.2f, false, 0.2f);
 		}
 	}
 	else {
@@ -127,7 +125,7 @@ void ARevolver::SpawnProjectile()
 
 void ARevolver::SpawnEmitter()
 {
-	UGameplayStatics::SpawnEmitterAtLocation(this, GetFireExplosion(), GetGunMesh()->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
+	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
 }
 
 void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -139,22 +137,17 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * Oth
 		if (CharacterEntered->GetHavePistol() == false) {
 			CharacterEntered->SetPistolActor(this);
 			CharacterEntered->SetHavePistol(true);
-			SetCharacterActor(CharacterEntered);
+			CharacterActor = CharacterEntered;
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
-			GetSphereCollision()->SetSimulatePhysics(false);
-
-			if (Cast<AMyCharacter>(OtherActor) != NULL) {
-				CharacterEntered->SetPistolFireRate(GetFireRate());
-			}
-			else {
-				CharacterEntered->SetPistolFireRate(1.0f);
-			}
+			SphereCollision->SetSimulatePhysics(false);
 		}
 		else {
-			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
+			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == NULL)) {
 				AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterEntered);
-				MainChar->SetCurrPistolMagazine(MainChar->GetPistolMagazineLimit());
-				Destroy();
+				if (MainChar->GetCurrPistolMagazine() < MainChar->GetPistolMagazineLimit()) {
+					MainChar->SetCurrPistolMagazine(MainChar->GetPistolMagazineLimit());
+					Destroy();
+				}
 			}
 		}
 	}

@@ -16,8 +16,10 @@ AGroundEnemy::AGroundEnemy() {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetHealth(100);
-	SetCharacterSpeed(300.0f);
+	Health = 100;
+	CharacterSpeed = 350.0f;
+	PistolFireRate = 0.5;
+	bHaveRifle = true;
 
 	DistanceToWalk = 700.0f;
 
@@ -35,13 +37,9 @@ void AGroundEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
-		if (ActorItr) {
-			MainCharacterActor = *ActorItr;
-		}
-	}
 	FActorSpawnParameters ActorSpawnParams;
 	ARevolver* SpawnedPistol = GetWorld()->SpawnActor<ARevolver>(PistolClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
+
 }
 
 void AGroundEnemy::Tick(float DeltaTime)
@@ -50,6 +48,7 @@ void AGroundEnemy::Tick(float DeltaTime)
 
 	MoveForward(NULL);
 	Fire();
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), PistolFireRate));
 }
 
 void AGroundEnemy::MoveForward(float Input)
@@ -57,29 +56,29 @@ void AGroundEnemy::MoveForward(float Input)
 	Rotate(LineTrace());
 
 	if (GetDistanceToMain() > DistanceToWalk) {
-		SetForwardInput(1.0f);
+		ForwardInput = 1.0f;
 		FVector CurrLoc = GetActorLocation();
-		FVector NewLoc = CurrLoc + (GetActorForwardVector() * GetCharacterSpeed() * GetWorld()->GetDeltaSeconds());
+		FVector NewLoc = CurrLoc + (GetActorForwardVector() * CharacterSpeed * GetWorld()->GetDeltaSeconds());
 		SetActorLocation(NewLoc);
 	}
 	else {
-		SetForwardInput(0.0f);
+		ForwardInput = 0.0f;
 	}
 }
 
 void AGroundEnemy::Fire()
 {
-	if ((GetPistolActor() != NULL) && (GetHavePistol() == true) && (GetCanFirePistol() == true)) {
-		GetPistolActor()->SpawnProjectile();
-		SetCanFirePistol(false);
-		GetWorldTimerManager().SetTimer(GetPistolFireRateHandle(), this, &AGroundEnemy::ResetPistolFire, GetPistolFireRate(), false, GetPistolFireRate());
+	if ((PistolActor != NULL) && (bHavePistol == true) && (bCanFirePistol == true)) {
+		PistolActor->SpawnProjectile();
+		bCanFirePistol = false;
+		GetWorldTimerManager().SetTimer(PistolFireRateHandle, this, &AGroundEnemy::ResetPistolFire, PistolFireRate, false, PistolFireRate);
 	}
 }
 
 void AGroundEnemy::ResetPistolFire()
 {
-	GetWorldTimerManager().ClearTimer(GetPistolFireRateHandle());
-	SetCanFirePistol(true);
+	GetWorldTimerManager().ClearTimer(PistolFireRateHandle);
+	bCanFirePistol = true;
 }
 
 float AGroundEnemy::GetDistanceToMain()

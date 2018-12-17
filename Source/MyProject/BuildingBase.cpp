@@ -77,14 +77,25 @@ void ABuildingBase::BeginPlay()
 	Super::BeginPlay();
 	
 	WindowsChild->CreateChildActor();
-	WindowsChild2->CreateChildActor();
-	WindowsChild3->CreateChildActor();
-	WindowsChild4->CreateChildActor();
+	FEnemyHandler EnemyHandler1;
+	EnemyHandler1.SetWindowsActor(Cast<AWindows>(WindowsChild->GetChildActor()));
 
-	WindowsArray.Add(Cast<AWindows>(WindowsChild->GetChildActor()));
-	WindowsArray.Add(Cast<AWindows>(WindowsChild2->GetChildActor()));
-	WindowsArray.Add(Cast<AWindows>(WindowsChild3->GetChildActor()));
-	WindowsArray.Add(Cast<AWindows>(WindowsChild4->GetChildActor()));
+	WindowsChild2->CreateChildActor();
+	FEnemyHandler EnemyHandler2;
+	EnemyHandler2.SetWindowsActor(Cast<AWindows>(WindowsChild2->GetChildActor()));
+
+	WindowsChild3->CreateChildActor();
+	FEnemyHandler EnemyHandler3;
+	EnemyHandler3.SetWindowsActor(Cast<AWindows>(WindowsChild3->GetChildActor()));
+
+	WindowsChild4->CreateChildActor();
+	FEnemyHandler EnemyHandler4;
+	EnemyHandler4.SetWindowsActor(Cast<AWindows>(WindowsChild4->GetChildActor()));
+
+	EnemyHandlerArray.Add(EnemyHandler1);
+	EnemyHandlerArray.Add(EnemyHandler2);
+	EnemyHandlerArray.Add(EnemyHandler3);
+	EnemyHandlerArray.Add(EnemyHandler4);
 }
 
 // Called every frame
@@ -92,5 +103,12 @@ void ABuildingBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	for (int32 i = 0; i < 4; i++) {
+		if (EnemyHandlerArray[i].GetWindowEnemyActor() != NULL) {
+			if (EnemyHandlerArray[i].GetWindowEnemyActor()->GetHealth() <= 0) {
+				EnemyHandlerArray[i].GetWindowsActor()->Close();
+			}
+		}
+	}
 }
 

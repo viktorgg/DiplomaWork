@@ -30,7 +30,8 @@ public:
 
 private:
 
-	float CharacterNormalSpeed;
+	float ZoomedCharSpeed;
+	float NotZoomedCharSpeed;
 
 	UPROPERTY(EditAnywhere)
 		float LookSpeed;
@@ -38,7 +39,6 @@ private:
 	float LookLowerLimit;
 
 	bool bZooming;
-	bool bOutZooming;
 
 	bool bSlowMo;
 
@@ -98,12 +98,12 @@ public:
 	UCameraComponent* GetCamera() const { return Camera; }
 
 	int32 GetCurrPistolMagazine() const { return CurrPistolMagazine; }
-	void SetCurrPistolMagazine(int32 NewCurrPistolMagazine) { CurrPistolMagazine = NewCurrPistolMagazine; }
+	void SetCurrPistolMagazine(int32 CurrPistolMagazine) { this->CurrPistolMagazine = CurrPistolMagazine; }
 
 	int32 GetPistolMagazineLimit() const { return PistolMagazineLimit; }
 
 	int32 GetCurrRifleMagazine() const { return CurrRifleMagazine; }
-	void SetCurrRifleMagazine(int32 NewCurrRifleMagazine) { CurrRifleMagazine = NewCurrRifleMagazine; }
+	void SetCurrRifleMagazine(int32 CurrRifleMagazine) { this->CurrRifleMagazine = CurrRifleMagazine; }
 
 	int32 GetRifleMagazineLimit() const { return RifleMagazineLimit; }
 };

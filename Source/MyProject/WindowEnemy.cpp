@@ -17,8 +17,8 @@ AWindowEnemy::AWindowEnemy() {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetHealth(100);
-	SetRifleFireRate(2.0f);
+	Health = 100;
+	RifleFireRate = FMath::RandRange(2.0f, 3.0f);
 
 	WindowsPlace = 0;
 
@@ -44,25 +44,23 @@ void AWindowEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Fire();
+	//Fire();
 	RotateToCharacter();
-	// SetActorRotation(FRotator(GetActorRotation().Pitch, FMath::Clamp(GetActorRotation().Yaw, -40.0f, 40.0f), 0.0f));
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rot: %f"), GetActorRotation().Yaw));
 }
 
 void AWindowEnemy::Fire()
 {
-	if ((GetRifleActor() != NULL) && (GetHaveRifle() == true) && (GetCanFireRifle() == true)) {
-		GetRifleActor()->SpawnProjectile();
-		SetCanFireRifle(false);
-		GetWorldTimerManager().SetTimer(GetRifleFireRateHandle(), this, &AWindowEnemy::ResetRifleFire, GetRifleFireRate(), false, GetRifleFireRate());
+	if ((RifleActor != NULL) && (bHaveRifle == true) && (bCanFireRifle == true)) {
+		RifleActor->SpawnProjectile();
+		bCanFireRifle = false;
+		GetWorldTimerManager().SetTimer(RifleFireRateHandle, this, &AWindowEnemy::ResetRifleFire, RifleFireRate, false, RifleFireRate);
 	}
 }
 
 void AWindowEnemy::ResetRifleFire()
 {
-	GetWorldTimerManager().ClearTimer(GetRifleFireRateHandle());
-	SetCanFireRifle(true);
+	GetWorldTimerManager().ClearTimer(RifleFireRateHandle);
+	bCanFireRifle = true;
 }
 
 void AWindowEnemy::RotateToCharacter()

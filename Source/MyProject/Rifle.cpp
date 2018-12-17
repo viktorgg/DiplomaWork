@@ -20,10 +20,8 @@ ARifle::ARifle() {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetDamage(50);
-	SetFireRate(2.0f);
+	Damage = 50;
 	SetProjectileOffsetNoZoom(2.5f);
-
 }
 
 void ARifle::BeginPlay()
@@ -43,7 +41,7 @@ void ARifle::SpawnProjectile()
 
 	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
 
-		AMyCharacter* MainCharacter = Cast<AMyCharacter>(GetCharacterActor());
+		AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor);
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
@@ -62,45 +60,44 @@ void ARifle::SpawnProjectile()
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
-				BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetNoZoom(), GetProjectileOffsetNoZoom());
-				BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetNoZoom(), GetProjectileOffsetNoZoom());
+				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
+				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
 				FRotator CurrRot = MainCharacter->GetCamera()->GetComponentRotation();
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
 			}
 		}
 	}
-	else if (Cast<AWindowEnemy>(GetCharacterActor()) != NULL) {
+	else if (Cast<AWindowEnemy>(CharacterActor) != NULL) {
 
-		AWindowEnemy* EnemyCharacter = Cast<AWindowEnemy>(GetCharacterActor());
+		AWindowEnemy* EnemyCharacter = Cast<AWindowEnemy>(CharacterActor);
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
 		SpawnLocation = EnemyCharacter->GetActorLocation() + (EnemyCharacter->GetActorForwardVector() * 100);
 
-		if (ChanceToHit < 50) {
+		if (ChanceToHit < 30) {
 			SpawnRotation = EnemyCharacter->LookAtChar();
 		}
 		else {
 			float BulletOffsetPitch;
 			float BulletOffsetYaw;
-			BulletOffsetPitch = FMath::RandRange(-GetProjectileOffsetZoom() * 2, GetProjectileOffsetZoom() * 2);
-			BulletOffsetYaw = FMath::RandRange(-GetProjectileOffsetZoom() * 2, GetProjectileOffsetZoom() * 2);
-			FRotator CurrRot = EnemyCharacter->GetActorRotation();
-			SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
+			BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom * 2.5f, ProjectileOffsetNoZoom * 2.5f);
+			BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetNoZoom * 2.5f, ProjectileOffsetNoZoom * 2.5f);
+			SpawnRotation = FRotator(EnemyCharacter->LookAtChar().Pitch + BulletOffsetPitch, EnemyCharacter->LookAtChar().Yaw + BulletOffsetYaw, EnemyCharacter->LookAtChar().Roll);
 		}
 	}
 	FActorSpawnParameters ActorSpawnParams;
-	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(GetProjectileClass(), SpawnLocation, SpawnRotation, ActorSpawnParams);
+	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 
-	SpawnedProjectile->SetCharacterActor(GetCharacterActor());
-	SpawnedProjectile->SetDamage(GetDamage());
+	SpawnedProjectile->SetCharacterActor(CharacterActor);
+	SpawnedProjectile->SetDamage(Damage);
 
-	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
-		if (Cast<AMyCharacter>(GetCharacterActor())->GetZooming() == true) {
+	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+		if (Cast<AMyCharacter>(CharacterActor)->GetZooming() == true) {
 			SpawnEmitter();
 		}
 		else {
-			GetWorldTimerManager().SetTimer(GetParticleDelayHandle(), this, &ARifle::SpawnEmitter, 0.2f, false, 0.2f);
+			GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARifle::SpawnEmitter, 0.2f, false, 0.2f);
 		}
 	}
 	else {
@@ -110,7 +107,7 @@ void ARifle::SpawnProjectile()
 
 void ARifle::SpawnEmitter()
 {
-	UGameplayStatics::SpawnEmitterAtLocation(this, GetFireExplosion(), GetGunMesh()->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
+	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
 }
 
 void ARifle::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -122,16 +119,17 @@ void ARifle::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherA
 		if (CharacterEntered->GetHaveRifle() == false) {
 			CharacterEntered->SetRifleActor(this);
 			CharacterEntered->SetHaveRifle(true);
-			SetCharacterActor(CharacterEntered);
+			CharacterActor = CharacterEntered;
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
-			CharacterEntered->SetRifleFireRate(GetFireRate());
-			GetSphereCollision()->SetSimulatePhysics(false);
+			SphereCollision->SetSimulatePhysics(false);
 		}
 		else {
-			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
+			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == NULL)) {
 				AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterEntered);
-				MainChar->SetCurrRifleMagazine(MainChar->GetRifleMagazineLimit());
-				Destroy();
+				if (MainChar->GetCurrRifleMagazine() < MainChar->GetRifleMagazineLimit()) {
+					MainChar->SetCurrRifleMagazine(MainChar->GetRifleMagazineLimit());
+					Destroy();
+				}
 			}
 		}
 	}

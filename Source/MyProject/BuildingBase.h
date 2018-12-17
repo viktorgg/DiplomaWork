@@ -7,6 +7,31 @@
 #include "BuildingBase.generated.h"
 
 
+USTRUCT()
+struct FEnemyHandler
+{
+	GENERATED_USTRUCT_BODY()
+
+private:
+
+	class AWindows* WindowsActor;
+
+	class AWindowEnemy* WindowEnemyActor;
+
+public:
+
+	AWindows* GetWindowsActor() const { return WindowsActor; }
+	void SetWindowsActor(AWindows* WindowsActor) { this->WindowsActor = WindowsActor; }
+
+	AWindowEnemy* GetWindowEnemyActor() const { return WindowEnemyActor; }
+	void SetWindowEnemyActor(AWindowEnemy* WindowEnemyActor) { this->WindowEnemyActor = WindowEnemyActor; }
+
+	FEnemyHandler() {
+		WindowsActor = NULL;
+		WindowEnemyActor = NULL;
+	}
+};
+
 UCLASS()
 class MYPROJECT_API ABuildingBase : public AActor
 {
@@ -19,15 +44,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-
-private:
-
-	TArray<class AWindows*> WindowsArray;
 
 	TSubclassOf<class AWindows> WindowsClass;
 
@@ -67,10 +83,15 @@ private:
 		class UStaticMeshComponent* SecondFloorMesh;
 
 	virtual void SpawnEnemy(int32 Place) PURE_VIRTUAL(ABuildingBase::SpawnEnemy, );
-	
-public:
 
-	TArray<class AWindows*> GetWindowsArray() const { return WindowsArray; }
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	TArray<FEnemyHandler> EnemyHandlerArray;
+
+
+public:
 
 	TSubclassOf<class AWindowEnemy> GetWindowEnemyClass() const { return WindowEnemyClass; }
 

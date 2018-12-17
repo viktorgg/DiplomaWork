@@ -33,8 +33,6 @@ private:
 
 	TSubclassOf<class ARifle> RifleClass;
 
-	class AMyCharacter* MainCharacterActor;
-
 	class AWindows* WindowsActor;
 
 	int32 WindowsPlace;
@@ -47,9 +45,6 @@ private:
 
 public:
 
-	void SetWindowsPlace(int32 NewWindowsPlace) { WindowsPlace = NewWindowsPlace; }
-
-	class AWindows* GetWindowsActor() const { return WindowsActor; }
-	void SetWindowsActor(class AWindows* NewWindowsActor) { WindowsActor = NewWindowsActor; }
+	void SetWindowsPlace(int32 WindowsPlace) { this->WindowsPlace = WindowsPlace; }
 	
 };
