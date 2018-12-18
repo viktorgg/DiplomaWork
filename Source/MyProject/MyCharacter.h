@@ -33,6 +33,8 @@ private:
 	float ZoomedCharSpeed;
 	float NotZoomedCharSpeed;
 
+	float SlowMoCapacity;
+
 	UPROPERTY(EditAnywhere)
 		float LookSpeed;
 	float LookUpperLimit;
@@ -106,4 +108,6 @@ public:
 	void SetCurrRifleMagazine(int32 CurrRifleMagazine) { this->CurrRifleMagazine = CurrRifleMagazine; }
 
 	int32 GetRifleMagazineLimit() const { return RifleMagazineLimit; }
+
+	void AddSlowMoCapacity(float Amount) { if (SlowMoCapacity < 10.0f) { SlowMoCapacity += Amount; } }
 };

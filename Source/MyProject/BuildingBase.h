@@ -18,6 +18,8 @@ private:
 
 	class AWindowEnemy* WindowEnemyActor;
 
+	FVector TerraceLoc;
+
 public:
 
 	AWindows* GetWindowsActor() const { return WindowsActor; }
@@ -25,6 +27,9 @@ public:
 
 	AWindowEnemy* GetWindowEnemyActor() const { return WindowEnemyActor; }
 	void SetWindowEnemyActor(AWindowEnemy* WindowEnemyActor) { this->WindowEnemyActor = WindowEnemyActor; }
+
+	FVector GetTerraceLoc() const { return TerraceLoc; }
+	void SetTerraceLoc(FVector TerraceLoc) { this->TerraceLoc = TerraceLoc; }
 
 	FEnemyHandler() {
 		WindowsActor = NULL;

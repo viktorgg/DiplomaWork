@@ -20,6 +20,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+
 	UPROPERTY(EditAnywhere)
 		float BulletSpeed;
 
@@ -48,8 +50,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-public:
 
 	void SetDamage(int32 Damage) { this->Damage = Damage; }
 

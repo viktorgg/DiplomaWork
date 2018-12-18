@@ -18,9 +18,9 @@ AWindowEnemy::AWindowEnemy() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Health = 100;
-	RifleFireRate = FMath::RandRange(2.0f, 3.0f);
+	RifleFireRate = FMath::RandRange(2.0f, 3.5f);
 
-	WindowsPlace = 0;
+	WindowsPlace = 3;
 
 	static ConstructorHelpers::FClassFinder<ARifle>
 		RifleBP(TEXT("Blueprint'/Game/Blueprints/RifleBP.RifleBP_C'"));
@@ -44,8 +44,10 @@ void AWindowEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//Fire();
-	RotateToCharacter();
+	if (Health > 0) {
+		Fire();
+		RotateToCharacter();
+	}
 }
 
 void AWindowEnemy::Fire()
@@ -69,7 +71,7 @@ void AWindowEnemy::RotateToCharacter()
 		SetActorRotation(FMath::Lerp(FRotator(-40.0f, GetActorRotation().Yaw, 0.0f), FRotator(-40.0f, LookAtChar().Yaw, 0.0f), 15 * GetWorld()->GetDeltaSeconds()));
 	}
 	else {
-		SetActorRotation(FMath::Lerp(FRotator(-20.0f, GetActorRotation().Yaw, 0.0f), FRotator(-20.0f, LookAtChar().Yaw, 0.0f), 15 * GetWorld()->GetDeltaSeconds()));
+		SetActorRotation(FMath::Lerp(FRotator(-10.0f, GetActorRotation().Yaw, 0.0f), FRotator(-20.0f, LookAtChar().Yaw, 0.0f), 15 * GetWorld()->GetDeltaSeconds()));
 	}
 }
 

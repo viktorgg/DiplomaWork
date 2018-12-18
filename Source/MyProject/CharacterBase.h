@@ -42,9 +42,13 @@ protected:
 	bool bCanRifleAnim;
 	FTimerHandle RifleAnimHandle;
 
+	FTimerHandle DestroyHandle;
+
 	class ARevolver* PistolActor;
 	class ARifle* RifleActor;
 	class AMyCharacter* MainCharacterActor;
+
+	UAnimSequence* DeathAnim;
 
 	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
 
@@ -60,9 +64,6 @@ protected:
 
 	virtual void ResetRifleSynch() PURE_VIRTUAL(ACharacterBase::ResetRifleSynch, );
 
-private:
-
-
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -71,6 +72,12 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	FRotator LookAtChar();
+
+	void PlayDeathAnim();
+
+	void DestroyAfterTime();
+
+	void DestroyChar();
 
 	int32 GetHealth() const { return Health; }
 	void SetHealth(int32 Health) { this->Health = Health; }
@@ -115,6 +122,8 @@ public:
 	void SetRifleActor(ARifle* RifleActor) { this->RifleActor = RifleActor; }
 
 	AMyCharacter* GetMainCharacterActor() const { return MainCharacterActor; }
+
+	UAnimSequence* GetDeathAnim() const { return DeathAnim; }
 
 };
 

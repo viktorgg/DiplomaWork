@@ -3,6 +3,10 @@
 #include "Projectile.h"
 #include "MyCharacter.h"
 #include "CharacterBase.h"
+#include "Revolver.h"
+#include "Rifle.h"
+#include "GroundEnemy.h"
+#include "WindowEnemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
@@ -86,18 +90,33 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 				UGameplayStatics::SpawnEmitterAtLocation(this, HitBlood, BloodSplatterLoc, FRotator(0.0f, 0.0f, 0.0f), FVector(1.2f, 1.2f, 1.2f), true);
 
 				if ((Hit.BoneName.ToString() == "Head") || (Hit.BoneName.ToString() == "HeadTop_End")) {
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Headshot!")));
 					HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5);
 				}
 				else {
 					HitActor->SetHealth(HitActor->GetHealth() - Damage);
+				}
+				if (HitActor->GetHealth() <= 0) {
+					if (Cast<AGroundEnemy>(HitActor) != NULL) {
+						AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
+						GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
+						GroundEnemy->GetPistolActor()->SetCharacterActor(NULL);
+					}
+					else if (Cast<AWindowEnemy>(HitActor) != NULL) {
+						AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor);
+						WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);
+						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() * 100000.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
+						WindowEnemy->GetRifleActor()->SetCharacterActor(NULL);
+					}
+					HitActor->GetMainCharacterActor()->AddSlowMoCapacity(1.0f);
+					HitActor->GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+					HitActor->PlayDeathAnim();
+					HitActor->DestroyAfterTime();
 				}
 			}
 			else {
 				UGameplayStatics::SpawnEmitterAtLocation(this, HitFire, Hit.Location, FRotator(0.0f, 0.0f, 0.0f), FVector(0.1f, 0.1f, 0.1f), true);
 			}
 		}
-		
 		Destroy();
 	}
 }
@@ -106,6 +125,7 @@ void AProjectile::ProjectileTravel()
 {
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * 20000.0f),GetWorld()->DeltaTimeSeconds, BulletSpeed));
 }
+
 
 
 

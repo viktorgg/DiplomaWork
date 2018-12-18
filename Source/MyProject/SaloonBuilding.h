@@ -6,6 +6,36 @@
 #include "GameFramework/Actor.h"
 #include "SaloonBuilding.generated.h"
 
+
+USTRUCT()
+struct FSEnemyHandler
+{
+	GENERATED_USTRUCT_BODY()
+
+private:
+
+	class AWindowEnemy* WindowEnemyActor;
+
+	FVector InLoc;
+	FVector OutLoc;
+
+public:
+
+	AWindowEnemy* GetWindowEnemyActor() const { return WindowEnemyActor; }
+	void SetWindowEnemyActor(AWindowEnemy* WindowEnemyActor) { this->WindowEnemyActor = WindowEnemyActor; }
+
+	FVector GetInLoc() const { return InLoc; }
+	void SetInLoc(FVector InLoc) { this->InLoc = InLoc; }
+
+	FVector GetOutLoc() const { return OutLoc; }
+	void SetOutLoc(FVector OutLoc) { this->OutLoc = OutLoc; }
+
+	FSEnemyHandler() {
+		WindowEnemyActor = NULL;
+	}
+};
+
+
 UCLASS()
 class MYPROJECT_API ASaloonBuilding : public AActor
 {
@@ -23,10 +53,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	TArray<FSEnemyHandler> SEnemyHandlerArray;
+
 private:
+
+	TSubclassOf<class AWindowEnemy> WindowEnemyClass;
 
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* MainBuildingMesh;
+
+	UPROPERTY(VisibleAnywhere)
+		class UChildActorComponent* DoorsChild;
 
 	UPROPERTY(VisibleAnywhere)
 		class UBoxComponent* BoxCollision;
@@ -45,5 +82,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 		class UBoxComponent* BoxCollision6;
+
+	void SpawnEnemy(int32 Place);
 	
 };

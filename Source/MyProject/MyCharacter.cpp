@@ -24,8 +24,9 @@ AMyCharacter::AMyCharacter()
 
 	Health = 500;
 	CharacterSpeed = 450.0f;
-	ZoomedCharSpeed = CharacterSpeed / 2.5;
+	ZoomedCharSpeed = CharacterSpeed / 2.5f;
 	NotZoomedCharSpeed = CharacterSpeed;
+	SlowMoCapacity = 0.0f;
 
 	PistolFireRate = 0.25f;
 	RifleFireRate = 1.0f;
@@ -44,7 +45,7 @@ AMyCharacter::AMyCharacter()
 	CurrPistolMagazine = 20;
 	RifleMagazineLimit = 5;
 	CurrRifleMagazine = 5;
-
+	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 
@@ -82,6 +83,15 @@ void AMyCharacter::Tick(float DeltaTime)
 	if (GetCanRifleAnim() == false) {
 		LerpPlayerToCamera(15.0f);
 	}
+
+	if (bSlowMo == true) {
+		SlowMoCapacity -= DeltaTime * 1.5f;
+		if (SlowMoCapacity <= 0.0f) {
+			EnterSlowMo();
+		}
+	}
+
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("SlowMo: %f"), SlowMoCapacity));
 }
 
 // Called to bind functionality to input
@@ -229,7 +239,6 @@ void AMyCharacter::ChangeToPistol()
 		if (WInHand == None) {
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
 		}
-
 		if (WInHand == Rifle){
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
@@ -245,7 +254,6 @@ void AMyCharacter::ChangeToRifle()
 		if (WInHand == None) {
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
 		}
-
 		if (WInHand == Pistol) {
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
@@ -256,7 +264,7 @@ void AMyCharacter::ChangeToRifle()
 
 void AMyCharacter::EnterSlowMo()
 {
-	if (bSlowMo == false) {
+	if ((bSlowMo == false) && (SlowMoCapacity > 0.0f)) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.4f);
 		CharacterSpeed *= 2.5f;
 		PistolFireRate /= 2.5f;
@@ -264,7 +272,7 @@ void AMyCharacter::EnterSlowMo()
 		LookSpeed *= 2.5f;
 		bSlowMo = true;
 	}
-	else {
+	else if(bSlowMo == true) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 		CharacterSpeed /= 2.5f;
 		PistolFireRate *= 2.5f;
@@ -273,7 +281,6 @@ void AMyCharacter::EnterSlowMo()
 		bSlowMo = false;
 	}
 }
-
 
 void AMyCharacter::ResetPistolFire()
 {

@@ -11,10 +11,14 @@
 #include "Components/ArrowComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
-#include "Camera/CameraComponent.h"
+#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Classes/Animation/AnimationAsset.h"
+#include "Runtime/Engine/Public/TimerManager.h"
+#include "Engine/GameEngine.h"
 
 
 // Sets default values
@@ -45,6 +49,15 @@ ACharacterBase::ACharacterBase()
 	GetArrowComponent()->SetupAttachment(RootComponent);
 
 	GetMesh()->SetupAttachment(RootComponent);
+
+	static ConstructorHelpers::FObjectFinder<UAnimSequence>
+		AnimAsset(TEXT("AnimSequence'/Game/Assets/Animations/EnemyChar/Shoulder_Hit_And_Fall.Shoulder_Hit_And_Fall'"));
+	if (AnimAsset.Succeeded() == true) {
+		DeathAnim = AnimAsset.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Animation Not Found!")));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -59,23 +72,27 @@ void ACharacterBase::BeginPlay()
 	}
 }
 
+void ACharacterBase::PlayDeathAnim()
+{
+	GetMesh()->PlayAnimation(DeathAnim, false);
+}
+
+void ACharacterBase::DestroyAfterTime()
+{
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &ACharacterBase::DestroyChar, 3, false, 3);
+}
+
+void ACharacterBase::DestroyChar()
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	Destroy();
+}
+
 // Called every frame
 void ACharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Health <= 0) {
-		if (Cast<AGroundEnemy>(this) != NULL) {
-			PistolActor->GetSphereCollision()->SetSimulatePhysics(true);
-			PistolActor->SetCharacterActor(NULL);
-		}
-		else if(Cast<AWindowEnemy>(this) != NULL){
-			RifleActor->GetSphereCollision()->SetSimulatePhysics(true);
-			RifleActor->GetSphereCollision()->AddForce(GetActorForwardVector() * 100000.0f * RifleActor->GetSphereCollision()->GetMass());
-			RifleActor->SetCharacterActor(NULL);
-		}
-		Destroy();
-	}
 }
 
 // Called to bind functionality to input

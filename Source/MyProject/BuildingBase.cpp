@@ -92,10 +92,14 @@ void ABuildingBase::BeginPlay()
 	FEnemyHandler EnemyHandler4;
 	EnemyHandler4.SetWindowsActor(Cast<AWindows>(WindowsChild4->GetChildActor()));
 
+	FEnemyHandler EnemyHandler5;
+	EnemyHandler5.SetTerraceLoc(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 580.0f) + (MainBuildingMesh->GetUpVector() * 100.0f));
+
 	EnemyHandlerArray.Add(EnemyHandler1);
 	EnemyHandlerArray.Add(EnemyHandler2);
 	EnemyHandlerArray.Add(EnemyHandler3);
 	EnemyHandlerArray.Add(EnemyHandler4);
+	EnemyHandlerArray.Add(EnemyHandler5);
 }
 
 // Called every frame

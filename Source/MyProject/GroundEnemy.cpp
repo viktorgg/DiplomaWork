@@ -46,8 +46,10 @@ void AGroundEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	MoveForward(NULL);
-	Fire();
+	if (Health > 0) {
+		MoveForward(NULL);
+		Fire();
+	}
 	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), PistolFireRate));
 }
 
