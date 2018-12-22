@@ -51,6 +51,15 @@ AProjectile::AProjectile()
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Blood Particle Not Found!")));
 	}
+	
+	static ConstructorHelpers::FObjectFinder<UParticleSystem>
+		ParticleSystem3(TEXT("ParticleSystem'/Game/Assets/Particles/ProjectileTrail.ProjectileTrail'"));
+	if (ParticleSystem3.Succeeded() == true) {
+		ProjectileTrail = ParticleSystem3.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Trail Not Found!")));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -68,6 +77,10 @@ void AProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ProjectileTravel();
+
+	//if (FVector::DotProduct(CharacterActor->GetActorForwardVector(), (CharacterActor->GetMainCharacterActor()->GetActorLocation() - CharacterActor->GetActorLocation())) >= 0.0f) {
+	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Behind")));
+	//}
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -124,6 +137,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 void AProjectile::ProjectileTravel()
 {
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * 20000.0f),GetWorld()->DeltaTimeSeconds, BulletSpeed));
+	UGameplayStatics::SpawnEmitterAtLocation(this, ProjectileTrail, GetActorLocation(), GetActorRotation(), FVector(1.0f, 1.0f, 1.0f), true);
 }
 
 

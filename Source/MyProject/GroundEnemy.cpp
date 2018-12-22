@@ -93,7 +93,7 @@ float AGroundEnemy::GetDistanceToMain()
 
 void AGroundEnemy::RotateToCharacter()
 {
-	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, 40.0f));
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, 80.0f));
 }
 
 void AGroundEnemy::Rotate(float Direction)

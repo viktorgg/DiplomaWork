@@ -4,12 +4,15 @@
 #include "Projectile.h"
 #include "MyCharacter.h"
 #include "Revolver.h"
+#include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+#include "DrawDebugHelpers.h"
 #include "EngineUtils.h"
 
 // Sets default values
@@ -55,6 +58,23 @@ void AGunBase::BeginPlay()
 
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGunBase::OnEnterSphere);
 
+}
+
+FRotator AGunBase::GetHitRot(FVector SocketLoc, class AMyCharacter* MainChar)
+{
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+
+	FVector EndLoc = MainChar->GetCamera()->GetComponentLocation() + (MainChar->GetCamera()->GetForwardVector() * 1000000);
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, MainChar->GetCamera()->GetComponentLocation(), EndLoc, ECC_Camera, CollisionParams);
+
+	if (HitResult.bBlockingHit == true) {
+		return UKismetMathLibrary::FindLookAtRotation(SocketLoc, HitResult.ImpactPoint);
+	}
+	else {
+		return MainChar->GetCamera()->GetComponentRotation();
+	}
 }
 
 // Called every frame

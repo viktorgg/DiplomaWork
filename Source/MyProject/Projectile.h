@@ -42,6 +42,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UParticleSystem* HitBlood;
 
+	UPROPERTY(VisibleAnywhere)
+		class UParticleSystem* ProjectileTrail;
+
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 

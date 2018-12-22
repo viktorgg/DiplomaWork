@@ -44,7 +44,7 @@ void ARevolver::Tick(float DeltaTime)
 void ARevolver::SpawnProjectile()
 {
 	FRotator SpawnRotation;
-	FVector SpawnLocation;
+	FVector SpawnLocation = GunMesh->GetSocketLocation("Muzzle");
 
 	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
 
@@ -54,32 +54,28 @@ void ARevolver::SpawnProjectile()
 
 		if (MainCharacter->GetZooming() == true) {
 
-			SpawnLocation = MainCharacter->GetCamera()->GetComponentLocation() + (MainCharacter->GetCamera()->GetForwardVector() * 200);
-
 			if (ChanceToHit < 30) {
-				SpawnRotation = MainCharacter->GetCamera()->GetComponentRotation();
+				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
 				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
 				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
-				FRotator CurrRot = MainCharacter->GetCamera()->GetComponentRotation();
-				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);					}
+				FRotator CurrRot = GetHitRot(SpawnLocation, MainCharacter);
+				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);	
+			}
 		}
 		else {
-
-			SpawnLocation = MainCharacter->GetCamera()->GetComponentLocation() + (MainCharacter->GetCamera()->GetForwardVector() * 250);
-
 			if (ChanceToHit < 15) {
-				SpawnRotation = MainCharacter->GetCamera()->GetComponentRotation();
+				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
 				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
 				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
-				FRotator CurrRot = MainCharacter->GetCamera()->GetComponentRotation();
+				FRotator CurrRot = GetHitRot(SpawnLocation, MainCharacter);
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
 			}
 		}
@@ -89,8 +85,6 @@ void ARevolver::SpawnProjectile()
 		AGroundEnemy* EnemyCharacter = Cast<AGroundEnemy>(CharacterActor);
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
-
-		SpawnLocation = EnemyCharacter->GetActorLocation() + (EnemyCharacter->GetActorForwardVector() * 100);
 
 		if (ChanceToHit < 60) {
 			SpawnRotation = EnemyCharacter->LookAtChar();
@@ -134,7 +128,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * Oth
 
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
 
-		if (CharacterEntered->GetHavePistol() == false) {
+		if ((CharacterEntered->GetHavePistol()) == false && (CharacterActor == NULL)) {
 			CharacterEntered->SetPistolActor(this);
 			CharacterEntered->SetHavePistol(true);
 			CharacterActor = CharacterEntered;

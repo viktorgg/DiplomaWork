@@ -37,7 +37,7 @@ void ARifle::Tick(float DeltaTime)
 void ARifle::SpawnProjectile()
 {
 	FRotator SpawnRotation;
-	FVector SpawnLocation;
+	FVector SpawnLocation = GunMesh->GetSocketLocation("Muzzle");
 
 	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
 
@@ -47,22 +47,19 @@ void ARifle::SpawnProjectile()
 
 		if (MainCharacter->GetZooming() == true) {
 
-			SpawnLocation = MainCharacter->GetCamera()->GetComponentLocation() + (MainCharacter->GetCamera()->GetForwardVector() * 200);
-			SpawnRotation = MainCharacter->GetCamera()->GetComponentRotation();
+			SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 		}
 		else {
 
-			SpawnLocation = MainCharacter->GetCamera()->GetComponentLocation() + (MainCharacter->GetCamera()->GetForwardVector() * 250);
-
 			if (ChanceToHit < 35) {
-				SpawnRotation = MainCharacter->GetCamera()->GetComponentRotation();
+				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
 				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
 				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
-				FRotator CurrRot = MainCharacter->GetCamera()->GetComponentRotation();
+				FRotator CurrRot = GetHitRot(SpawnLocation, MainCharacter);
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
 			}
 		}
@@ -116,7 +113,7 @@ void ARifle::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherA
 
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
 
-		if (CharacterEntered->GetHaveRifle() == false) {
+		if ((CharacterEntered->GetHaveRifle() == false) && (CharacterActor == NULL)) {
 			CharacterEntered->SetRifleActor(this);
 			CharacterEntered->SetHaveRifle(true);
 			CharacterActor = CharacterEntered;

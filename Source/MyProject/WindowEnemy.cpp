@@ -19,6 +19,7 @@ AWindowEnemy::AWindowEnemy() {
 
 	Health = 100;
 	RifleFireRate = FMath::RandRange(2.0f, 3.5f);
+	bHavePistol = true;
 
 	WindowsPlace = 3;
 
@@ -45,9 +46,9 @@ void AWindowEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (Health > 0) {
-		Fire();
+		//Fire();
 		RotateToCharacter();
-	}
+	}//
 }
 
 void AWindowEnemy::Fire()

@@ -50,6 +50,8 @@ protected:
 
 	virtual void SpawnEmitter() PURE_VIRTUAL(AGunBase::SpawnEmitter, );
 
+	FRotator GetHitRot(FVector SocketLoc, class AMyCharacter* MainChar);
+
 	UFUNCTION()
 		virtual void OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) PURE_VIRTUAL(AGunBase::OnEnterSphere, );
