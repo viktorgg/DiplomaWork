@@ -21,7 +21,7 @@ AGroundEnemy::AGroundEnemy() {
 	PistolFireRate = 0.5;
 	bHaveRifle = true;
 
-	DistanceToWalk = 700.0f;
+	DistanceToWalk = 300.0f;
 
 	static ConstructorHelpers::FClassFinder<ARevolver>
 		PistolBP(TEXT("Blueprint'/Game/Blueprints/RevolverBP.RevolverBP_C'"));
@@ -129,13 +129,13 @@ float AGroundEnemy::LineTrace()
 	GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
 
 	if (OutHitFront.bBlockingHit == true || OutHitFrontL.bBlockingHit == true || OutHitFrontR.bBlockingHit == true) {
-		
+
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Detected!")));
+
 		GetWorld()->LineTraceSingleByChannel(OutHitFrontL, StartLocFrontL, EndLocFrontL, ECC_Camera, CollisionParams);
 
 		if (OutHitFrontL.bBlockingHit == true) {
-
 			DistanceLeft = OutHitFrontL.Distance;
-			
 		}
 		else {
 			DistanceLeft = 0.0f;
@@ -143,9 +143,7 @@ float AGroundEnemy::LineTrace()
 		GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
 
 		if (OutHitFrontR.bBlockingHit == true) {
-
 			DistanceRight = OutHitFrontR.Distance;
-			
 		}
 		else {
 			DistanceRight = 0.0f;

@@ -19,10 +19,6 @@ void AHotel::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (int32 i = 0; i < 5; i++) {
-		SpawnEnemy(i);
-	}
-
 }
 
 void AHotel::Tick(float DeltaTime)

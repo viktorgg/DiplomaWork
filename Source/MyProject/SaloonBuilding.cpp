@@ -67,9 +67,6 @@ void ASaloonBuilding::BeginPlay()
 	SEnemyHandlerArray.Add(SEnemyHandler);
 	SEnemyHandlerArray.Add(SEnemyHandler2);
 
-	for (int32 i = 0; i < 2; i++) {
-		SpawnEnemy(i);
-	}
 }
 
 // Called every frame

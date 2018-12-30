@@ -4,6 +4,7 @@
 #include "Windows.h"
 #include "WindowEnemy.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
@@ -35,6 +36,9 @@ ABuildingBase::ABuildingBase()
 
 	SecondFloorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Second Floor"));
 	SecondFloorMesh->SetupAttachment(MainBuildingMesh);
+
+	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
+	BoxCollision->SetupAttachment(MainBuildingMesh);
 
 	static ConstructorHelpers::FClassFinder<AWindows>
 		WindowsBP(TEXT("Blueprint'/Game/Blueprints/WindowsBP.WindowsBP_C'"));
@@ -75,6 +79,8 @@ ABuildingBase::ABuildingBase()
 void ABuildingBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &ABuildingBase::OnEnterBox);
 	
 	WindowsChild->CreateChildActor();
 	FEnemyHandler EnemyHandler1;
@@ -114,5 +120,28 @@ void ABuildingBase::Tick(float DeltaTime)
 			}
 		}
 	}
+}
+
+void ABuildingBase::SpawnEnemy(int32 Place)
+{
+	EnemyHandlerArray[Place].GetWindowsActor()->Open();
+	FVector LocOffset;
+	FRotator RotOffset;
+	if (Place < 2) {
+		LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10)
+			+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
+		RotOffset = FRotator(0.0f, 90.0f, 0.0f);
+	}
+	else {
+		LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10)
+			+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
+		RotOffset = FRotator(0.0f, 90.0f, 0.0f);
+	}
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place].GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
+
+	SpawnedEnemy->SetWindowsPlace(Place);
+	EnemyHandlerArray[Place].SetWindowEnemyActor(SpawnedEnemy);
 }
 

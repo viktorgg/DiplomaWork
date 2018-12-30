@@ -3,6 +3,7 @@
 #include "NationalBank.h"
 #include "Windows.h"
 #include "WindowEnemy.h"
+#include "MyCharacter.h"
 #include "Engine/GameEngine.h"
 #include "Engine/World.h"
 
@@ -17,10 +18,6 @@ ANationalBank::ANationalBank() {
 void ANationalBank::BeginPlay()
 {
 	Super::BeginPlay();
-
-	for (int32 i = 0; i < 2; i++) {
-		SpawnEnemy(i);
-	}
 	
 }
 
@@ -30,26 +27,12 @@ void ANationalBank::Tick(float DeltaTime)
 
 }
 
-void ANationalBank::SpawnEnemy(int32 Place)
+void ANationalBank::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	EnemyHandlerArray[Place].GetWindowsActor()->Open();
-	FVector LocOffset;
-	FRotator RotOffset;
-	if (Place < 2) {
-		LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10)
-			+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
-		RotOffset = FRotator(0.0f, 90.0f, 0.0f);
+	if (Cast<AMyCharacter>(OtherActor) != NULL) {
+		for (int32 i = 0; i < 2; i++) {
+			SpawnEnemy(i);
+		}
 	}
-	else {
-		LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10) 
-			+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
-		RotOffset = FRotator(0.0f, 90.0f, 0.0f);
-	}
-	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place].GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
-	
-	SpawnedEnemy->SetWindowsPlace(Place);
-	EnemyHandlerArray[Place].SetWindowEnemyActor(SpawnedEnemy);
 }
 

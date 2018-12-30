@@ -70,8 +70,6 @@ void ARifle::SpawnProjectile()
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
-		SpawnLocation = EnemyCharacter->GetActorLocation() + (EnemyCharacter->GetActorForwardVector() * 100);
-
 		if (ChanceToHit < 30) {
 			SpawnRotation = EnemyCharacter->LookAtChar();
 		}
@@ -107,7 +105,7 @@ void ARifle::SpawnEmitter()
 	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
 }
 
-void ARifle::OnEnterSphere(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (Cast<ACharacterBase>(OtherActor) != NULL) {
 

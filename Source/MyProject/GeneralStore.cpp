@@ -18,9 +18,6 @@ void AGeneralStore::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (int32 i = 2; i < 4; i++) {
-		SpawnEnemy(i);
-	}
 }
 
 void AGeneralStore::Tick(float DeltaTime)
@@ -29,27 +26,5 @@ void AGeneralStore::Tick(float DeltaTime)
 
 }
 
-void AGeneralStore::SpawnEnemy(int32 Place)
-{
-	EnemyHandlerArray[Place].GetWindowsActor()->Open();
-	FVector LocOffset;
-	FRotator RotOffset;
-	if (Place < 2) {
-		LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10)
-			+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
-		RotOffset = FRotator(0.0f, 90.0f, 0.0f);
-	}
-	else {
-		LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10)
-			+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
-		RotOffset = FRotator(0.0f, 90.0f, 0.0f);
-	}
-	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place].GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
-
-	SpawnedEnemy->SetWindowsPlace(Place);
-	EnemyHandlerArray[Place].SetWindowEnemyActor(SpawnedEnemy);
-}
 
 

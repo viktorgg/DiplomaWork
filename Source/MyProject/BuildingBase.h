@@ -87,7 +87,14 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* SecondFloorMesh;
 
-	virtual void SpawnEnemy(int32 Place) PURE_VIRTUAL(ABuildingBase::SpawnEnemy, );
+	UPROPERTY(VisibleAnywhere)
+		class UBoxComponent* BoxCollision;
+
+	virtual void SpawnEnemy(int32 Place);
+
+	UFUNCTION()
+		virtual void OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) PURE_VIRTUAL(ABuildingBase::OnEnterBox, );
 
 public:	
 	// Called every frame

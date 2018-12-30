@@ -46,9 +46,9 @@ void AWindowEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (Health > 0) {
-		//Fire();
+		Fire();
 		RotateToCharacter();
-	}//
+	}
 }
 
 void AWindowEnemy::Fire()
