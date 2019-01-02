@@ -23,17 +23,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-
-private:
+	TSubclassOf<class ARevolver> PistolClass;
 
 	UPROPERTY(EditAnywhere)
 		float DistanceToWalk;
-
-	TSubclassOf<class ARevolver> PistolClass;
 
 	virtual void MoveForward(float Input);
 
@@ -42,11 +35,15 @@ private:
 	virtual void ResetPistolFire();
 
 	virtual void RotateToCharacter();
-	
+
 	float GetDistanceToMain();
 
 	void Rotate(float Direction);
 
 	float LineTrace();
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
 };

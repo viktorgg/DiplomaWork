@@ -19,6 +19,7 @@ void ANationalBank::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SpawnEnemy(1);
 }
 
 void ANationalBank::Tick(float DeltaTime)
@@ -27,12 +28,4 @@ void ANationalBank::Tick(float DeltaTime)
 
 }
 
-void ANationalBank::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (Cast<AMyCharacter>(OtherActor) != NULL) {
-		for (int32 i = 0; i < 2; i++) {
-			SpawnEnemy(i);
-		}
-	}
-}
 

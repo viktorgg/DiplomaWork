@@ -14,24 +14,28 @@ struct FSEnemyHandler
 
 private:
 
-	class AWindowEnemy* WindowEnemyActor;
+	class ACharacterBase* EnemyActor;
 
 	FVector InLoc;
+	FVector DoorLoc;
 	FVector OutLoc;
 
 public:
 
-	AWindowEnemy* GetWindowEnemyActor() const { return WindowEnemyActor; }
-	void SetWindowEnemyActor(AWindowEnemy* WindowEnemyActor) { this->WindowEnemyActor = WindowEnemyActor; }
+	ACharacterBase* GetEnemyActor() const { return EnemyActor; }
+	void SetEnemyActor(ACharacterBase* EnemyActor) { this->EnemyActor = EnemyActor; }
 
 	FVector GetInLoc() const { return InLoc; }
 	void SetInLoc(FVector InLoc) { this->InLoc = InLoc; }
+
+	FVector GetDoorLoc() const { return DoorLoc; }
+	void SetDoorLoc(FVector DoorLoc) { this->DoorLoc = DoorLoc; }
 
 	FVector GetOutLoc() const { return OutLoc; }
 	void SetOutLoc(FVector OutLoc) { this->OutLoc = OutLoc; }
 
 	FSEnemyHandler() {
-		WindowEnemyActor = NULL;
+		EnemyActor = NULL;
 	}
 };
 
@@ -55,9 +59,12 @@ public:
 
 	TArray<FSEnemyHandler> SEnemyHandlerArray;
 
-private:
+	void SpawnEnemy(int32 Place);
 
+private:
+	
 	TSubclassOf<class AWindowEnemy> WindowEnemyClass;
+	TSubclassOf<class ASaloonGroundEnemy> SaloonGroundEnemyClass;
 
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* MainBuildingMesh;
@@ -82,7 +89,5 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 		class UBoxComponent* BoxCollision6;
-
-	void SpawnEnemy(int32 Place);
 	
 };
