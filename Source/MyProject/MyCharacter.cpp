@@ -66,16 +66,18 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
+	// Call CameraZoom() in tick so it changes position smoothly
 	if (bZooming == true && SpringArm->TargetArmLength != 151.0f) {
-		CameraZoom();
+		CameraZoom();	
 		LerpPlayerToCamera(6.0f);
 	}
 
+	// Call CameraOutZoom() in tick so it changes position smoothly
 	if (bZooming == false && SpringArm->TargetArmLength <= 399.0f) {
 		CameraOutZoom();
 	}
 
+	// Character to face camera's direction when shooting
 	if (GetCanFirePistol() == false) {
 		LerpPlayerToCamera(15.0f);
 	}
@@ -84,10 +86,11 @@ void AMyCharacter::Tick(float DeltaTime)
 		LerpPlayerToCamera(15.0f);
 	}
 
+	// Slowly deplete slow mo's capacity when ON
 	if (bSlowMo == true) {
 		SlowMoCapacity -= DeltaTime * 1.5f;
 		if (SlowMoCapacity <= 0.0f) {
-			EnterSlowMo();
+			EnterSlowMo();		// Disable slow mo when out of capacity
 		}
 	}
 
@@ -113,13 +116,14 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AMyCharacter::MoveForward(float Input)
 {
-	SetForwardInput(Input);
-
+	SetForwardInput(Input);		// Sets input to 1.0 when clicking W
+								// Sets input to -1.0 when clicking
 	if (Input != 0.0) {
 		FVector CurrLoc = GetActorLocation();
 		FVector NewLoc;
 		FVector SpringArmForward = SpringArm->GetForwardVector();
-		if (RightInput != 0.0) {
+
+		if (RightInput != 0.0) {	// Lowers the speed when holding both W/S and D/A so that character doesn't move faster diagonally
 			NewLoc = CurrLoc + (SpringArmForward * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
@@ -127,7 +131,7 @@ void AMyCharacter::MoveForward(float Input)
 		}
 		SetActorLocation(NewLoc);
 		
-		LerpPlayerToCamera(6.0f);
+		LerpPlayerToCamera(6.0f);	// Character turns to camera direction when moving
 	}
 }
 
@@ -138,6 +142,7 @@ void AMyCharacter::MoveRight(float Input)
 	if (Input != 0.0) {
 		FVector CurrLoc = GetActorLocation();
 		FVector NewLoc;
+
 		if (GetForwardInput() != 0.0) {
 			NewLoc = CurrLoc + (SpringArm->GetRightVector() * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
@@ -150,9 +155,10 @@ void AMyCharacter::MoveRight(float Input)
 	}
 }
 
+// Sets input to 1.0 when moving mouse right; Sets input to -1.0 when moving mouse left
 void AMyCharacter::LookSide(float Input)
 {
-	if (Input != 0.0) {
+	if (Input != 0.0) {		// Camera rotates right when moving mouse right on X axis
 		float NewRot = LookSpeed * Input * GetWorld()->GetDeltaSeconds();
 		SpringArm->AddRelativeRotation(FRotator(0.0f, NewRot, 0.0f));
 	}
@@ -160,12 +166,12 @@ void AMyCharacter::LookSide(float Input)
 
 void AMyCharacter::LookUp(float Input)
 {
-	if (Input != 0.0f) {
+	if (Input != 0.0f) {	// Camera rotates up when moving mouse up on Y axis
 		
 		float CurrRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Pitch;
 
 		float NewRot = LookSpeed * Input * GetWorld()->GetDeltaSeconds();
-		if ((CurrRot + NewRot) > LookUpperLimit && (CurrRot + NewRot) < LookLowerLimit) {
+		if ((CurrRot + NewRot) > LookUpperLimit && (CurrRot + NewRot) < LookLowerLimit) {	// Limit the rotation at some point
 			SpringArm->AddRelativeRotation(FRotator(NewRot, 0.0f, 0.0f));
 		}
 	}
@@ -175,7 +181,7 @@ void AMyCharacter::CameraZoom()
 {
 	if (WInHand != None) {
 		if (bSlowMo == true) {
-			CharacterSpeed = ZoomedCharSpeed * 2.5;
+			CharacterSpeed = ZoomedCharSpeed * 2.5;		// Increase character speed when time is slowed for player's advantage when aiming
 		}
 		else {
 			CharacterSpeed = ZoomedCharSpeed;
@@ -191,7 +197,7 @@ void AMyCharacter::CameraZoom()
 void AMyCharacter::CameraOutZoom()
 {
 	if (bSlowMo == true) {
-		CharacterSpeed = NotZoomedCharSpeed * 2.5;
+		CharacterSpeed = NotZoomedCharSpeed * 2.5;		// Increase character speed when time is slowed for player's advantage when not aiming
 	}
 	else {
 		CharacterSpeed = NotZoomedCharSpeed;
@@ -203,6 +209,7 @@ void AMyCharacter::CameraOutZoom()
 	bZooming = false;
 }
 
+// Character's direction rotates to match camera's direction
 void AMyCharacter::LerpPlayerToCamera(float Speed)
 {
 	float CurrRot = GetMesh()->GetRelativeTransform().GetRotation().Rotator().Yaw;
@@ -223,7 +230,7 @@ void AMyCharacter::Fire()
 	if (WInHand == Rifle) {
 		if ((RifleActor != NULL) && (bCanFireRifle == true) && (CurrRifleMagazine > 0)) {
 			RifleActor->SpawnProjectile();
-			bCanRifleAnim = false;
+			bCanRifleAnim = false;		// Use this variable to speed up animation(visual purposes)
 			bCanFireRifle = false;
 			CurrRifleMagazine--;
 			GetWorldTimerManager().SetTimer(RifleAnimHandle, this, &AMyCharacter::ResetRifleAnim, 0.4f, false, 0.4f);
@@ -234,7 +241,7 @@ void AMyCharacter::Fire()
 
 void AMyCharacter::ChangeToPistol()
 {
-	if ((bHavePistol == true) && (WInHand != Pistol) && (bZooming == false)) {
+	if ((bHavePistol == true) && (WInHand != Pistol) && (bZooming == false)) {		// Can't change weapons when aimed
 
 		if (WInHand == None) {
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
@@ -249,7 +256,7 @@ void AMyCharacter::ChangeToPistol()
 
 void AMyCharacter::ChangeToRifle()
 {
-	if ((bHaveRifle == true) && (WInHand != Rifle) && (bZooming == false)) {
+	if ((bHaveRifle == true) && (WInHand != Rifle) && (bZooming == false)) {		// Can't change weapons when aimed
 
 		if (WInHand == None) {
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));

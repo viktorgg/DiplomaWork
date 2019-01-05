@@ -27,7 +27,15 @@ private:
 
 	bool bEntered;
 
-	FTimerHandle BankEnemyHandler;
+	enum GEnemySpawn { Start, Barn, End };
+	GEnemySpawn GESpawn;
+
+	FVector GEnemyStart = FVector(2910.f, -722.f, 205.f);
+	FVector GEnemyBarn = FVector(1104.f, 2335.f, 205.f);
+	FVector GenemyEnd = FVector(3555.f, 2898.f, 205.f);
+
+	FTimerDelegate BankEnemyDel;
+	FTimerHandle BankEnemyHandle;
 
 	UPROPERTY(VisibleAnywhere)
 		class USceneComponent* Root;
@@ -37,6 +45,10 @@ private:
 
 	class AMyCharacter* MainCharacter;
 
+	class AGroundEnemy* GroundEnemy;
+
+	UClass* GroundEnemyClass;
+
 	class ASaloonBuilding* SaloonBuildingActor;
 
 	class ANationalBank* NationalBankActor;
@@ -45,7 +57,10 @@ private:
 
 	class AGeneralStore* GeneralStoreActor;
 
-	void SpawnBankEnemy(int32 Place);
+	void SpawnGroundEnemy(int32 Place);
+
+	UFUNCTION()
+		void SpawnBankEnemy(int32 Place);
 
 	UFUNCTION()
 		virtual void OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

@@ -21,8 +21,9 @@ AGroundEnemy::AGroundEnemy() {
 	PistolFireRate = 0.5;
 	bHaveRifle = true;
 
-	DistanceToWalk = 300.0f;
+	DistanceToWalk = 300.0f;	// Distance to reach between him and player 
 
+	// Find the revolver class in content browser
 	static ConstructorHelpers::FClassFinder<ARevolver>
 		PistolBP(TEXT("Blueprint'/Game/Blueprints/RevolverBP.RevolverBP_C'"));
 	if (PistolBP.Succeeded() == true) {
@@ -37,6 +38,7 @@ void AGroundEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Spawn revolver so that enemy starts with a weapon
 	FActorSpawnParameters ActorSpawnParams;
 	ARevolver* SpawnedPistol = GetWorld()->SpawnActor<ARevolver>(PistolClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
 
@@ -106,6 +108,7 @@ void AGroundEnemy::Rotate(float Direction)
 	}
 }
 
+// If enemy reaches a wall it returns the nearer direction it needs to rotate in order to go around wall
 float AGroundEnemy::LineTrace()
 {
 	FHitResult OutHitFront, OutHitFrontL, OutHitFrontR;
@@ -129,8 +132,6 @@ float AGroundEnemy::LineTrace()
 	GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
 
 	if (OutHitFront.bBlockingHit == true || OutHitFrontL.bBlockingHit == true || OutHitFrontR.bBlockingHit == true) {
-
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Detected!")));
 
 		GetWorld()->LineTraceSingleByChannel(OutHitFrontL, StartLocFrontL, EndLocFrontL, ECC_Camera, CollisionParams);
 

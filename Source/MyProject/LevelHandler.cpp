@@ -3,12 +3,17 @@
 #include "LevelHandler.h"
 #include "SaloonBuilding.h"
 #include "NationalBank.h"
+#include "GroundEnemy.h"
 #include "Hotel.h"
 #include "GeneralStore.h"
 #include "MyCharacter.h"
+#include "Engine/World.h"
+#include "Engine/GameEngine.h"
 #include "Components/BoxComponent.h"
 #include "Components/SceneComponent.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
+#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
 
 // Sets default values
@@ -25,6 +30,14 @@ ALevelHandler::ALevelHandler()
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
 	BoxCollision->SetupAttachment(RootComponent);
 
+	static ConstructorHelpers::FClassFinder<AGroundEnemy>
+		GroundEnemyBP(TEXT("Blueprint'/Game/Blueprints/GroundEnemyBP.GroundEnemyBP_C'"));
+	if (GroundEnemyBP.Succeeded() == true) {
+		GroundEnemyClass = (UClass*)GroundEnemyBP.Class;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Ground Enemy Not Found!")));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -63,6 +76,28 @@ void ALevelHandler::Tick(float DeltaTime)
 
 }
 
+void ALevelHandler::SpawnGroundEnemy(int32 Place)
+{
+	FVector SpawnLoc;
+	FRotator SpawnRot;
+
+	if (Place == Start) {
+		SpawnLoc = GEnemyStart;
+		SpawnRot = FRotator(0.f, 90.f, 0.f);
+	}
+	else if (Place == Barn) {
+		SpawnLoc = GEnemyBarn;
+		SpawnRot = FRotator(0.f, 0.f, 0.f);
+	}
+	else if (Place == End) {
+		SpawnLoc = GenemyEnd;
+		SpawnRot = FRotator(0.f, 180.f, 0.f);
+	}
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	AGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AGroundEnemy>(GroundEnemyClass, SpawnLoc, SpawnRot, ActorSpawnParams);
+}
+
 void ALevelHandler::SpawnBankEnemy(int32 Place)
 {
 	NationalBankActor->SpawnEnemy(Place);
@@ -74,7 +109,9 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 		if (Cast<AMyCharacter>(OtherActor) != NULL) {
 			SaloonBuildingActor->SpawnEnemy(2);
 			bEntered = true;
-			SpawnBankEnemy(1);
+
+			BankEnemyDel.BindUFunction(this, FName("SpawnBankEnemy"), FMath::RandRange(0, 1));
+			GetWorldTimerManager().SetTimer(BankEnemyHandle, BankEnemyDel, 2.0f, false, 2.0f);
 		}
 	}
 }

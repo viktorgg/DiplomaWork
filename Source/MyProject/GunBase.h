@@ -38,7 +38,7 @@ protected:
 		class UStaticMeshComponent* GunMesh;
 
 	UPROPERTY(VisibleAnywhere)
-		TSubclassOf<class AProjectile> ProjectileClass;
+		UClass* ProjectileClass;
 
 	UPROPERTY(VisibleAnywhere)
 		class ACharacterBase* CharacterActor;
@@ -75,7 +75,7 @@ public:
 
 	ACharacterBase* GetCharacterActor() const { return CharacterActor; }
 
-	TSubclassOf<AProjectile> GetProjectileClass() const { return ProjectileClass; }
+	UClass* GetProjectileClass() const { return ProjectileClass; }
 
 	void SetCharacterActor(ACharacterBase* CharacterActor) { this->CharacterActor = CharacterActor; }
 
@@ -85,3 +85,4 @@ public:
 
 	UParticleSystem* GetFireExplosion() const { return FireExplosion; }
 };
+//

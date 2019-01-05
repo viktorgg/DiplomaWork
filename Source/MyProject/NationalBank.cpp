@@ -19,7 +19,6 @@ void ANationalBank::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	SpawnEnemy(1);
 }
 
 void ANationalBank::Tick(float DeltaTime)

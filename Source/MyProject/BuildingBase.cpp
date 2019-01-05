@@ -37,6 +37,7 @@ ABuildingBase::ABuildingBase()
 	SecondFloorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Second Floor"));
 	SecondFloorMesh->SetupAttachment(MainBuildingMesh);
 
+	// Find windows class in content browser
 	static ConstructorHelpers::FClassFinder<AWindows>
 		WindowsBP(TEXT("Blueprint'/Game/Blueprints/WindowsBP.WindowsBP_C'"));
 	if (WindowsBP.Succeeded() == true) {
@@ -46,6 +47,7 @@ ABuildingBase::ABuildingBase()
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Windows Not Found!")));
 	}
 
+	// Find window enemy class in content browser
 	static ConstructorHelpers::FClassFinder<AWindowEnemy>
 		WindowEnemyBP(TEXT("Blueprint'/Game/Blueprints/WindowEnemyBP.WindowEnemyBP_C'"));
 	if (WindowEnemyBP.Succeeded() == true) {
@@ -77,6 +79,7 @@ void ABuildingBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Create structures for the 5 possible enemies
 	WindowsChild->CreateChildActor();
 	FEnemyHandler EnemyHandler1;
 	EnemyHandler1.SetWindowsActor(Cast<AWindows>(WindowsChild->GetChildActor()));
@@ -108,6 +111,7 @@ void ABuildingBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Constantly check if an enemy dies so the window closes
 	for (int32 i = 0; i < 4; i++) {
 		if (EnemyHandlerArray[i].GetWindowEnemyActor() != NULL) {
 			if (EnemyHandlerArray[i].GetWindowEnemyActor()->GetHealth() <= 0) {
@@ -117,6 +121,7 @@ void ABuildingBase::Tick(float DeltaTime)
 	}
 }
 
+// Spawn enemies just behind window or terrace
 void ABuildingBase::SpawnEnemy(int32 Place)
 {
 	if (EnemyHandlerArray[Place].GetWindowsActor()->bOpened == false) {

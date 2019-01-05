@@ -7,6 +7,7 @@
 #include "BuildingBase.generated.h"
 
 
+// Structure to hold information about enemy and it's window
 USTRUCT()
 struct FEnemyHandler
 {
@@ -50,9 +51,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	TSubclassOf<class AWindows> WindowsClass;
+	UClass* WindowsClass;
 
-	TSubclassOf<class AWindowEnemy> WindowEnemyClass;
+	UClass* WindowEnemyClass;
 
 	UPROPERTY(VisibleAnywhere)
 		class UChildActorComponent* WindowsChild;
@@ -93,9 +94,10 @@ public:
 
 	virtual void SpawnEnemy(int32 Place);
 
+	// Array to hold structure of every enemy
 	TArray<FEnemyHandler> EnemyHandlerArray;
 
-	TSubclassOf<class AWindowEnemy> GetWindowEnemyClass() const { return WindowEnemyClass; }
+	UClass* GetWindowEnemyClass() const { return WindowEnemyClass; }
 
 	UChildActorComponent* GetWindowsChild() const { return WindowsChild; }
 

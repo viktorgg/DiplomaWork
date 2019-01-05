@@ -23,7 +23,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	TSubclassOf<class ARevolver> PistolClass;
+	UClass* PistolClass;
 
 	UPROPERTY(EditAnywhere)
 		float DistanceToWalk;

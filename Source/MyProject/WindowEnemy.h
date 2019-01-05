@@ -31,10 +31,9 @@ public:
 
 private:
 
-	TSubclassOf<class ARifle> RifleClass;
+	UClass* RifleClass;
 
-	class AWindows* WindowsActor;
-
+	// Need to know the window it stands behind in order to adjust rotation
 	int32 WindowsPlace;
 
 	virtual void Fire();

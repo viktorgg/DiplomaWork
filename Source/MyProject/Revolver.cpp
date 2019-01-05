@@ -54,26 +54,26 @@ void ARevolver::SpawnProjectile()
 
 		if (MainCharacter->GetZooming() == true) {
 
-			if (ChanceToHit < 30) {
+			if (ChanceToHit < 30) {		// There's a 30% chance the bullet will go exactly at crosshair when zooming
 				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
-				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
+				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);		// Add a random deviation to the crosshair's location
 				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
 				FRotator CurrRot = GetHitRot(SpawnLocation, MainCharacter);
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);	
 			}
 		}
 		else {
-			if (ChanceToHit < 15) {
+			if (ChanceToHit < 15) {		// There's a 15% chance the bullet will go exactly at crosshair when not zooming
 				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
-				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
+				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);		// Add an even bigger random deviation to the crosshair's location
 				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
 				FRotator CurrRot = GetHitRot(SpawnLocation, MainCharacter);
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
@@ -86,7 +86,7 @@ void ARevolver::SpawnProjectile()
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
-		if (ChanceToHit < 60) {
+		if (ChanceToHit < 60) {		// There's a 60% chance the bullet will go exactly at player's character
 			SpawnRotation = EnemyCharacter->LookAtChar();
 		}
 		else {
@@ -98,12 +98,14 @@ void ARevolver::SpawnProjectile()
 		}
 	}
 
+	// Spawn the projectile and set it's shooter and damage
 	FActorSpawnParameters ActorSpawnParams;
 	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 
 	SpawnedProjectile->SetCharacterActor(GetCharacterActor());
 	SpawnedProjectile->SetDamage(Damage);
 
+	// Wait 0.2 seconds when player is firing for animation synchronization
 	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
 		if (Cast<AMyCharacter>(CharacterActor)->GetZooming() == true) {
 			SpawnEmitter();
@@ -133,7 +135,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 			CharacterEntered->SetHavePistol(true);
 			CharacterActor = CharacterEntered;
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
-			SphereCollision->SetSimulatePhysics(false);
+			SphereCollision->SetSimulatePhysics(false);		// Enable it's physics when character dies
 		}
 		else {
 			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == NULL)) {

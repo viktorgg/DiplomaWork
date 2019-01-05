@@ -50,6 +50,7 @@ ACharacterBase::ACharacterBase()
 
 	GetMesh()->SetupAttachment(RootComponent);
 
+	// Find the AnimationSequence asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UAnimSequence>
 		AnimAsset(TEXT("AnimSequence'/Game/Assets/Animations/EnemyChar/Shoulder_Hit_And_Fall.Shoulder_Hit_And_Fall'"));
 	if (AnimAsset.Succeeded() == true) {
@@ -65,6 +66,7 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Find the player controlled character; Enemies' target
 	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
 		if (ActorItr) {
 			MainCharacterActor = *ActorItr;
@@ -95,13 +97,7 @@ void ACharacterBase::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
+// Find the rotation the enemy needs to be to face player controlled character
 FRotator ACharacterBase::LookAtChar()
 {
 	FRotator LookAtChar = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MainCharacterActor->GetActorLocation());

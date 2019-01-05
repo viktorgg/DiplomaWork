@@ -68,9 +68,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	FRotator LookAtChar();
 
 	void PlayDeathAnim();
@@ -98,7 +95,7 @@ public:
 	bool GetHaveRifle() const { return bHaveRifle; }
 	void SetHaveRifle(bool bHaveRifle) { this->bHaveRifle = bHaveRifle; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable) 
 		bool GetCanFirePistol() const { return bCanFirePistol; }
 	void SetCanFirePistol(bool bCanFirePistol) { this->bCanFirePistol = bCanFirePistol; }
 

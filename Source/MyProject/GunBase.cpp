@@ -31,6 +31,7 @@ AGunBase::AGunBase()
 	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Mesh"));
 	GunMesh->SetupAttachment(RootComponent);
 
+	// Find the projectile class in content browser by reference 
 	static ConstructorHelpers::FClassFinder<AProjectile>
 		ProjectileBP(TEXT("Blueprint'/Game/Blueprints/ProjectileBP.ProjectileBP_C'"));
 	if (ProjectileBP.Succeeded() == true) {
@@ -40,6 +41,7 @@ AGunBase::AGunBase()
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Projectile Not Found!")));
 	}
 
+	// Find the explosion particle asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UParticleSystem>
 		ParticleSystem(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
 	if (ParticleSystem.Succeeded() == true) {
@@ -56,10 +58,11 @@ void AGunBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGunBase::OnEnterSphere);
+	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGunBase::OnEnterSphere);	// Calls OnEnterSphere when something enters sphere
 
 }
 
+// Returns the rotation the projectile needs to be in order to hit exact spot player is aiming at
 FRotator AGunBase::GetHitRot(FVector SocketLoc, class AMyCharacter* MainChar)
 {
 	FHitResult HitResult;
@@ -67,6 +70,7 @@ FRotator AGunBase::GetHitRot(FVector SocketLoc, class AMyCharacter* MainChar)
 
 	FVector EndLoc = MainChar->GetCamera()->GetComponentLocation() + (MainChar->GetCamera()->GetForwardVector() * 1000000);
 
+	// Fire a ray from camera to it's forward direction and save result in FHitResult struct
 	GetWorld()->LineTraceSingleByChannel(HitResult, MainChar->GetCamera()->GetComponentLocation(), EndLoc, ECC_Camera, CollisionParams);
 
 	if (HitResult.bBlockingHit == true) {

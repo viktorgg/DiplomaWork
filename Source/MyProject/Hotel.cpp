@@ -51,6 +51,7 @@ void AHotel::SpawnEnemy(int32 Place)
 		EnemyHandlerArray[Place].SetWindowEnemyActor(SpawnedEnemy);
 	}
 	else {
+		// Spawn enemy at the terrace location
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place].GetTerraceLoc(), GetActorRotation(), ActorSpawnParams);

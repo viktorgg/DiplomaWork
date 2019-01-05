@@ -9,16 +9,14 @@
 ASaloonGroundEnemy::ASaloonGroundEnemy() 
 {
 	bIsKicking = true;
-	CharacterSpeed = 250.0f;
+	CharacterSpeed = 250.0f;	// Enemy will go slower when kicking door
 }
 
 void ASaloonGroundEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FActorSpawnParameters ActorSpawnParams;
-	ARevolver* SpawnedPistol = GetWorld()->SpawnActor<ARevolver>(PistolClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
-
+	// Kicking animation will stop after 1.5 seconds
 	GetWorldTimerManager().SetTimer(KickingHandle, this, &ASaloonGroundEnemy::ResetKicking, 1.5f, false, 1.5f);
 }
 

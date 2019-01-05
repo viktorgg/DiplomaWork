@@ -7,6 +7,7 @@
 #include "SaloonBuilding.generated.h"
 
 
+// Structure to hold information about enemies
 USTRUCT()
 struct FSEnemyHandler
 {
@@ -57,14 +58,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Array to store structure of every enemy
 	TArray<FSEnemyHandler> SEnemyHandlerArray;
 
 	void SpawnEnemy(int32 Place);
 
 private:
 	
-	TSubclassOf<class AWindowEnemy> WindowEnemyClass;
-	TSubclassOf<class ASaloonGroundEnemy> SaloonGroundEnemyClass;
+	UClass* WindowEnemyClass;
+	UClass* SaloonGroundEnemyClass;
 
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* MainBuildingMesh;

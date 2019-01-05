@@ -34,6 +34,7 @@ AProjectile::AProjectile()
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
 	ProjectileMesh->SetupAttachment(RootComponent);
 
+	// Find the explosion particle asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UParticleSystem>
 		ParticleSystem(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
 	if (ParticleSystem.Succeeded() == true) {
@@ -43,6 +44,7 @@ AProjectile::AProjectile()
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Fire Particle Not Found!")));
 	}
 
+	// Find the blood splatter particle asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UParticleSystem>
 		ParticleSystem2(TEXT("ParticleSystem'/Game/Assets/Particles/BloodSplatter.BloodSplatter'"));
 	if (ParticleSystem2.Succeeded() == true) {
@@ -52,6 +54,7 @@ AProjectile::AProjectile()
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Blood Particle Not Found!")));
 	}
 	
+	// Find the projectile trail particle asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UParticleSystem>
 		ParticleSystem3(TEXT("ParticleSystem'/Game/Assets/Particles/ProjectileTrail.ProjectileTrail'"));
 	if (ParticleSystem3.Succeeded() == true) {
@@ -67,7 +70,7 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereCollision->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	SphereCollision->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);		// Call OnHit when sphere hits something
 
 }
 
@@ -78,9 +81,6 @@ void AProjectile::Tick(float DeltaTime)
 
 	ProjectileTravel();
 
-	//if (FVector::DotProduct(CharacterActor->GetActorForwardVector(), (CharacterActor->GetMainCharacterActor()->GetActorLocation() - CharacterActor->GetActorLocation())) >= 0.0f) {
-	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Behind")));
-	//}
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -92,7 +92,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && (OtherActor != CharacterActor)) {
 
 		if (Cast<AMyCharacter>(CharacterActor) == NULL && Cast<AMyCharacter>(Hit.GetActor()) == NULL) {
-			Destroy();
+			Destroy();		// If enemy hits another enemy bullet vanishes
 		}
 		else {
 			ACharacterBase* HitActor = Cast<ACharacterBase>(Hit.GetComponent()->GetOwner());
@@ -102,6 +102,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 				FVector BloodSplatterLoc = Hit.GetActor()->GetActorLocation() + (Hit.GetActor()->GetActorUpVector() * 20.0f);
 				UGameplayStatics::SpawnEmitterAtLocation(this, HitBlood, BloodSplatterLoc, FRotator(0.0f, 0.0f, 0.0f), FVector(1.2f, 1.2f, 1.2f), true);
 
+				// Headshot damage
 				if ((Hit.BoneName.ToString() == "Head") || (Hit.BoneName.ToString() == "HeadTop_End")) {
 					HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5);
 				}
@@ -109,17 +110,20 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 					HitActor->SetHealth(HitActor->GetHealth() - Damage);
 				}
 				if (HitActor->GetHealth() <= 0) {
+					// If ground enemy dies it's pistol becomes retrievable
 					if (Cast<AGroundEnemy>(HitActor) != NULL) {
 						AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
 						GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
 						GroundEnemy->GetPistolActor()->SetCharacterActor(NULL);
 					}
+					// If window enemy dies it's rifle becomes retrievable and flies off to the ground
 					else if (Cast<AWindowEnemy>(HitActor) != NULL) {
 						AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor);
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() * 100000.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
 						WindowEnemy->GetRifleActor()->SetCharacterActor(NULL);
 					}
+					// Everytime player makes a kill slow mo capacity increases and enemy animation plays
 					HitActor->GetMainCharacterActor()->AddSlowMoCapacity(1.0f);
 					HitActor->GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 					HitActor->PlayDeathAnim();

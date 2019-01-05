@@ -23,6 +23,7 @@ AWindowEnemy::AWindowEnemy() {
 
 	WindowsPlace = 3;
 
+	// Find the rifle class in content browser
 	static ConstructorHelpers::FClassFinder<ARifle>
 		RifleBP(TEXT("Blueprint'/Game/Blueprints/RifleBP.RifleBP_C'"));
 	if (RifleBP.Succeeded() == true) {
@@ -68,7 +69,7 @@ void AWindowEnemy::ResetRifleFire()
 
 void AWindowEnemy::RotateToCharacter()
 {
-	if (WindowsPlace < 2) {
+	if (WindowsPlace < 2) {		// If window is on second floor the enemy will be more leaned towards ground
 		SetActorRotation(FMath::Lerp(FRotator(-40.0f, GetActorRotation().Yaw, 0.0f), FRotator(-40.0f, LookAtChar().Yaw, 0.0f), 15 * GetWorld()->GetDeltaSeconds()));
 	}
 	else {
