@@ -41,10 +41,10 @@ AMyCharacter::AMyCharacter()
 
 	WInHand = None;
 
-	PistolMagazineLimit = 20;
-	CurrPistolMagazine = 20;
-	RifleMagazineLimit = 5;
-	CurrRifleMagazine = 5;
+	PistolMagazineLimit = 30;
+	CurrPistolMagazine = 30;
+	RifleMagazineLimit = 10;
+	CurrRifleMagazine = 10;
 	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());

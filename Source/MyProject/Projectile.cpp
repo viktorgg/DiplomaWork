@@ -5,7 +5,9 @@
 #include "CharacterBase.h"
 #include "Revolver.h"
 #include "Rifle.h"
+#include "SaloonGroundEnemy.h"
 #include "GroundEnemy.h"
+#include "LevelHandler.h"
 #include "WindowEnemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -14,6 +16,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Runtime/Engine/Public/EngineUtils.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystem.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
@@ -115,6 +118,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 						AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
 						GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
 						GroundEnemy->GetPistolActor()->SetCharacterActor(NULL);
+
+						for (TActorIterator<ALevelHandler> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+							if (ActorItr) {
+								ActorItr->GEnemyHandler();
+							}
+						}
 					}
 					// If window enemy dies it's rifle becomes retrievable and flies off to the ground
 					else if (Cast<AWindowEnemy>(HitActor) != NULL) {
