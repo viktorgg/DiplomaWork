@@ -178,6 +178,21 @@ void ALevelHandler::GEnemyHandler()
 	}
 }
 
+void ALevelHandler::WEnemyHandler()
+{
+	FTimerDelegate GroundEnemyDel;
+	FTimerHandle GroundEnemyHandle;
+
+	GroundEnemyDel.BindUFunction(this, FName("SpawnWindowEnemy"), FMath::RandRange(Start, End));
+
+	if (MainCharacter->GetHealth() < 200) {
+		GetWorldTimerManager().SetTimer(GroundEnemyHandle, GroundEnemyDel, 10.0f, false, 10.0f);
+	}
+	else {
+		GetWorldTimerManager().SetTimer(GroundEnemyHandle, GroundEnemyDel, 5.0f, false, 5.0f);
+	}
+}
+
 bool ALevelHandler::IfEnemyInSight(FVector Loc, FRotator Rot)
 {
 	FVector EnemyForwardVector = UKismetMathLibrary::GetForwardVector(Rot);

@@ -113,17 +113,24 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 					HitActor->SetHealth(HitActor->GetHealth() - Damage);
 				}
 				if (HitActor->GetHealth() <= 0) {
+					// Assign the LevelHandler script to variable
+					for (TActorIterator<ALevelHandler> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+						if (ActorItr) {
+							LevelHandlerActor = *ActorItr;
+						}
+					}
+					// If Main Character dies play death animation and disable player input
+					if (Cast<AMyCharacter>(HitActor) != NULL) {
+						HitActor->PlayMainDeathAnim();
+						HitActor->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+					}
 					// If ground enemy dies it's pistol becomes retrievable
-					if (Cast<AGroundEnemy>(HitActor) != NULL) {
+					else if (Cast<AGroundEnemy>(HitActor) != NULL) {
 						AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
 						GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
 						GroundEnemy->GetPistolActor()->SetCharacterActor(NULL);
-
-						for (TActorIterator<ALevelHandler> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
-							if (ActorItr) {
-								ActorItr->GEnemyHandler();
-							}
-						}
+						LevelHandlerActor->GEnemyHandler();
+						HitActor->PlayEnemyDeathAnim();
 					}
 					// If window enemy dies it's rifle becomes retrievable and flies off to the ground
 					else if (Cast<AWindowEnemy>(HitActor) != NULL) {
@@ -131,11 +138,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() * 100000.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
 						WindowEnemy->GetRifleActor()->SetCharacterActor(NULL);
+						LevelHandlerActor->WEnemyHandler();
+						HitActor->PlayEnemyDeathAnim();
 					}
 					// Everytime player makes a kill slow mo capacity increases and enemy animation plays
 					HitActor->GetMainCharacterActor()->AddSlowMoCapacity(1.0f);
 					HitActor->GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-					HitActor->PlayDeathAnim();
 					HitActor->DestroyAfterTime();
 				}
 			}

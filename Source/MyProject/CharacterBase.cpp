@@ -50,11 +50,21 @@ ACharacterBase::ACharacterBase()
 
 	GetMesh()->SetupAttachment(RootComponent);
 
-	// Find the AnimationSequence asset in content browser by reference
+	// Find the Main Char Enemy Animation asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UAnimSequence>
-		AnimAsset(TEXT("AnimSequence'/Game/Assets/Animations/EnemyChar/Shoulder_Hit_And_Fall.Shoulder_Hit_And_Fall'"));
+		AnimAsset(TEXT("AnimSequence'/Game/Assets/Animations/MainChar/Death.Death'"));
 	if (AnimAsset.Succeeded() == true) {
-		DeathAnim = AnimAsset.Object;
+		MainCharDeathAnim = AnimAsset.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Animation Not Found!")));
+	}
+
+	// Find the Enemy Death Animation asset in content browser by reference
+	static ConstructorHelpers::FObjectFinder<UAnimSequence>
+		AnimAsset2(TEXT("AnimSequence'/Game/Assets/Animations/EnemyChar/Shoulder_Hit_And_Fall.Shoulder_Hit_And_Fall'"));
+	if (AnimAsset2.Succeeded() == true) {
+		EnemyDeathAnim = AnimAsset2.Object;
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Animation Not Found!")));
@@ -74,9 +84,14 @@ void ACharacterBase::BeginPlay()
 	}
 }
 
-void ACharacterBase::PlayDeathAnim()
+void ACharacterBase::PlayMainDeathAnim()
 {
-	GetMesh()->PlayAnimation(DeathAnim, false);
+	GetMesh()->PlayAnimation(MainCharDeathAnim, false);
+}
+
+void ACharacterBase::PlayEnemyDeathAnim()
+{
+	GetMesh()->PlayAnimation(EnemyDeathAnim, false);
 }
 
 void ACharacterBase::DestroyAfterTime()

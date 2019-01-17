@@ -25,6 +25,8 @@ public:
 	
 	void GEnemyHandler();
 
+	void WEnemyHandler();
+
 private:
 
 	bool bEntered;

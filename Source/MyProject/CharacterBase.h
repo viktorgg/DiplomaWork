@@ -48,7 +48,8 @@ protected:
 	class ARifle* RifleActor;
 	class AMyCharacter* MainCharacterActor;
 
-	UAnimSequence* DeathAnim;
+	UAnimSequence* MainCharDeathAnim;
+	UAnimSequence* EnemyDeathAnim;
 
 	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
 
@@ -70,7 +71,9 @@ public:
 
 	FRotator LookAtChar();
 
-	void PlayDeathAnim();
+	void PlayMainDeathAnim();
+
+	void PlayEnemyDeathAnim();
 
 	void DestroyAfterTime();
 
@@ -120,7 +123,9 @@ public:
 
 	AMyCharacter* GetMainCharacterActor() const { return MainCharacterActor; }
 
-	UAnimSequence* GetDeathAnim() const { return DeathAnim; }
+	UAnimSequence* GetMainDeathAnim() const { return MainCharDeathAnim; }
+
+	UAnimSequence* GetEnemyDeathAnim() const { return EnemyDeathAnim; }
 
 };
 

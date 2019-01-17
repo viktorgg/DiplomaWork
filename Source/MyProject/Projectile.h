@@ -27,6 +27,8 @@ private:
 
 	int32 Damage;
 
+	class ALevelHandler* LevelHandlerActor;
+
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* SphereCollision;
 
