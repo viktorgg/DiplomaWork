@@ -17,7 +17,7 @@ AWindowEnemy::AWindowEnemy() {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Health = 100;
+	Health = 100.f;
 	RifleFireRate = FMath::RandRange(2.0f, 3.5f);
 	bHavePistol = true;
 
@@ -30,7 +30,7 @@ AWindowEnemy::AWindowEnemy() {
 		RifleClass = (UClass*)RifleBP.Class;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rifle Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rifle Not Found In WEnemy!")));
 	}
 }
 
@@ -50,11 +50,12 @@ void AWindowEnemy::Tick(float DeltaTime)
 		Fire();
 		RotateToCharacter();
 	}
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), *EnemyHandler.GetWindowsActor()->GetName()));
 }
 
 void AWindowEnemy::Fire()
 {
-	if ((RifleActor != NULL) && (bHaveRifle == true) && (bCanFireRifle == true)) {
+	if ((RifleActor != nullptr) && (bHaveRifle == true) && (bCanFireRifle == true)) {
 		RifleActor->SpawnProjectile();
 		bCanFireRifle = false;
 		GetWorldTimerManager().SetTimer(RifleFireRateHandle, this, &AWindowEnemy::ResetRifleFire, RifleFireRate, false, RifleFireRate);
@@ -75,5 +76,22 @@ void AWindowEnemy::RotateToCharacter()
 	else {
 		SetActorRotation(FMath::Lerp(FRotator(-10.0f, GetActorRotation().Yaw, 0.0f), FRotator(-20.0f, LookAtChar().Yaw, 0.0f), 15 * GetWorld()->GetDeltaSeconds()));
 	}
+}
+
+void AWindowEnemy::DestroyChar()
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	Destroy();
+
+	EnemyHandler->SetEnemyActor(nullptr);
+
+	if (EnemyHandler->GetWindowsActor() != nullptr) {
+		EnemyHandler->GetWindowsActor()->Close();
+	}
+}
+
+void AWindowEnemy::DestroyAfterTime()
+{
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AWindowEnemy::DestroyChar, 1, false, 1);
 }
 

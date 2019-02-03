@@ -23,11 +23,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	bool bOpened;
-
 	void Open();
 
 	void Close();
+
+	bool GetIfOpened() const;
 	
 private:
 

@@ -37,6 +37,10 @@ AProjectile::AProjectile()
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
 	ProjectileMesh->SetupAttachment(RootComponent);
 
+	LevelHandlerActor = nullptr;
+
+	CharacterActor = nullptr;
+
 	// Find the explosion particle asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UParticleSystem>
 		ParticleSystem(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
@@ -44,7 +48,7 @@ AProjectile::AProjectile()
 		HitFire = ParticleSystem.Object;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Fire Particle Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Fire Particle Not Found In Projectile!")));
 	}
 
 	// Find the blood splatter particle asset in content browser by reference
@@ -54,7 +58,7 @@ AProjectile::AProjectile()
 		HitBlood = ParticleSystem2.Object;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Blood Particle Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Blood Particle Not Found In Projectile!")));
 	}
 	
 	// Find the projectile trail particle asset in content browser by reference
@@ -64,7 +68,7 @@ AProjectile::AProjectile()
 		ProjectileTrail = ParticleSystem3.Object;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Trail Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Trail Not Found In Projectile!")));
 	}
 }
 
@@ -92,7 +96,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		Destroy();
 	}
 
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && (OtherActor != CharacterActor)) {
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != NULL) && (OtherActor != CharacterActor)) {
 
 		if (Cast<AMyCharacter>(CharacterActor) == NULL && Cast<AMyCharacter>(Hit.GetActor()) == NULL) {
 			Destroy();		// If enemy hits another enemy bullet vanishes
@@ -107,7 +111,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 
 				// Headshot damage
 				if ((Hit.BoneName.ToString() == "Head") || (Hit.BoneName.ToString() == "HeadTop_End")) {
-					HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5);
+					HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5f);
 				}
 				else {
 					HitActor->SetHealth(HitActor->GetHealth() - Damage);
@@ -128,23 +132,24 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 					else if (Cast<AGroundEnemy>(HitActor) != NULL) {
 						AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
 						GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
-						GroundEnemy->GetPistolActor()->SetCharacterActor(NULL);
+						GroundEnemy->GetPistolActor()->SetCharacterActor(nullptr);
 						LevelHandlerActor->GEnemyHandler();
 						HitActor->PlayEnemyDeathAnim();
+						GroundEnemy->DestroyAfterTime();
 					}
 					// If window enemy dies it's rifle becomes retrievable and flies off to the ground
 					else if (Cast<AWindowEnemy>(HitActor) != NULL) {
 						AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor);
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() * 100000.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
-						WindowEnemy->GetRifleActor()->SetCharacterActor(NULL);
+						WindowEnemy->GetRifleActor()->SetCharacterActor(nullptr);
 						LevelHandlerActor->WEnemyHandler();
 						HitActor->PlayEnemyDeathAnim();
+						WindowEnemy->DestroyAfterTime();
 					}
 					// Everytime player makes a kill slow mo capacity increases and enemy animation plays
 					HitActor->GetMainCharacterActor()->AddSlowMoCapacity(1.0f);
 					HitActor->GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-					HitActor->DestroyAfterTime();
 				}
 			}
 			else {
@@ -157,7 +162,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 
 void AProjectile::ProjectileTravel()
 {
-	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * 20000.0f),GetWorld()->DeltaTimeSeconds, BulletSpeed));
+	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * 20000.0f), GetWorld()->DeltaTimeSeconds, BulletSpeed));
 	UGameplayStatics::SpawnEmitterAtLocation(this, ProjectileTrail, GetActorLocation(), GetActorRotation(), FVector(1.0f, 1.0f, 1.0f), true);
 }
 

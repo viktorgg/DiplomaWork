@@ -16,12 +16,12 @@ AGroundEnemy::AGroundEnemy() {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Health = 100;
+	Health = 100.f;
 	CharacterSpeed = 350.0f;
 	PistolFireRate = 0.5;
 	bHaveRifle = true;
 
-	DistanceToWalk = 300.0f;	// Distance to reach between him and player 
+	DistanceToWalk = 400.0f;	// Distance to reach between him and player 
 
 	// Find the revolver class in content browser
 	static ConstructorHelpers::FClassFinder<ARevolver>
@@ -30,7 +30,7 @@ AGroundEnemy::AGroundEnemy() {
 		PistolClass = (UClass*)PistolBP.Class;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pistol Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pistol Not Found In GEnemy!")));
 	}
 }
 
@@ -72,7 +72,7 @@ void AGroundEnemy::MoveForward(float Input)
 
 void AGroundEnemy::Fire()
 {
-	if ((PistolActor != NULL) && (bHavePistol == true) && (bCanFirePistol == true)) {
+	if ((PistolActor != nullptr) && (bHavePistol == true) && (bCanFirePistol == true)) {
 		PistolActor->SpawnProjectile();
 		bCanFirePistol = false;
 		GetWorldTimerManager().SetTimer(PistolFireRateHandle, this, &AGroundEnemy::ResetPistolFire, PistolFireRate, false, PistolFireRate);
@@ -98,6 +98,11 @@ void AGroundEnemy::RotateToCharacter()
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, 80.0f));
 }
 
+void AGroundEnemy::DestroyAfterTime()
+{
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AGroundEnemy::DestroyChar, 3, false, 3);
+}
+
 void AGroundEnemy::Rotate(float Direction)
 {
 	if (Direction != 0.0f) {
@@ -106,6 +111,14 @@ void AGroundEnemy::Rotate(float Direction)
 	else {
 		RotateToCharacter();
 	}
+}
+
+void AGroundEnemy::DestroyChar()
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	Destroy();
+
+	EnemyHandler->SetEnemyActor(nullptr);
 }
 
 // If enemy reaches a wall it returns the nearer direction it needs to rotate in order to go around wall
@@ -162,3 +175,4 @@ float AGroundEnemy::LineTrace()
 		return 0.0f;
 	}
 }
+

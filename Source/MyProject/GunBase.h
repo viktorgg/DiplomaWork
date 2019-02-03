@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GunBase.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class MYPROJECT_API AGunBase : public AActor
 {
 	GENERATED_BODY()
@@ -85,4 +85,3 @@ public:
 
 	UParticleSystem* GetFireExplosion() const { return FireExplosion; }
 };
-//

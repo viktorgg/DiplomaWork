@@ -17,28 +17,43 @@ private:
 
 	class AWindows* WindowsActor;
 
-	class AWindowEnemy* WindowEnemyActor;
+	class ACharacterBase* EnemyActor;
 
+	// Variable for hotel
 	FVector TerraceLoc;
+
+	// Variables for the saloon
+	FVector InLoc;
+	FVector DoorLoc;
+	FVector OutLoc;
 
 public:
 
 	AWindows* GetWindowsActor() const { return WindowsActor; }
 	void SetWindowsActor(AWindows* WindowsActor) { this->WindowsActor = WindowsActor; }
 
-	AWindowEnemy* GetWindowEnemyActor() const { return WindowEnemyActor; }
-	void SetWindowEnemyActor(AWindowEnemy* WindowEnemyActor) { this->WindowEnemyActor = WindowEnemyActor; }
+	ACharacterBase* GetEnemyActor() const { return EnemyActor; }
+	void SetEnemyActor(ACharacterBase* EnemyActor) { this->EnemyActor = EnemyActor; }
 
 	FVector GetTerraceLoc() const { return TerraceLoc; }
 	void SetTerraceLoc(FVector TerraceLoc) { this->TerraceLoc = TerraceLoc; }
 
+	FVector GetInLoc() const { return InLoc; }
+	void SetInLoc(FVector InLoc) { this->InLoc = InLoc; }
+
+	FVector GetDoorLoc() const { return DoorLoc; }
+	void SetDoorLoc(FVector DoorLoc) { this->DoorLoc = DoorLoc; }
+
+	FVector GetOutLoc() const { return OutLoc; }
+	void SetOutLoc(FVector OutLoc) { this->OutLoc = OutLoc; }
+
 	FEnemyHandler() {
-		WindowsActor = NULL;
-		WindowEnemyActor = NULL;
+		WindowsActor = nullptr;
+		EnemyActor = nullptr;
 	}
 };
 
-UCLASS()
+UCLASS(Abstract)
 class MYPROJECT_API ABuildingBase : public AActor
 {
 	GENERATED_BODY()
@@ -88,6 +103,14 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* SecondFloorMesh;
 
+	// Structures for the 5 possible enemies
+
+	FEnemyHandler* EnemyHandler = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler2 = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler3 = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler4 = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler5 = new FEnemyHandler();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -95,7 +118,7 @@ public:
 	virtual void SpawnEnemy(int32 Place);
 
 	// Array to hold structure of every enemy
-	TArray<FEnemyHandler> EnemyHandlerArray;
+	TArray<FEnemyHandler*> EnemyHandlerArray;
 
 	UClass* GetWindowEnemyClass() const { return WindowEnemyClass; }
 

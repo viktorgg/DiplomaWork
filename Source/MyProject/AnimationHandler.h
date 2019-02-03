@@ -39,4 +39,5 @@ protected:
 	
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimationProperties();
+
 };

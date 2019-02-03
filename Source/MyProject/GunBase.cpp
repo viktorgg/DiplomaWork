@@ -31,6 +31,8 @@ AGunBase::AGunBase()
 	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Mesh"));
 	GunMesh->SetupAttachment(RootComponent);
 
+	CharacterActor = nullptr;
+
 	// Find the projectile class in content browser by reference 
 	static ConstructorHelpers::FClassFinder<AProjectile>
 		ProjectileBP(TEXT("Blueprint'/Game/Blueprints/ProjectileBP.ProjectileBP_C'"));
@@ -38,7 +40,7 @@ AGunBase::AGunBase()
 		ProjectileClass = (UClass*)ProjectileBP.Class;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Projectile Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Projectile Not Found In GunBase!")));
 	}
 
 	// Find the explosion particle asset in content browser by reference
@@ -48,7 +50,7 @@ AGunBase::AGunBase()
 		FireExplosion = ParticleSystem.Object;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Particle Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Particle Not Found In GunBase!")));
 	}
 
 }

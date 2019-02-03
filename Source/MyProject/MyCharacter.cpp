@@ -22,7 +22,7 @@ AMyCharacter::AMyCharacter()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Health = 500;
+	Health = 500.f;
 	CharacterSpeed = 450.0f;
 	ZoomedCharSpeed = CharacterSpeed / 2.5f;
 	NotZoomedCharSpeed = CharacterSpeed;
@@ -31,7 +31,7 @@ AMyCharacter::AMyCharacter()
 	PistolFireRate = 0.25f;
 	RifleFireRate = 1.0f;
 
-	LookSpeed = 150.0f;
+	LookSpeed = 1.5f;
 	LookUpperLimit = -50.0f;
 	LookLowerLimit = 65.0f;
 
@@ -86,6 +86,11 @@ void AMyCharacter::Tick(float DeltaTime)
 		LerpPlayerToCamera(15.0f);
 	}
 
+	// Regenerate health
+	if (Health < 500.f) {
+		Health += DeltaTime * 30.f;
+	}
+
 	// Slowly deplete slow mo's capacity when ON
 	if (bSlowMo == true) {
 		SlowMoCapacity -= DeltaTime * 1.5f;
@@ -94,7 +99,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("SlowMo: %f"), SlowMoCapacity));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), Health));
 }
 
 // Called to bind functionality to input
@@ -159,7 +164,7 @@ void AMyCharacter::MoveRight(float Input)
 void AMyCharacter::LookSide(float Input)
 {
 	if (Input != 0.0) {		// Camera rotates right when moving mouse right on X axis
-		float NewRot = LookSpeed * Input * GetWorld()->GetDeltaSeconds();
+		float NewRot = LookSpeed * Input;
 		SpringArm->AddRelativeRotation(FRotator(0.0f, NewRot, 0.0f));
 	}
 }
@@ -170,7 +175,7 @@ void AMyCharacter::LookUp(float Input)
 		
 		float CurrRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Pitch;
 
-		float NewRot = LookSpeed * Input * GetWorld()->GetDeltaSeconds();
+		float NewRot = LookSpeed * Input;
 		if ((CurrRot + NewRot) > LookUpperLimit && (CurrRot + NewRot) < LookLowerLimit) {	// Limit the rotation at some point
 			SpringArm->AddRelativeRotation(FRotator(NewRot, 0.0f, 0.0f));
 		}
@@ -220,7 +225,7 @@ void AMyCharacter::LerpPlayerToCamera(float Speed)
 void AMyCharacter::Fire()
 {
 	if (WInHand == Pistol) {
-		if ((PistolActor != NULL) && (bCanFirePistol == true) && (CurrPistolMagazine > 0)) {
+		if ((PistolActor != nullptr) && (bCanFirePistol == true) && (CurrPistolMagazine > 0)) {
 			PistolActor->SpawnProjectile();
 			bCanFirePistol = false;
 			CurrPistolMagazine--;
@@ -228,7 +233,7 @@ void AMyCharacter::Fire()
 		}
 	}
 	if (WInHand == Rifle) {
-		if ((RifleActor != NULL) && (bCanFireRifle == true) && (CurrRifleMagazine > 0)) {
+		if ((RifleActor != nullptr) && (bCanFireRifle == true) && (CurrRifleMagazine > 0)) {
 			RifleActor->SpawnProjectile();
 			bCanRifleAnim = false;		// Use this variable to speed up animation(visual purposes)
 			bCanFireRifle = false;
@@ -276,7 +281,6 @@ void AMyCharacter::EnterSlowMo()
 		CharacterSpeed *= 2.5f;
 		PistolFireRate /= 2.5f;
 		RifleFireRate /= 2.5f;
-		LookSpeed *= 2.5f;
 		bSlowMo = true;
 	}
 	else if(bSlowMo == true) {
@@ -284,7 +288,6 @@ void AMyCharacter::EnterSlowMo()
 		CharacterSpeed /= 2.5f;
 		PistolFireRate *= 2.5f;
 		RifleFireRate *= 2.5f;
-		LookSpeed /= 2.5;
 		bSlowMo = false;
 	}
 }

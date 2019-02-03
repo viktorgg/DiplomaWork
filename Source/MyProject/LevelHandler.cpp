@@ -15,6 +15,7 @@
 #include "Components/SceneComponent.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
@@ -40,13 +41,31 @@ ALevelHandler::ALevelHandler()
 	BoxCollisionEnd = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision End"));
 	BoxCollisionEnd->SetupAttachment(RootComponent);
 
+	MainCharacter = nullptr;
+	GroundEnemy = nullptr;
+
+	SaloonBuildingActor = nullptr;
+	SaloonBuildingActor2 = nullptr;
+	NationalBankActor = nullptr;
+	HotelActor = nullptr;
+	GeneralStoreActor = nullptr;
+
 	static ConstructorHelpers::FClassFinder<AGroundEnemy>
 		GroundEnemyBP(TEXT("Blueprint'/Game/Blueprints/GroundEnemyBP.GroundEnemyBP_C'"));
 	if (GroundEnemyBP.Succeeded() == true) {
 		GroundEnemyClass = (UClass*)GroundEnemyBP.Class;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Ground Enemy Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Ground Enemy Not Found In Level!")));
+	}
+
+	static ConstructorHelpers::FClassFinder<ASaloonBuilding>
+		SaloonBP(TEXT("Blueprint'/Game/Blueprints/SaloonBP.SaloonBP_C'"));
+	if (SaloonBP.Succeeded() == true) {
+		SaloonBuildingClass = (UClass*)SaloonBP.Class;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Saloon Not Found In Level!")));
 	}
 }
 
@@ -64,11 +83,10 @@ void ALevelHandler::BeginPlay()
 		}
 	}
 	// Get Saloon from level
-	for (TActorIterator<ASaloonBuilding> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
-		if (ActorItr) {
-			SaloonBuildingActor = *ActorItr;
-		}
-	}
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), SaloonBuildingClass, SaloonArray);
+	SaloonBuildingActor = Cast<ASaloonBuilding>(SaloonArray[0]);
+	SaloonBuildingActor2 = Cast<ASaloonBuilding>(SaloonArray[1]);
+
 	// Get Bank from level
 	for (TActorIterator<ANationalBank> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
 		if (ActorItr) {
@@ -103,12 +121,11 @@ void ALevelHandler::SpawnGroundEnemy(int32 Place)
 
 	bool bCanSpawn = true;
 	
-
 	if (Place == Start) {
 		SpawnLoc = GEnemyStart;
 		SpawnRot = FRotator(0.f, 90.f, 0.f);
 
-		if (IfEnemyInSight(SpawnLoc, SpawnRot) == true) {
+		if (IfEnemyInSight(SpawnLoc) == true) {
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 			AGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AGroundEnemy>(GroundEnemyClass, SpawnLoc, SpawnRot, ActorSpawnParams);
@@ -122,7 +139,7 @@ void ALevelHandler::SpawnGroundEnemy(int32 Place)
 		SpawnRot = FRotator(0.f, 0.f, 0.f);
 
 		if (BoxCollisionBarn->IsOverlappingActor(MainCharacter) == true) {
-			if (IfEnemyInSight(SpawnLoc, SpawnRot) == true) {
+			if (IfEnemyInSight(SpawnLoc) == true) {
 				FActorSpawnParameters ActorSpawnParams;
 				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 				AGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AGroundEnemy>(GroundEnemyClass, SpawnLoc, SpawnRot, ActorSpawnParams);
@@ -142,7 +159,7 @@ void ALevelHandler::SpawnGroundEnemy(int32 Place)
 		SpawnRot = FRotator(0.f, 180.f, 0.f);
 
 		if (BoxCollisionEnd->IsOverlappingActor(MainCharacter) == true) {
-			if (IfEnemyInSight(SpawnLoc, SpawnRot) == true) {
+			if (IfEnemyInSight(SpawnLoc) == true) {
 				FActorSpawnParameters ActorSpawnParams;
 				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 				AGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AGroundEnemy>(GroundEnemyClass, SpawnLoc, SpawnRot, ActorSpawnParams);
@@ -180,26 +197,72 @@ void ALevelHandler::GEnemyHandler()
 
 void ALevelHandler::WEnemyHandler()
 {
-	FTimerDelegate GroundEnemyDel;
-	FTimerHandle GroundEnemyHandle;
+	FTimerDelegate WEnemyDel;
+	FTimerHandle WEnemyHandle;
 
-	GroundEnemyDel.BindUFunction(this, FName("SpawnWindowEnemy"), FMath::RandRange(Start, End));
+	int32 Random = FMath::RandRange(Bank, Saloon2);
 
-	if (MainCharacter->GetHealth() < 200) {
-		GetWorldTimerManager().SetTimer(GroundEnemyHandle, GroundEnemyDel, 10.0f, false, 10.0f);
+	if (Random == Bank) {
+
+		WEnemyDel.BindUFunction(this, FName("SpawnBankEnemy"), FMath::RandRange(0, 3));
+		if (MainCharacter->GetHealth() < 200) {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
+		}
+		else {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 5.0f, false, 5.0f);
+		}
 	}
-	else {
-		GetWorldTimerManager().SetTimer(GroundEnemyHandle, GroundEnemyDel, 5.0f, false, 5.0f);
+	else if (Random == Hotel) {
+
+		WEnemyDel.BindUFunction(this, FName("SpawnHotelEnemy"), FMath::RandRange(0, 4));
+		if (MainCharacter->GetHealth() < 200) {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
+		}
+		else {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 5.0f, false, 5.0f);
+		}
+	}
+	else if (Random == Store) {
+
+		WEnemyDel.BindUFunction(this, FName("SpawnStoreEnemy"), FMath::RandRange(0, 3));
+		if (MainCharacter->GetHealth() < 200) {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
+		}
+		else {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 5.0f, false, 5.0f);
+		}
+	}
+	else if (Random == Saloon) {
+
+		WEnemyDel.BindUFunction(this, FName("SpawnSaloonEnemy"), FMath::RandRange(0, 2));
+		if (MainCharacter->GetHealth() < 200) {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
+		}
+		else {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 5.0f, false, 5.0f);
+		}
+	}
+	else if (Random == Saloon2) {
+
+		WEnemyDel.BindUFunction(this, FName("SpawnSaloonEnemy2"), FMath::RandRange(0, 2));
+		if (MainCharacter->GetHealth() < 200) {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
+		}
+		else {
+			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 5.0f, false, 5.0f);
+		}
 	}
 }
 
-bool ALevelHandler::IfEnemyInSight(FVector Loc, FRotator Rot)
+bool ALevelHandler::IfEnemyInSight(FVector Loc)
 {
-	FVector EnemyForwardVector = UKismetMathLibrary::GetForwardVector(Rot);
+	FVector CameraForwardVector = MainCharacter->GetCamera()->GetForwardVector();
+	CameraForwardVector /= CameraForwardVector.Size();
 
-	float Angle = FMath::Acos(FVector::DotProduct(EnemyForwardVector, MainCharacter->GetCamera()->GetForwardVector()));
-	
-	if (Angle <= 1.7f) {
+	FVector ToEnemy = Loc - MainCharacter->GetCamera()->GetComponentLocation();
+
+	float Angle = FVector::DotProduct(CameraForwardVector, ToEnemy);
+	if (Angle < 0.f) {
 		return true;
 	}
 	else {
@@ -210,6 +273,26 @@ bool ALevelHandler::IfEnemyInSight(FVector Loc, FRotator Rot)
 void ALevelHandler::SpawnBankEnemy(int32 Place)
 {
 	NationalBankActor->SpawnEnemy(Place);
+}
+
+void ALevelHandler::SpawnHotelEnemy(int32 Place)
+{
+	HotelActor->SpawnEnemy(Place);
+}
+
+void ALevelHandler::SpawnStoreEnemy(int32 Place)
+{
+	GeneralStoreActor->SpawnEnemy(Place);
+}
+
+void ALevelHandler::SpawnSaloonEnemy(int32 Place)
+{
+	SaloonBuildingActor->SpawnEnemy(Place);
+}
+
+void ALevelHandler::SpawnSaloonEnemy2(int32 Place)
+{
+	SaloonBuildingActor2->SpawnEnemy(Place);
 }
 
 // One time use
@@ -226,10 +309,21 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 			SaloonBuildingActor->SpawnEnemy(2);
 			bEntered = true;
 
-			// Spawn enemy just on second floor
+			FTimerDelegate BankEnemyDel;
+			FTimerHandle BankEnemyHandle;
+
+			FTimerDelegate HotelEnemyDel;
+			FTimerHandle HotelEnemyHandle;
+
+			// Spawn bank enemy just on second floor
 			BankEnemyDel.BindUFunction(this, FName("SpawnBankEnemy"), FMath::RandRange(0, 1));
+			HotelEnemyDel.BindUFunction(this, FName("SpawnHotelEnemy"), FMath::RandRange(0, 4));
 			GetWorldTimerManager().SetTimer(BankEnemyHandle, BankEnemyDel, 2.0f, false, 2.0f);
+			GetWorldTimerManager().SetTimer(HotelEnemyHandle, HotelEnemyDel, 3.0f, false, 3.0f);
+
 			GetWorldTimerManager().SetTimer(GEnemyHandle, this, &ALevelHandler::SpawnGEnemy, 7.0f, false, 7.0f);
+			// Spawns a WEnemy every 15 seconds
+			GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 15.0f, true, 7.0f);
 		}
 	}
 }

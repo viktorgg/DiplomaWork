@@ -29,19 +29,26 @@ public:
 
 private:
 
+	TArray<AActor*> SaloonArray;
+
 	bool bEntered;
 
 	enum GEnemySpawn { Start, Barn, End };
 	GEnemySpawn GESpawn;
 
+	enum WEnemyBuilding { Bank, Hotel, Store, Saloon, Saloon2 };
+	WEnemyBuilding WEBuilding;
+
 	FVector GEnemyStart = FVector(2910.f, -722.f, 205.f);
 	FVector GEnemyBarn = FVector(1104.f, 2335.f, 205.f);
-	FVector GEnemyEnd = FVector(3555.f, 2898.f, 205.f);
+	FVector GEnemyEnd = FVector(3610.f, 3633.f, 205.f);
 
-	FTimerDelegate BankEnemyDel;
-	FTimerHandle BankEnemyHandle;
+	FVector HotelTerraceLoc = FVector(2355.f, 4662.f, 580.f);
+	FVector SaloonTerraceLoc = FVector(1633.f, 1352.f, 560.f);
+	FVector SaloonTerraceLoc2 = FVector(3011.f, 3095.f, 550.f);
 
 	FTimerHandle GEnemyHandle;
+	FTimerHandle WEnemyHandle;
 
 	UPROPERTY(VisibleAnywhere)
 		class USceneComponent* Root;
@@ -61,7 +68,11 @@ private:
 
 	UClass* GroundEnemyClass;
 
+	UClass* SaloonBuildingClass;
+
 	class ASaloonBuilding* SaloonBuildingActor;
+
+	class ASaloonBuilding* SaloonBuildingActor2;
 
 	class ANationalBank* NationalBankActor;
 
@@ -72,13 +83,25 @@ private:
 	// One time use
 	void SpawnGEnemy();
 
-	bool IfEnemyInSight(FVector Loc, FRotator Rot);
+	bool IfEnemyInSight(FVector Loc);
 
 	UFUNCTION()
 		void SpawnGroundEnemy(int32 Place);
 
 	UFUNCTION()
 		void SpawnBankEnemy(int32 Place);
+
+	UFUNCTION()
+		void SpawnHotelEnemy(int32 Place);
+
+	UFUNCTION()
+		void SpawnStoreEnemy(int32 Place);
+
+	UFUNCTION()
+		void SpawnSaloonEnemy(int32 Place);
+
+	UFUNCTION()
+		void SpawnSaloonEnemy2(int32 Place);
 
 	UFUNCTION()
 		virtual void OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

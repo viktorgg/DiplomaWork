@@ -2,43 +2,11 @@
 
 #pragma once
 
+#include "BuildingBase.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SaloonBuilding.generated.h"
 
-
-// Structure to hold information about enemies
-USTRUCT()
-struct FSEnemyHandler
-{
-	GENERATED_USTRUCT_BODY()
-
-private:
-
-	class ACharacterBase* EnemyActor;
-
-	FVector InLoc;
-	FVector DoorLoc;
-	FVector OutLoc;
-
-public:
-
-	ACharacterBase* GetEnemyActor() const { return EnemyActor; }
-	void SetEnemyActor(ACharacterBase* EnemyActor) { this->EnemyActor = EnemyActor; }
-
-	FVector GetInLoc() const { return InLoc; }
-	void SetInLoc(FVector InLoc) { this->InLoc = InLoc; }
-
-	FVector GetDoorLoc() const { return DoorLoc; }
-	void SetDoorLoc(FVector DoorLoc) { this->DoorLoc = DoorLoc; }
-
-	FVector GetOutLoc() const { return OutLoc; }
-	void SetOutLoc(FVector OutLoc) { this->OutLoc = OutLoc; }
-
-	FSEnemyHandler() {
-		EnemyActor = NULL;
-	}
-};
 
 
 UCLASS()
@@ -59,7 +27,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Array to store structure of every enemy
-	TArray<FSEnemyHandler> SEnemyHandlerArray;
+	TArray<FEnemyHandler*> SEnemyHandlerArray;
 
 	void SpawnEnemy(int32 Place);
 
@@ -91,5 +59,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 		class UBoxComponent* BoxCollision6;
-	
+
+	FEnemyHandler* SEnemyHandler = new FEnemyHandler();
+	FEnemyHandler* SEnemyHandler2 = new FEnemyHandler();
+	FEnemyHandler* SEnemyHandler3 = new FEnemyHandler();
+
 };

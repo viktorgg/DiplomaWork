@@ -2,13 +2,12 @@
 
 #pragma once
 
+#include "BuildingBase.h"
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
 #include "WindowEnemy.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class MYPROJECT_API AWindowEnemy : public ACharacterBase
 {
@@ -42,7 +41,11 @@ private:
 
 	virtual void RotateToCharacter();
 
+	virtual void DestroyChar();
+
 public:
+
+	virtual void DestroyAfterTime();
 
 	void SetWindowsPlace(int32 WindowsPlace) { this->WindowsPlace = WindowsPlace; }
 	

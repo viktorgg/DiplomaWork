@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "SaloonBuilding.h"
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
 #include "GroundEnemy.generated.h"
@@ -40,10 +41,15 @@ protected:
 
 	void Rotate(float Direction);
 
+	virtual void DestroyChar();
+
 	float LineTrace();
+
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void DestroyAfterTime();
 
 };

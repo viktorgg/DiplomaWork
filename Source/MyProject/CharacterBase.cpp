@@ -44,30 +44,44 @@ ACharacterBase::ACharacterBase()
 
 	bCanRifleAnim = true;
 
+	PistolActor = nullptr;
+	RifleActor = nullptr;
+	MainCharacterActor = nullptr;
+
 	RootComponent = GetCapsuleComponent();
 
 	GetArrowComponent()->SetupAttachment(RootComponent);
 
 	GetMesh()->SetupAttachment(RootComponent);
 
-	// Find the Main Char Enemy Animation asset in content browser by reference
+	// Find the Main Char DeathAnimation asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UAnimSequence>
 		AnimAsset(TEXT("AnimSequence'/Game/Assets/Animations/MainChar/Death.Death'"));
 	if (AnimAsset.Succeeded() == true) {
 		MainCharDeathAnim = AnimAsset.Object;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Animation Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Animation1 Not Found In CharBase!")));
 	}
 
-	// Find the Enemy Death Animation asset in content browser by reference
+	// Find the Enemy DeathAnimation asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UAnimSequence>
 		AnimAsset2(TEXT("AnimSequence'/Game/Assets/Animations/EnemyChar/Shoulder_Hit_And_Fall.Shoulder_Hit_And_Fall'"));
 	if (AnimAsset2.Succeeded() == true) {
 		EnemyDeathAnim = AnimAsset2.Object;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Animation Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Animation2 Not Found In CharBase!")));
+	}
+
+	// Find the Enemy DeathAnimation2 asset in content browser by reference
+	static ConstructorHelpers::FObjectFinder<UAnimSequence>
+		AnimAsset3(TEXT("AnimSequence'/Game/Assets/Animations/EnemyChar/Dying.Dying'"));
+	if (AnimAsset3.Succeeded() == true) {
+		EnemyDeathAnim2 = AnimAsset3.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Animation3 Not Found In CharBase!")));
 	}
 }
 
@@ -91,18 +105,19 @@ void ACharacterBase::PlayMainDeathAnim()
 
 void ACharacterBase::PlayEnemyDeathAnim()
 {
-	GetMesh()->PlayAnimation(EnemyDeathAnim, false);
-}
+	if (Cast<AWindowEnemy>(this) != NULL) {
+		GetMesh()->PlayAnimation(EnemyDeathAnim, false);
+	}
+	else {
+		int32 Anim = FMath::RandRange(1, 2);
 
-void ACharacterBase::DestroyAfterTime()
-{
-	GetWorldTimerManager().SetTimer(DestroyHandle, this, &ACharacterBase::DestroyChar, 3, false, 3);
-}
-
-void ACharacterBase::DestroyChar()
-{
-	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	Destroy();
+		if (Anim == 1) {
+			GetMesh()->PlayAnimation(EnemyDeathAnim, false);
+		}
+		else {
+			GetMesh()->PlayAnimation(EnemyDeathAnim2, false);
+		}
+	}
 }
 
 // Called every frame

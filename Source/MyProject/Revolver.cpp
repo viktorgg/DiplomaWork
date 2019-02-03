@@ -130,7 +130,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
 
-		if ((CharacterEntered->GetHavePistol()) == false && (CharacterActor == NULL)) {
+		if ((CharacterEntered->GetHavePistol()) == false && (CharacterActor == nullptr)) {
 			CharacterEntered->SetPistolActor(this);
 			CharacterEntered->SetHavePistol(true);
 			CharacterActor = CharacterEntered;
@@ -138,7 +138,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 			SphereCollision->SetSimulatePhysics(false);		// Enable it's physics when character dies
 		}
 		else {
-			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == NULL)) {
+			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == nullptr)) {
 				AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterEntered);
 				if (MainChar->GetCurrPistolMagazine() < MainChar->GetPistolMagazineLimit()) {
 					MainChar->SetCurrPistolMagazine(MainChar->GetPistolMagazineLimit());

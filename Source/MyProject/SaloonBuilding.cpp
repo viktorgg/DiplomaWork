@@ -48,7 +48,7 @@ ASaloonBuilding::ASaloonBuilding()
 		WindowEnemyClass = (UClass*)WindowEnemyBP.Class;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Window Enemy Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Window Enemy Not Found In Saloon!")));
 	}
 
 	// Find saloon ground enemy class in content browser
@@ -58,8 +58,9 @@ ASaloonBuilding::ASaloonBuilding()
 		SaloonGroundEnemyClass = (UClass*)SaloonGroundEnemyBP.Class;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Ground Enemy Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Ground Enemy Not Found In Saloon!")));
 	}
+
 }
 
 // Called when the game starts or when spawned
@@ -68,16 +69,13 @@ void ASaloonBuilding::BeginPlay()
 	Super::BeginPlay();
 
 	//Inverted Directions, forward vector = right vector, right vector = forward vector
-	FSEnemyHandler SEnemyHandler;
-	SEnemyHandler.SetInLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 180.0f) 
+	SEnemyHandler->SetInLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 180.0f) 
 		+ (MainBuildingMesh->GetRightVector() * 365.0f) + (MainBuildingMesh->GetUpVector() * -181.0f)));
 
-	FSEnemyHandler SEnemyHandler2;
-	SEnemyHandler2.SetOutLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 4.0f)
+	SEnemyHandler2->SetOutLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 4.0f)
 		+ (MainBuildingMesh->GetRightVector() * -470.0f) + (MainBuildingMesh->GetUpVector() * 137.0f)));
 
-	FSEnemyHandler SEnemyHandler3;
-	SEnemyHandler3.SetDoorLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetRightVector() * -100.0f) + (MainBuildingMesh->GetUpVector() * -157.0f)));
+	SEnemyHandler3->SetDoorLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetRightVector() * -100.0f) + (MainBuildingMesh->GetUpVector() * -157.0f)));
 
 	SEnemyHandlerArray.Add(SEnemyHandler);
 	SEnemyHandlerArray.Add(SEnemyHandler2);
@@ -89,40 +87,35 @@ void ASaloonBuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Constantly check if an enemy dies
-	for (int32 i = 0; i < 2; i++) {
-		if (SEnemyHandlerArray[i].GetEnemyActor() != NULL) {
-			if (SEnemyHandlerArray[i].GetEnemyActor()->GetHealth() <= 0) {
-				SEnemyHandlerArray[i].SetEnemyActor(NULL);
-			}
-		}
-	}
 }
 
 void ASaloonBuilding::SpawnEnemy(int32 Place)
 {
-	if (SEnemyHandlerArray[Place].GetEnemyActor() == NULL) {
+	if (SEnemyHandlerArray[Place]->GetEnemyActor() == nullptr) {
 
 		if (Place == 0) {		// Spawns behind bar
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, SEnemyHandlerArray[Place].GetInLoc(), GetActorRotation(), ActorSpawnParams);
+			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, SEnemyHandlerArray[Place]->GetInLoc(), GetActorRotation(), ActorSpawnParams);
 
-			SEnemyHandlerArray[Place].SetEnemyActor(SpawnedEnemy);
+			SEnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
+			SpawnedEnemy->SetEnemyHandler(SEnemyHandlerArray[Place]);
 		}
 		else if (Place == 1) {		// Spawns on terrace
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, SEnemyHandlerArray[Place].GetOutLoc(), GetActorRotation(), ActorSpawnParams);
+			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, SEnemyHandlerArray[Place]->GetOutLoc(), GetActorRotation(), ActorSpawnParams);
 
-			SEnemyHandlerArray[Place].SetEnemyActor(SpawnedEnemy);
+			SEnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
+			SpawnedEnemy->SetEnemyHandler(SEnemyHandlerArray[Place]);
 		}
 		else if (Place == 2) {		// Spawns behind door
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			ASaloonGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<ASaloonGroundEnemy>(SaloonGroundEnemyClass, SEnemyHandlerArray[Place].GetDoorLoc(), GetActorRotation() + FRotator(0.0f, -90.0f, 0.0f), ActorSpawnParams);
+			ASaloonGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<ASaloonGroundEnemy>(SaloonGroundEnemyClass, SEnemyHandlerArray[Place]->GetDoorLoc(), GetActorRotation() + FRotator(0.0f, -90.0f, 0.0f), ActorSpawnParams);
 
-			SEnemyHandlerArray[Place].SetEnemyActor(SpawnedEnemy);
+			SEnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
+			SpawnedEnemy->SetEnemyHandler(SEnemyHandlerArray[Place]);
 		}
 	}
 }

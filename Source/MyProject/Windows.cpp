@@ -13,7 +13,6 @@ AWindows::AWindows()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	bOpened = false;
 	bOpening = false;
 	bClosing = false;
 
@@ -45,7 +44,7 @@ void AWindows::Tick(float DeltaTime)
 	if (bClosing == true) {
 		Close();
 	}
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), bOpened));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetIfOpened()));
 }
 
 void AWindows::Open()
@@ -66,7 +65,6 @@ void AWindows::Open()
 	else {
 		bOpening = false;
 	}
-	bOpened = true;
 }
 
 void AWindows::Close()
@@ -87,7 +85,21 @@ void AWindows::Close()
 	else {
 		bClosing = false;
 	}
-	bOpened = false;
+}
+
+bool AWindows::GetIfOpened() const
+{
+	if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, -90.0f, 2.0f) == true) {
+
+		return false; 
+	}
+	else if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, 110.0f, 2.0f) == true) {
+
+		return true;
+	}
+	else {
+		return NULL;
+	}
 }
 
 

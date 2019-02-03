@@ -44,7 +44,7 @@ ABuildingBase::ABuildingBase()
 		WindowsClass = (UClass*)WindowsBP.Class;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Windows Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Windows Not Found In BuildingBase!")));
 	}
 
 	// Find window enemy class in content browser
@@ -54,7 +54,7 @@ ABuildingBase::ABuildingBase()
 		WindowEnemyClass = (UClass*)WindowEnemyBP.Class;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Window Enemy Not Found!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Window Enemy Not Found In BuildingBase!")));
 	}
 
 	WindowsChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child"));
@@ -79,27 +79,22 @@ void ABuildingBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// Create structures for the 5 possible enemies
+	// Create the window actors and add them to array
 	WindowsChild->CreateChildActor();
-	FEnemyHandler EnemyHandler1;
-	EnemyHandler1.SetWindowsActor(Cast<AWindows>(WindowsChild->GetChildActor()));
+	EnemyHandler->SetWindowsActor(Cast<AWindows>(WindowsChild->GetChildActor()));
 
 	WindowsChild2->CreateChildActor();
-	FEnemyHandler EnemyHandler2;
-	EnemyHandler2.SetWindowsActor(Cast<AWindows>(WindowsChild2->GetChildActor()));
+	EnemyHandler2->SetWindowsActor(Cast<AWindows>(WindowsChild2->GetChildActor()));
 
 	WindowsChild3->CreateChildActor();
-	FEnemyHandler EnemyHandler3;
-	EnemyHandler3.SetWindowsActor(Cast<AWindows>(WindowsChild3->GetChildActor()));
+	EnemyHandler3->SetWindowsActor(Cast<AWindows>(WindowsChild3->GetChildActor()));
 
 	WindowsChild4->CreateChildActor();
-	FEnemyHandler EnemyHandler4;
-	EnemyHandler4.SetWindowsActor(Cast<AWindows>(WindowsChild4->GetChildActor()));
+	EnemyHandler4->SetWindowsActor(Cast<AWindows>(WindowsChild4->GetChildActor()));
 
-	FEnemyHandler EnemyHandler5;
-	EnemyHandler5.SetTerraceLoc(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 580.0f) + (MainBuildingMesh->GetUpVector() * 100.0f));
+	EnemyHandler5->SetTerraceLoc(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 580.0f) + (MainBuildingMesh->GetUpVector() * 100.0f));
 
-	EnemyHandlerArray.Add(EnemyHandler1);
+	EnemyHandlerArray.Add(EnemyHandler);
 	EnemyHandlerArray.Add(EnemyHandler2);
 	EnemyHandlerArray.Add(EnemyHandler3);
 	EnemyHandlerArray.Add(EnemyHandler4);
@@ -111,40 +106,33 @@ void ABuildingBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Constantly check if an enemy dies so the window closes
-	for (int32 i = 0; i < 4; i++) {
-		if (EnemyHandlerArray[i].GetWindowEnemyActor() != NULL) {
-			if (EnemyHandlerArray[i].GetWindowEnemyActor()->GetHealth() <= 0) {
-				EnemyHandlerArray[i].GetWindowsActor()->Close();
-			}
-		}
-	}
 }
 
 // Spawn enemies just behind window or terrace
 void ABuildingBase::SpawnEnemy(int32 Place)
 {
-	if (EnemyHandlerArray[Place].GetWindowsActor()->bOpened == false) {
-
-		EnemyHandlerArray[Place].GetWindowsActor()->Open();
+	if (EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) {
+		
+		EnemyHandlerArray[Place]->GetWindowsActor()->Open();
 		FVector LocOffset;
 		FRotator RotOffset;
 		if (Place < 2) {
-			LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10)
-				+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
+			LocOffset = (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorUpVector() * 10)
+				+ (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorForwardVector() * 10.0f);
 			RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 		}
 		else {
-			LocOffset = (EnemyHandlerArray[Place].GetWindowsActor()->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place].GetWindowsActor()->GetActorUpVector() * 10)
-				+ (EnemyHandlerArray[Place].GetWindowsActor()->GetActorForwardVector() * 10.0f);
+			LocOffset = (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorUpVector() * 10)
+				+ (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorForwardVector() * 10.0f);
 			RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 		}
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-		AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place].GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
+		AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
 
 		SpawnedEnemy->SetWindowsPlace(Place);
-		EnemyHandlerArray[Place].SetWindowEnemyActor(SpawnedEnemy);
+		SpawnedEnemy->SetEnemyHandler(EnemyHandlerArray[Place]);
+		EnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
 	}
 }
 

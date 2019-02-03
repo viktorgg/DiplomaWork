@@ -2,11 +2,13 @@
 
 #pragma once
 
+#include "BuildingBase.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
-UCLASS()
+
+UCLASS(Abstract)
 class MYPROJECT_API ACharacterBase : public ACharacter
 {
 	GENERATED_BODY()
@@ -21,7 +23,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere)
-		int32 Health;
+		float Health;
 	UPROPERTY(EditAnywhere)
 		float CharacterSpeed;
 
@@ -50,6 +52,9 @@ protected:
 
 	UAnimSequence* MainCharDeathAnim;
 	UAnimSequence* EnemyDeathAnim;
+	UAnimSequence* EnemyDeathAnim2;
+
+	FEnemyHandler* EnemyHandler = new FEnemyHandler();;
 
 	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
 
@@ -65,6 +70,10 @@ protected:
 
 	virtual void ResetRifleSynch() PURE_VIRTUAL(ACharacterBase::ResetRifleSynch, );
 
+	virtual void DestroyAfterTime() PURE_VIRTUAL(ACharacterBase::DestroyAfterTime, );
+
+	virtual void DestroyChar() PURE_VIRTUAL(ACharacterBase::DestroyChar, );
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -75,11 +84,7 @@ public:
 
 	void PlayEnemyDeathAnim();
 
-	void DestroyAfterTime();
-
-	void DestroyChar();
-
-	int32 GetHealth() const { return Health; }
+	float GetHealth() const { return Health; }
 	void SetHealth(int32 Health) { this->Health = Health; }
 
 	float GetCharacterSpeed() const { return CharacterSpeed; }
@@ -126,6 +131,8 @@ public:
 	UAnimSequence* GetMainDeathAnim() const { return MainCharDeathAnim; }
 
 	UAnimSequence* GetEnemyDeathAnim() const { return EnemyDeathAnim; }
+
+	void SetEnemyHandler(FEnemyHandler* EnemyHandler) { this->EnemyHandler = EnemyHandler; }
 
 };
 

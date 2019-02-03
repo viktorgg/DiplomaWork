@@ -111,7 +111,7 @@ void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
 
-		if ((CharacterEntered->GetHaveRifle() == false) && (CharacterActor == NULL)) {
+		if ((CharacterEntered->GetHaveRifle() == false) && (CharacterActor == nullptr)) {
 			CharacterEntered->SetRifleActor(this);
 			CharacterEntered->SetHaveRifle(true);
 			CharacterActor = CharacterEntered;
@@ -119,7 +119,7 @@ void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 			SphereCollision->SetSimulatePhysics(false);
 		}
 		else {
-			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == NULL)) {
+			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == nullptr)) {
 				AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterEntered);
 				if (MainChar->GetCurrRifleMagazine() < MainChar->GetRifleMagazineLimit()) {
 					MainChar->SetCurrRifleMagazine(MainChar->GetRifleMagazineLimit());
