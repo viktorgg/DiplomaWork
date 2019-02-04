@@ -78,7 +78,14 @@ ABuildingBase::ABuildingBase()
 void ABuildingBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Create structures for 5 possible enemies
+	FEnemyHandler* EnemyHandler = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler2 = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler3 = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler4 = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler5 = new FEnemyHandler();
+
 	// Create the window actors and add them to array
 	WindowsChild->CreateChildActor();
 	EnemyHandler->SetWindowsActor(Cast<AWindows>(WindowsChild->GetChildActor()));
@@ -94,6 +101,7 @@ void ABuildingBase::BeginPlay()
 
 	EnemyHandler5->SetTerraceLoc(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 580.0f) + (MainBuildingMesh->GetUpVector() * 100.0f));
 
+	// Add the structs to array
 	EnemyHandlerArray.Add(EnemyHandler);
 	EnemyHandlerArray.Add(EnemyHandler2);
 	EnemyHandlerArray.Add(EnemyHandler3);
@@ -111,7 +119,7 @@ void ABuildingBase::Tick(float DeltaTime)
 // Spawn enemies just behind window or terrace
 void ABuildingBase::SpawnEnemy(int32 Place)
 {
-	if (EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) {
+	if ((EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIfClosed() == true)) {
 		
 		EnemyHandlerArray[Place]->GetWindowsActor()->Open();
 		FVector LocOffset;

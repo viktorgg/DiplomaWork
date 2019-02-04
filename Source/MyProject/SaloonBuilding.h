@@ -60,8 +60,4 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UBoxComponent* BoxCollision6;
 
-	FEnemyHandler* SEnemyHandler = new FEnemyHandler();
-	FEnemyHandler* SEnemyHandler2 = new FEnemyHandler();
-	FEnemyHandler* SEnemyHandler3 = new FEnemyHandler();
-
 };

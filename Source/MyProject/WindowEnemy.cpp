@@ -4,6 +4,7 @@
 #include "MyCharacter.h"
 #include "Rifle.h"
 #include "Windows.h"
+#include "LevelHandler.h"
 #include "BuildingBase.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
@@ -50,7 +51,6 @@ void AWindowEnemy::Tick(float DeltaTime)
 		Fire();
 		RotateToCharacter();
 	}
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), *EnemyHandler.GetWindowsActor()->GetName()));
 }
 
 void AWindowEnemy::Fire()
@@ -81,13 +81,17 @@ void AWindowEnemy::RotateToCharacter()
 void AWindowEnemy::DestroyChar()
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	Destroy();
 
 	EnemyHandler->SetEnemyActor(nullptr);
 
 	if (EnemyHandler->GetWindowsActor() != nullptr) {
 		EnemyHandler->GetWindowsActor()->Close();
 	}
+
+	LevelHandlerActor->WEnemyHandler();
+	// delete EnemyHandler;
+
+	Destroy();
 }
 
 void AWindowEnemy::DestroyAfterTime()

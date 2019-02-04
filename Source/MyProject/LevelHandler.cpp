@@ -308,7 +308,7 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 		if (Cast<AMyCharacter>(OtherActor) != NULL) {
 			SaloonBuildingActor->SpawnEnemy(2);
 			bEntered = true;
-
+			
 			FTimerDelegate BankEnemyDel;
 			FTimerHandle BankEnemyHandle;
 
@@ -327,6 +327,7 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 		}
 	}
 }
+
 
 
 

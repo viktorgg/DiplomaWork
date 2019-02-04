@@ -7,8 +7,8 @@
 #include "Rifle.h"
 #include "SaloonGroundEnemy.h"
 #include "GroundEnemy.h"
-#include "LevelHandler.h"
 #include "WindowEnemy.h"
+#include "Windows.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
@@ -117,12 +117,6 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 					HitActor->SetHealth(HitActor->GetHealth() - Damage);
 				}
 				if (HitActor->GetHealth() <= 0) {
-					// Assign the LevelHandler script to variable
-					for (TActorIterator<ALevelHandler> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
-						if (ActorItr) {
-							LevelHandlerActor = *ActorItr;
-						}
-					}
 					// If Main Character dies play death animation and disable player input
 					if (Cast<AMyCharacter>(HitActor) != NULL) {
 						HitActor->PlayMainDeathAnim();
@@ -133,7 +127,6 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 						AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
 						GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
 						GroundEnemy->GetPistolActor()->SetCharacterActor(nullptr);
-						LevelHandlerActor->GEnemyHandler();
 						HitActor->PlayEnemyDeathAnim();
 						GroundEnemy->DestroyAfterTime();
 					}
@@ -141,9 +134,8 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 					else if (Cast<AWindowEnemy>(HitActor) != NULL) {
 						AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor);
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);
-						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() * 100000.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
+						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() / GetWorld()->DeltaTimeSeconds * 1000.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
 						WindowEnemy->GetRifleActor()->SetCharacterActor(nullptr);
-						LevelHandlerActor->WEnemyHandler();
 						HitActor->PlayEnemyDeathAnim();
 						WindowEnemy->DestroyAfterTime();
 					}
@@ -165,7 +157,3 @@ void AProjectile::ProjectileTravel()
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * 20000.0f), GetWorld()->DeltaTimeSeconds, BulletSpeed));
 	UGameplayStatics::SpawnEmitterAtLocation(this, ProjectileTrail, GetActorLocation(), GetActorRotation(), FVector(1.0f, 1.0f, 1.0f), true);
 }
-
-
-
-

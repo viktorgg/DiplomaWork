@@ -27,7 +27,7 @@ public:
 
 	void Close();
 
-	bool GetIfOpened() const;
+	bool GetIfClosed();
 	
 private:
 

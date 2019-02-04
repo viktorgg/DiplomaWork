@@ -44,13 +44,13 @@ void AWindows::Tick(float DeltaTime)
 	if (bClosing == true) {
 		Close();
 	}
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), GetIfOpened()));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw));
 }
 
 void AWindows::Open()
 {
 	if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, 110.0f, 2.0f) == false) {
-
+		
 		bOpening = true;
 
 		FRotator WindowRCurrRot = WindowRMesh->GetRelativeTransform().GetRotation().Rotator();
@@ -87,18 +87,14 @@ void AWindows::Close()
 	}
 }
 
-bool AWindows::GetIfOpened() const
+bool AWindows::GetIfClosed()
 {
 	if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, -90.0f, 2.0f) == true) {
 
-		return false; 
-	}
-	else if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, 110.0f, 2.0f) == true) {
-
-		return true;
+		return true; 
 	}
 	else {
-		return NULL;
+		return false;
 	}
 }
 

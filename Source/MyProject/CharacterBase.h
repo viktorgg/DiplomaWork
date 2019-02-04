@@ -49,12 +49,13 @@ protected:
 	class ARevolver* PistolActor;
 	class ARifle* RifleActor;
 	class AMyCharacter* MainCharacterActor;
+	class ALevelHandler* LevelHandlerActor;
 
 	UAnimSequence* MainCharDeathAnim;
 	UAnimSequence* EnemyDeathAnim;
 	UAnimSequence* EnemyDeathAnim2;
 
-	FEnemyHandler* EnemyHandler = new FEnemyHandler();;
+	FEnemyHandler* EnemyHandler = new FEnemyHandler();
 
 	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
 

@@ -68,6 +68,11 @@ void ASaloonBuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Create structures for 3 possible enemies
+	FEnemyHandler* SEnemyHandler = new FEnemyHandler();
+	FEnemyHandler* SEnemyHandler2 = new FEnemyHandler();
+	FEnemyHandler* SEnemyHandler3 = new FEnemyHandler();
+
 	//Inverted Directions, forward vector = right vector, right vector = forward vector
 	SEnemyHandler->SetInLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 180.0f) 
 		+ (MainBuildingMesh->GetRightVector() * 365.0f) + (MainBuildingMesh->GetUpVector() * -181.0f)));
@@ -77,6 +82,8 @@ void ASaloonBuilding::BeginPlay()
 
 	SEnemyHandler3->SetDoorLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetRightVector() * -100.0f) + (MainBuildingMesh->GetUpVector() * -157.0f)));
 
+
+	// Add the structs to array
 	SEnemyHandlerArray.Add(SEnemyHandler);
 	SEnemyHandlerArray.Add(SEnemyHandler2);
 	SEnemyHandlerArray.Add(SEnemyHandler3);

@@ -2,6 +2,7 @@
 
 #include "NationalBank.h"
 #include "Windows.h"
+#include "Components/StaticMeshComponent.h"
 #include "WindowEnemy.h"
 #include "MyCharacter.h"
 #include "Engine/GameEngine.h"
@@ -24,7 +25,8 @@ void ANationalBank::BeginPlay()
 void ANationalBank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), EnemyHandlerArray[1]->GetWindowsActor()->WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw));
 }
 
 

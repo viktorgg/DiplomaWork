@@ -31,8 +31,8 @@ void AHotel::SpawnEnemy(int32 Place)
 {	
 	if (EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) {
 
-		if (Place < 4) {
-
+		if ((Place < 4) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIfClosed() == true)) {
+			
 			EnemyHandlerArray[Place]->GetWindowsActor()->Open();
 
 			FVector LocOffset;

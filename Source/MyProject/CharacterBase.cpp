@@ -7,6 +7,7 @@
 #include "GroundEnemy.h"
 #include "WindowEnemy.h"
 #include "Windows.h"
+#include "LevelHandler.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -47,6 +48,7 @@ ACharacterBase::ACharacterBase()
 	PistolActor = nullptr;
 	RifleActor = nullptr;
 	MainCharacterActor = nullptr;
+	LevelHandlerActor = nullptr;
 
 	RootComponent = GetCapsuleComponent();
 
@@ -94,6 +96,13 @@ void ACharacterBase::BeginPlay()
 	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
 		if (ActorItr) {
 			MainCharacterActor = *ActorItr;
+		}
+	}
+
+	// Assign the LevelHandler script to variable
+	for (TActorIterator<ALevelHandler> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (ActorItr) {
+			LevelHandlerActor = *ActorItr;
 		}
 	}
 }

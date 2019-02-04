@@ -3,6 +3,7 @@
 #include "GroundEnemy.h"
 #include "MyCharacter.h"
 #include "Revolver.h"
+#include "LevelHandler.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
@@ -116,9 +117,13 @@ void AGroundEnemy::Rotate(float Direction)
 void AGroundEnemy::DestroyChar()
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	Destroy();
 
 	EnemyHandler->SetEnemyActor(nullptr);
+
+	LevelHandlerActor->GEnemyHandler();
+	// delete EnemyHandler;
+
+	Destroy();
 }
 
 // If enemy reaches a wall it returns the nearer direction it needs to rotate in order to go around wall

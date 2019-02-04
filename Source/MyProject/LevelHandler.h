@@ -106,5 +106,15 @@ private:
 	UFUNCTION()
 		virtual void OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+public:
 
+	ANationalBank* GetNationalBankActor() const { return NationalBankActor; }
+
+	AHotel* GetHotelActor() const { return HotelActor; }
+
+	AGeneralStore* GetGeneralStoreActor() const { return GeneralStoreActor; }
+
+	ASaloonBuilding* GetSaloonBuildingActor() const { return SaloonBuildingActor; }
+
+	ASaloonBuilding* GetSaloonBuildingActor2() const { return SaloonBuildingActor2; }
 };

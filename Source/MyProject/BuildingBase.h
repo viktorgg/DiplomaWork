@@ -32,7 +32,7 @@ public:
 	AWindows* GetWindowsActor() const { return WindowsActor; }
 	void SetWindowsActor(AWindows* WindowsActor) { this->WindowsActor = WindowsActor; }
 
-	ACharacterBase* GetEnemyActor() const { return EnemyActor; }
+	ACharacterBase* GetEnemyActor() { return EnemyActor; }
 	void SetEnemyActor(ACharacterBase* EnemyActor) { this->EnemyActor = EnemyActor; }
 
 	FVector GetTerraceLoc() const { return TerraceLoc; }
@@ -102,14 +102,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* SecondFloorMesh;
-
-	// Structures for the 5 possible enemies
-
-	FEnemyHandler* EnemyHandler = new FEnemyHandler();
-	FEnemyHandler* EnemyHandler2 = new FEnemyHandler();
-	FEnemyHandler* EnemyHandler3 = new FEnemyHandler();
-	FEnemyHandler* EnemyHandler4 = new FEnemyHandler();
-	FEnemyHandler* EnemyHandler5 = new FEnemyHandler();
 
 public:	
 	// Called every frame
