@@ -18,9 +18,4 @@ public:
 
 	AGameHUD();
 
-
-	UPROPERTY(VisibleAnywhere)
-		class UTexture2D* CrosshairTex;
-
-
 };

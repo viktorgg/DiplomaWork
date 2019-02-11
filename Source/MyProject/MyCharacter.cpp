@@ -14,6 +14,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
 
 // Sets default values
@@ -51,14 +52,13 @@ AMyCharacter::AMyCharacter()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
-
 }
 
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame

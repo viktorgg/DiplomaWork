@@ -11,11 +11,6 @@
 
 AGameHUD::AGameHUD()
 {
-	static ConstructorHelpers::FObjectFinder<UTexture2D> 
-		Crosshair(TEXT("/Game/Assets/HUD/FirstPersonCrosshair"));
-	if (Crosshair.Object != NULL) {
-		CrosshairTex = Crosshair.Object;
-	}
+	
 	
 }
-

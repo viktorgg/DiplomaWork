@@ -18,11 +18,12 @@ AGroundEnemy::AGroundEnemy() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Health = 100.f;
-	CharacterSpeed = 350.0f;
-	PistolFireRate = 0.5;
+	CharacterSpeed = 350.f;
+	PistolFireRate = 0.5f;
 	bHaveRifle = true;
 
-	DistanceToWalk = 400.0f;	// Distance to reach between him and player 
+	UPROPERTY(EditAnywhere)
+		DistanceToWalk = 500.f;	// Distance to reach between him and player 
 
 	// Find the revolver class in content browser
 	static ConstructorHelpers::FClassFinder<ARevolver>
@@ -49,7 +50,7 @@ void AGroundEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Health > 0) {
+	if (Health > 0.f) {
 		MoveForward(NULL);
 		Fire();
 	}
@@ -58,17 +59,17 @@ void AGroundEnemy::Tick(float DeltaTime)
 
 void AGroundEnemy::MoveForward(float Input)
 {
-	Rotate(LineTrace());
-
-	if (GetDistanceToMain() > DistanceToWalk) {
-		ForwardInput = 1.0f;
+	ForwardInput = 1.f;
+	if (GetDistanceToMain() >= DistanceToWalk) {
+		ForwardInput = 1.f;
 		FVector CurrLoc = GetActorLocation();
 		FVector NewLoc = CurrLoc + (GetActorForwardVector() * CharacterSpeed * GetWorld()->GetDeltaSeconds());
 		SetActorLocation(NewLoc);
 	}
 	else {
-		ForwardInput = 0.0f;
+		ForwardInput = 0.f;
 	}
+	Rotate(LineTrace());
 }
 
 void AGroundEnemy::Fire()
@@ -96,7 +97,7 @@ float AGroundEnemy::GetDistanceToMain()
 
 void AGroundEnemy::RotateToCharacter()
 {
-	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, 80.0f));
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, 120.f));
 }
 
 void AGroundEnemy::DestroyAfterTime()
@@ -106,8 +107,8 @@ void AGroundEnemy::DestroyAfterTime()
 
 void AGroundEnemy::Rotate(float Direction)
 {
-	if (Direction != 0.0f) {
-		AddActorWorldRotation(FRotator(0.0f, 300.0f * Direction * GetWorld()->DeltaTimeSeconds, 0.0f));
+	if (Direction != 0.f) {
+		AddActorWorldRotation(FRotator(0.0f, 350.f * Direction * GetWorld()->DeltaTimeSeconds, 0.f));
 	}
 	else {
 		RotateToCharacter();
@@ -132,16 +133,16 @@ float AGroundEnemy::LineTrace()
 	FHitResult OutHitFront, OutHitFrontL, OutHitFrontR;
 
 	FVector StartLocFront = GetActorLocation();
-	FVector EndLocFront = (GetActorForwardVector() * 500.0f) + StartLocFront;
+	FVector EndLocFront = (GetActorForwardVector() * 250.f) + StartLocFront;
 
-	FVector StartLocFrontL = (GetActorRightVector() * -1.0f * 75.0f) + StartLocFront;
-	FVector EndLocFrontL = (GetActorForwardVector() * 500.0f) + StartLocFrontL;
+	FVector StartLocFrontL = (GetActorRightVector() * -1.f * 50.f) + StartLocFront;
+	FVector EndLocFrontL = (GetActorForwardVector() * 250.f) + StartLocFrontL;
 
-	FVector StartLocFrontR = (GetActorRightVector() * 75.0f) + StartLocFront;
-	FVector EndLocFrontR = (GetActorForwardVector() * 500.0f) + StartLocFrontR;
+	FVector StartLocFrontR = (GetActorRightVector() * 50.f) + StartLocFront;
+	FVector EndLocFrontR = (GetActorForwardVector() * 250.f) + StartLocFrontR;
 
-	float DistanceLeft = 0.0f;
-	float DistanceRight = 0.0f;
+	float DistanceLeft = 0.f;
+	float DistanceRight = 0.f;
 
 	FCollisionQueryParams CollisionParams;
 
@@ -149,35 +150,29 @@ float AGroundEnemy::LineTrace()
 	GetWorld()->LineTraceSingleByChannel(OutHitFrontL, StartLocFrontL, EndLocFrontL, ECC_Camera, CollisionParams);
 	GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
 
-	if (OutHitFront.bBlockingHit == true || OutHitFrontL.bBlockingHit == true || OutHitFrontR.bBlockingHit == true) {
+	//DrawDebugLine(GetWorld(), StartLocFront, EndLocFront, FColor::Emerald, true, 1.f, 0, 10);
+	//DrawDebugLine(GetWorld(), StartLocFrontL, EndLocFrontL, FColor::Emerald, true, 1.f, 0, 10);
+	//DrawDebugLine(GetWorld(), StartLocFrontR, EndLocFrontR, FColor::Emerald, true, 1.f, 0, 10);
 
-		GetWorld()->LineTraceSingleByChannel(OutHitFrontL, StartLocFrontL, EndLocFrontL, ECC_Camera, CollisionParams);
-
-		if (OutHitFrontL.bBlockingHit == true) {
+	if (OutHitFront.GetActor() != this || OutHitFrontL.GetActor() != this || OutHitFrontR.GetActor() != this) {
+		
+		if (OutHitFrontL.GetActor() != this) {
 			DistanceLeft = OutHitFrontL.Distance;
 		}
-		else {
-			DistanceLeft = 0.0f;
-		}
-		GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
-
-		if (OutHitFrontR.bBlockingHit == true) {
+		if (OutHitFrontR.GetActor() != this) {
 			DistanceRight = OutHitFrontR.Distance;
-		}
-		else {
-			DistanceRight = 0.0f;
 		}
 	}
 	// Go Right
 	if (DistanceLeft < DistanceRight) {
-		return -1.0f;
+		return -1.f;
 	}
 	// Go Left
 	else if (DistanceRight < DistanceLeft) {
-		return 1.0f;
+		return 1.f;
 	}
+	// Go Straight
 	else {
-		return 0.0f;
+		return 0.f;
 	}
 }
-

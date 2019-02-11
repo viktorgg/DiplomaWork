@@ -60,4 +60,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UBoxComponent* BoxCollision6;
 
+public:
+
+	TArray<FEnemyHandler*> GetSEnemyHandlerArray() const { return SEnemyHandlerArray; }
+
 };

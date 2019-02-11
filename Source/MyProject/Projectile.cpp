@@ -134,7 +134,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 					else if (Cast<AWindowEnemy>(HitActor) != NULL) {
 						AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor);
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);
-						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() / GetWorld()->DeltaTimeSeconds * 1000.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
+						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() / GetWorld()->DeltaTimeSeconds * 800.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
 						WindowEnemy->GetRifleActor()->SetCharacterActor(nullptr);
 						HitActor->PlayEnemyDeathAnim();
 						WindowEnemy->DestroyAfterTime();

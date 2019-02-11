@@ -49,6 +49,13 @@ private:
 
 	FTimerHandle GEnemyHandle;
 	FTimerHandle WEnemyHandle;
+	FTimerHandle HotelTerraceHandle;
+	FTimerHandle SaloonOutHandle;
+	FTimerHandle SaloonOutHandle2;
+
+	FTimerDelegate HotelTerraceDel;
+	FTimerDelegate SaloonOutDel;
+	FTimerDelegate SaloonOutDel2;
 
 	UPROPERTY(VisibleAnywhere)
 		class USceneComponent* Root;

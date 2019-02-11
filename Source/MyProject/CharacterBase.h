@@ -85,8 +85,9 @@ public:
 
 	void PlayEnemyDeathAnim();
 
-	float GetHealth() const { return Health; }
-	void SetHealth(int32 Health) { this->Health = Health; }
+	UFUNCTION(BlueprintCallable)
+		float GetHealth() const { return Health; }
+	void SetHealth(float Health) { this->Health = Health; }
 
 	float GetCharacterSpeed() const { return CharacterSpeed; }
 	void SetCharacterSpeed(float CharacterSpeed) { this->CharacterSpeed = CharacterSpeed; }

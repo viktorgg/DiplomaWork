@@ -31,17 +31,7 @@ void ASaloonGroundEnemy::MoveForward(float Input)
 {
 	if (bIsKicking == false) {
 
-		Rotate(LineTrace());
-
-		if (GetDistanceToMain() > DistanceToWalk) {
-			ForwardInput = 1.0f;
-			FVector CurrLoc = GetActorLocation();
-			FVector NewLoc = CurrLoc + (GetActorForwardVector() * CharacterSpeed * GetWorld()->GetDeltaSeconds());
-			SetActorLocation(NewLoc);
-		}
-		else {
-			ForwardInput = 0.0f;
-		}
+		Super::MoveForward(NULL);
 	}
 	else {
 		FVector CurrLoc = GetActorLocation();

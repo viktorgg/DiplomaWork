@@ -114,6 +114,8 @@ public:
 
 	UClass* GetWindowEnemyClass() const { return WindowEnemyClass; }
 
+	TArray<FEnemyHandler*> GetEnemyHandlerArray() const { return EnemyHandlerArray; }
+
 	UChildActorComponent* GetWindowsChild() const { return WindowsChild; }
 
 	UChildActorComponent* GetWindowsChild2() const { return WindowsChild2; }

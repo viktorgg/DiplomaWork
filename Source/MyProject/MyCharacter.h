@@ -7,6 +7,10 @@
 #include "CharacterBase.h"
 #include "MyCharacter.generated.h"
 
+
+UENUM()
+enum WeaponInHand { None, Pistol, Rifle };
+
 UCLASS()
 class MYPROJECT_API AMyCharacter : public ACharacterBase
 {
@@ -44,7 +48,6 @@ private:
 
 	bool bSlowMo;
 
-	enum WeaponInHand { None, Pistol, Rifle };
 	WeaponInHand WInHand;
 
 	FTimerHandle Handle;
@@ -95,19 +98,24 @@ public:
 
 	bool GetZooming() const { return bZooming; }
 
-	WeaponInHand GetWInHand() const { return WInHand; }
+	UFUNCTION(BlueprintCallable)
+		WeaponInHand GetWInHand() const { return WInHand; }
 
 	UCameraComponent* GetCamera() const { return Camera; }
 
-	int32 GetCurrPistolMagazine() const { return CurrPistolMagazine; }
+	UFUNCTION(BlueprintCallable)
+		int32 GetCurrPistolMagazine() const { return CurrPistolMagazine; }
 	void SetCurrPistolMagazine(int32 CurrPistolMagazine) { this->CurrPistolMagazine = CurrPistolMagazine; }
 
 	int32 GetPistolMagazineLimit() const { return PistolMagazineLimit; }
 
-	int32 GetCurrRifleMagazine() const { return CurrRifleMagazine; }
+	UFUNCTION(BlueprintCallable)
+		int32 GetCurrRifleMagazine() const { return CurrRifleMagazine; }
 	void SetCurrRifleMagazine(int32 CurrRifleMagazine) { this->CurrRifleMagazine = CurrRifleMagazine; }
 
 	int32 GetRifleMagazineLimit() const { return RifleMagazineLimit; }
 
+	UFUNCTION(BlueprintCallable)
+		float GetSlowMoCapacity() const { return SlowMoCapacity; }
 	void AddSlowMoCapacity(float Amount) { if (SlowMoCapacity < 10.0f) { SlowMoCapacity += Amount; } }
 };
