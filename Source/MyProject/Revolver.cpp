@@ -11,6 +11,7 @@
 #include "Camera/CameraComponent.h"
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "EngineUtils.h"
@@ -83,21 +84,20 @@ void ARevolver::SpawnProjectile()
 	else if (Cast<AGroundEnemy>(GetCharacterActor()) != NULL) {
 
 		AGroundEnemy* EnemyCharacter = Cast<AGroundEnemy>(CharacterActor);
+		// Find the rotation to look at main character
+		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, EnemyCharacter->GetMainCharacterActor()->GetActorLocation());
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
-		if (ChanceToHit < 60) {		// There's a 60% chance the bullet will go exactly at player's character
-			SpawnRotation = EnemyCharacter->LookAtChar();
-		}
-		else {
+		// There's a 60% chance the bullet will go exactly at player's character
+		if (ChanceToHit < 60) {		
 			float BulletOffsetPitch;
 			float BulletOffsetYaw;
 			BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
 			BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
-			SpawnRotation = FRotator(EnemyCharacter->LookAtChar().Pitch + BulletOffsetPitch, EnemyCharacter->LookAtChar().Yaw + BulletOffsetYaw, EnemyCharacter->LookAtChar().Roll);
+			SpawnRotation = FRotator(SpawnRotation.Pitch + BulletOffsetPitch, SpawnRotation.Yaw + BulletOffsetYaw, SpawnRotation.Roll);
 		}
 	}
-
 	// Spawn the projectile and set it's shooter and damage
 	FActorSpawnParameters ActorSpawnParams;
 	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
@@ -130,7 +130,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 
 		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
 
-		if ((CharacterEntered->GetHavePistol()) == false && (CharacterActor == nullptr)) {
+		if ((CharacterEntered->GetHavePistol() == false) && (CharacterActor == nullptr)) {
 			CharacterEntered->SetPistolActor(this);
 			CharacterEntered->SetHavePistol(true);
 			CharacterActor = CharacterEntered;

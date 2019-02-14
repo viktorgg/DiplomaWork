@@ -26,6 +26,8 @@ protected:
 
 	UClass* PistolClass;
 
+	bool bIsRotating;
+
 	UPROPERTY(EditAnywhere)
 		float DistanceToWalk;
 
@@ -52,4 +54,6 @@ public:
 
 	virtual void DestroyAfterTime();
 
+	UFUNCTION(BlueprintCallable)
+		bool GetIsRotating() const { return bIsRotating; }
 };

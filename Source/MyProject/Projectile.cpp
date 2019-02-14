@@ -116,6 +116,8 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 				else {
 					HitActor->SetHealth(HitActor->GetHealth() - Damage);
 				}
+				HitActor->SetIsHit(true);
+
 				if (HitActor->GetHealth() <= 0) {
 					// If Main Character dies play death animation and disable player input
 					if (Cast<AMyCharacter>(HitActor) != NULL) {

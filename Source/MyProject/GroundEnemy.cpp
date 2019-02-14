@@ -19,12 +19,12 @@ AGroundEnemy::AGroundEnemy() {
 
 	Health = 100.f;
 	CharacterSpeed = 350.f;
-	PistolFireRate = 0.5f;
+	PistolFireRate = FMath::RandRange(0.75f, 1.5f);
 	bHaveRifle = true;
+	bIsRotating = false;
 
-	UPROPERTY(EditAnywhere)
-		DistanceToWalk = 500.f;	// Distance to reach between him and player 
-
+	DistanceToWalk = 500.f;	// Distance to reach between him and player 
+	
 	// Find the revolver class in content browser
 	static ConstructorHelpers::FClassFinder<ARevolver>
 		PistolBP(TEXT("Blueprint'/Game/Blueprints/RevolverBP.RevolverBP_C'"));
@@ -54,12 +54,11 @@ void AGroundEnemy::Tick(float DeltaTime)
 		MoveForward(NULL);
 		Fire();
 	}
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), PistolFireRate));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), ForwardInput));
 }
 
 void AGroundEnemy::MoveForward(float Input)
 {
-	ForwardInput = 1.f;
 	if (GetDistanceToMain() >= DistanceToWalk) {
 		ForwardInput = 1.f;
 		FVector CurrLoc = GetActorLocation();
@@ -107,8 +106,16 @@ void AGroundEnemy::DestroyAfterTime()
 
 void AGroundEnemy::Rotate(float Direction)
 {
+	// Determine if character should rotate in one place
+	if ((MainCharacterActor->GetForwardInput() == 0.f) && (MainCharacterActor->GetRightInput() == 0.f)) {
+		bIsRotating = false;
+	}
+	else {
+		bIsRotating = true;
+	}
 	if (Direction != 0.f) {
-		AddActorWorldRotation(FRotator(0.0f, 350.f * Direction * GetWorld()->DeltaTimeSeconds, 0.f));
+		AddActorWorldRotation(FRotator(0.f, 350.f * Direction * GetWorld()->DeltaTimeSeconds, 0.f));
+		bIsRotating = true;
 	}
 	else {
 		RotateToCharacter();

@@ -88,10 +88,10 @@ void AMyCharacter::Tick(float DeltaTime)
 
 	// Regenerate health
 	if (Health < 500.f) {
-		Health += DeltaTime * 30.f;
+		Health += DeltaTime * 20.f;
 	}
 
-	// Slowly deplete slow mo's capacity when ON
+	// Slowly deplete SlowMo's capacity when ON
 	if (bSlowMo == true) {
 		SlowMoCapacity -= DeltaTime * 1.5f;
 		if (SlowMoCapacity <= 0.0f) {

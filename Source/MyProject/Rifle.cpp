@@ -11,6 +11,7 @@
 #include "Camera/CameraComponent.h"
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "EngineUtils.h"
@@ -51,13 +52,13 @@ void ARifle::SpawnProjectile()
 		}
 		else {
 
-			if (ChanceToHit < 35) {
+			if (ChanceToHit < 35) {		// There's a 35% chance the bullet will go exactly at crosshair when not zooming
 				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
-				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
+				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);		// Add a random deviation to the crosshair's location
 				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
 				FRotator CurrRot = GetHitRot(SpawnLocation, MainCharacter);
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
@@ -67,26 +68,28 @@ void ARifle::SpawnProjectile()
 	else if (Cast<AWindowEnemy>(CharacterActor) != NULL) {
 
 		AWindowEnemy* EnemyCharacter = Cast<AWindowEnemy>(CharacterActor);
+		// Find the rotation to look at main character
+		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, EnemyCharacter->GetMainCharacterActor()->GetActorLocation());
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
-		if (ChanceToHit < 30) {
-			SpawnRotation = EnemyCharacter->LookAtChar();
-		}
-		else {
+		// There's a 50% chance the bullet will go exactly at player's character
+		if (ChanceToHit < 50) {
 			float BulletOffsetPitch;
 			float BulletOffsetYaw;
 			BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom * 2.5f, ProjectileOffsetNoZoom * 2.5f);
 			BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetNoZoom * 2.5f, ProjectileOffsetNoZoom * 2.5f);
-			SpawnRotation = FRotator(EnemyCharacter->LookAtChar().Pitch + BulletOffsetPitch, EnemyCharacter->LookAtChar().Yaw + BulletOffsetYaw, EnemyCharacter->LookAtChar().Roll);
+			SpawnRotation = FRotator(SpawnRotation.Pitch + BulletOffsetPitch, SpawnRotation.Yaw + BulletOffsetYaw, SpawnRotation.Roll);
 		}
 	}
+	// Spawn the projectile and set it's shooter and damage
 	FActorSpawnParameters ActorSpawnParams;
 	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 
 	SpawnedProjectile->SetCharacterActor(CharacterActor);
 	SpawnedProjectile->SetDamage(Damage);
 
+	// Wait 0.2 seconds when player is firing for animation synchronization
 	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
 		if (Cast<AMyCharacter>(CharacterActor)->GetZooming() == true) {
 			SpawnEmitter();
@@ -116,7 +119,7 @@ void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 			CharacterEntered->SetHaveRifle(true);
 			CharacterActor = CharacterEntered;
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
-			SphereCollision->SetSimulatePhysics(false);
+			SphereCollision->SetSimulatePhysics(false);		// Enable it's physics when character dies
 		}
 		else {
 			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == nullptr)) {

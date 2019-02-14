@@ -207,7 +207,7 @@ void ALevelHandler::WEnemyHandler()
 	if (Place == Bank) {
 
 		WEnemyDel.BindUFunction(this, FName("SpawnBankEnemy"), FMath::RandRange(0, 3));
-		if (MainCharacter->GetHealth() < 200) {
+		if (MainCharacter->GetHealth() < 150) {
 			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
 		}
 		else {
@@ -218,7 +218,7 @@ void ALevelHandler::WEnemyHandler()
 
 		WEnemyDel.BindUFunction(this, FName("SpawnHotelEnemy"), FMath::RandRange(0, 4));
 
-		if (MainCharacter->GetHealth() < 200) {
+		if (MainCharacter->GetHealth() < 150) {
 			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
 		}
 		else {
@@ -228,7 +228,7 @@ void ALevelHandler::WEnemyHandler()
 	else if (Place == Store) {
 
 		WEnemyDel.BindUFunction(this, FName("SpawnStoreEnemy"), FMath::RandRange(0, 3));
-		if (MainCharacter->GetHealth() < 200) {
+		if (MainCharacter->GetHealth() < 150) {
 			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
 		}
 		else {
@@ -238,7 +238,7 @@ void ALevelHandler::WEnemyHandler()
 	else if (Place == Saloon) {
 		
 		WEnemyDel.BindUFunction(this, FName("SpawnSaloonEnemy"), FMath::RandRange(0, 2));
-		if (MainCharacter->GetHealth() < 200) {
+		if (MainCharacter->GetHealth() < 150) {
 			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
 		}
 		else {
@@ -248,7 +248,7 @@ void ALevelHandler::WEnemyHandler()
 	else if (Place == Saloon2) {
 
 		WEnemyDel.BindUFunction(this, FName("SpawnSaloonEnemy2"), FMath::RandRange(0, 2));
-		if (MainCharacter->GetHealth() < 200) {
+		if (MainCharacter->GetHealth() < 150) {
 			GetWorldTimerManager().SetTimer(WEnemyHandle, WEnemyDel, 10.0f, false, 10.0f);
 		}
 		else {
@@ -320,7 +320,7 @@ void ALevelHandler::SpawnSaloonEnemy(int32 Place)
 			SaloonBuildingActor->SpawnEnemy(Place);
 		}
 	}
-	else if (SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->GetEnemyActor() == nullptr) {
+	else if (SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->GetEnemyActor() != nullptr) {
 		WEnemyHandler();
 	}
 	else {
@@ -335,7 +335,7 @@ void ALevelHandler::SpawnSaloonEnemy2(int32 Place)
 			SaloonBuildingActor2->SpawnEnemy(Place);
 		}
 	}
-	else if (SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->GetEnemyActor() == nullptr) {
+	else if (SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->GetEnemyActor() != nullptr) {
 		WEnemyHandler();
 	}
 	else {
@@ -362,7 +362,7 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 
 			FTimerDelegate HotelEnemyDel;
 			FTimerHandle HotelEnemyHandle;
-
+			
 			// Spawn bank enemy just on second floor
 			BankEnemyDel.BindUFunction(this, FName("SpawnBankEnemy"), FMath::RandRange(0, 1));
 			HotelEnemyDel.BindUFunction(this, FName("SpawnHotelEnemy"), FMath::RandRange(0, 3));
@@ -371,8 +371,8 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 
 			GetWorldTimerManager().SetTimer(GEnemyHandle, this, &ALevelHandler::SpawnGEnemy, 7.0f, false, 7.0f);
 
-			// Spawns a window enemy every 30 seconds
-			//GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 30.0f, true, 7.0f);
+			// Spawns a window enemy every minute
+			GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 60.0f, true, 7.0f);
 
 			// Tries to spawn an enemy at hotel terrace every 15 seconds
 			HotelTerraceDel.BindUFunction(this, FName("SpawnHotelEnemy"), 4);

@@ -50,6 +50,9 @@ ACharacterBase::ACharacterBase()
 	MainCharacterActor = nullptr;
 	LevelHandlerActor = nullptr;
 
+	bIsHit = false;
+	bCanHit = true;
+
 	RootComponent = GetCapsuleComponent();
 
 	GetArrowComponent()->SetupAttachment(RootComponent);
@@ -127,6 +130,28 @@ void ACharacterBase::PlayEnemyDeathAnim()
 			GetMesh()->PlayAnimation(EnemyDeathAnim2, false);
 		}
 	}
+}
+
+void ACharacterBase::SetIsHit(bool bIsHit)
+{
+	if (bCanHit == true) {
+		this->bIsHit = bIsHit;
+		bCanHit = false;
+		GetWorldTimerManager().SetTimer(HitDelay, this, &ACharacterBase::ResetHitDelay, 1.f, false, 1.f);
+		GetWorldTimerManager().SetTimer(HitRegularity, this, &ACharacterBase::ResetHitRegularity, 1.5f, false, 1.5f);
+	}
+}
+
+void ACharacterBase::ResetHitDelay()
+{
+	GetWorldTimerManager().ClearTimer(HitDelay);
+	bIsHit = false;
+}
+
+void ACharacterBase::ResetHitRegularity()
+{
+	GetWorldTimerManager().ClearTimer(HitDelay);
+	bCanHit = true;
 }
 
 // Called every frame

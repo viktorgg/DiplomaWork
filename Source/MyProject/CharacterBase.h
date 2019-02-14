@@ -46,6 +46,11 @@ protected:
 
 	FTimerHandle DestroyHandle;
 
+	bool bIsHit;
+	bool bCanHit;
+	FTimerHandle HitDelay;
+	FTimerHandle HitRegularity;
+
 	class ARevolver* PistolActor;
 	class ARifle* RifleActor;
 	class AMyCharacter* MainCharacterActor;
@@ -56,6 +61,10 @@ protected:
 	UAnimSequence* EnemyDeathAnim2;
 
 	FEnemyHandler* EnemyHandler = new FEnemyHandler();
+
+	void ResetHitDelay();
+
+	void ResetHitRegularity();
 
 	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
 
@@ -133,6 +142,10 @@ public:
 	UAnimSequence* GetMainDeathAnim() const { return MainCharDeathAnim; }
 
 	UAnimSequence* GetEnemyDeathAnim() const { return EnemyDeathAnim; }
+
+	UFUNCTION(BlueprintCallable)
+		bool GetIsHit() const { return bIsHit; }
+	void SetIsHit(bool bIsHit);
 
 	void SetEnemyHandler(FEnemyHandler* EnemyHandler) { this->EnemyHandler = EnemyHandler; }
 
