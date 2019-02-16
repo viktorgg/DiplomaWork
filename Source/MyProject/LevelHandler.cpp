@@ -26,7 +26,7 @@
 ALevelHandler::ALevelHandler()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	bEntered = false;
 
@@ -280,7 +280,7 @@ bool ALevelHandler::IfEnemyInSight(FVector Loc)
 
 void ALevelHandler::SpawnBankEnemy(int32 Place)
 {
-	if (NationalBankActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIfClosed() == false) {
+	if (NationalBankActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed() == false) {
 		WEnemyHandler();
 	}
 	else {
@@ -295,7 +295,7 @@ void ALevelHandler::SpawnHotelEnemy(int32 Place)
 			HotelActor->SpawnEnemy(Place);
 		}
 	}
-	else if (HotelActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIfClosed() == false) {
+	else if (HotelActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed() == false) {
 		WEnemyHandler();
 	}
 	else {
@@ -305,7 +305,7 @@ void ALevelHandler::SpawnHotelEnemy(int32 Place)
 
 void ALevelHandler::SpawnStoreEnemy(int32 Place)
 {
-	if (GeneralStoreActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIfClosed() == false) {
+	if (GeneralStoreActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed() == false) {
 		WEnemyHandler();
 	}
 	else {
@@ -372,19 +372,19 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 			GetWorldTimerManager().SetTimer(GEnemyHandle, this, &ALevelHandler::SpawnGEnemy, 7.0f, false, 7.0f);
 
 			// Spawns a window enemy every minute
-			GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 60.0f, true, 7.0f);
+			//GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 60.0f, true, 7.0f);
 
-			// Tries to spawn an enemy at hotel terrace every 15 seconds
+			// Tries to spawn an enemy at hotel terrace every 20 seconds
 			HotelTerraceDel.BindUFunction(this, FName("SpawnHotelEnemy"), 4);
-			GetWorldTimerManager().SetTimer(HotelTerraceHandle, HotelTerraceDel, 15.0f, true, 7.0f);
+			GetWorldTimerManager().SetTimer(HotelTerraceHandle, HotelTerraceDel, 20.0f, true, 7.0f);
 
-			// Tries to spawn an enemy at saloon terrace every 15 seconds
+			// Tries to spawn an enemy at saloon terrace every 20 seconds
 			SaloonOutDel.BindUFunction(this, FName("SpawnSaloonEnemy"), 1);
-			GetWorldTimerManager().SetTimer(SaloonOutHandle, SaloonOutDel, 15.0f, true, 7.0f);
+			GetWorldTimerManager().SetTimer(SaloonOutHandle, SaloonOutDel, 20.0f, true, 7.0f);
 
-			// Tries to spawn an enemy at saloon terrace every 15 seconds
+			// Tries to spawn an enemy at saloon terrace every 20 seconds
 			SaloonOutDel2.BindUFunction(this, FName("SpawnSaloonEnemy2"), 1);
-			GetWorldTimerManager().SetTimer(SaloonOutHandle2, SaloonOutDel2, 15.0f, true, 7.0f);
+			GetWorldTimerManager().SetTimer(SaloonOutHandle2, SaloonOutDel2, 20.0f, true, 7.0f);
 		}
 	}
 }

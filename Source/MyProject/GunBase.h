@@ -46,6 +46,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		class UParticleSystem* FireExplosion;
 
+	class USoundCue* RevolverShot3D;
+	class USoundCue* RevolverShot;
+	class USoundCue* RifleShot3D;
+	class USoundCue* RifleShot;
+	class USoundCue* PickUp;
+
 	virtual void SpawnProjectile() PURE_VIRTUAL(AGunBase::SpawnProjectile, );
 
 	virtual void SpawnEmitter() PURE_VIRTUAL(AGunBase::SpawnEmitter, );

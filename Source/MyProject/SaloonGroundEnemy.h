@@ -29,7 +29,12 @@ private:
 	bool bIsKicking;
 	FTimerHandle KickingHandle;
 
+	FTimerHandle HalfwayKickHandle;
+	class USoundCue* DoorKick;
+
 	void ResetKicking();
+
+	void PlaySound();
 
 	virtual void MoveForward(float Input) override;
 	

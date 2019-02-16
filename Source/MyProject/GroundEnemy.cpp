@@ -17,7 +17,7 @@ AGroundEnemy::AGroundEnemy() {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Health = 100.f;
+	Health = 150.f;
 	CharacterSpeed = 350.f;
 	PistolFireRate = FMath::RandRange(0.75f, 1.5f);
 	bHaveRifle = true;
@@ -44,6 +44,8 @@ void AGroundEnemy::BeginPlay()
 	FActorSpawnParameters ActorSpawnParams;
 	ARevolver* SpawnedPistol = GetWorld()->SpawnActor<ARevolver>(PistolClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
 
+	// Enemy can't fire two seconds after spawning
+	GetWorldTimerManager().SetTimer(FireDelayHandle, this, &AGroundEnemy::ResetFireDelay, 1.5f, false, 1.5f);
 }
 
 void AGroundEnemy::Tick(float DeltaTime)
@@ -52,9 +54,11 @@ void AGroundEnemy::Tick(float DeltaTime)
 
 	if (Health > 0.f) {
 		MoveForward(NULL);
-		Fire();
+		if (bCanFire == true) {
+			Fire();
+		}
 	}
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), ForwardInput));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), bIsRotating));
 }
 
 void AGroundEnemy::MoveForward(float Input)

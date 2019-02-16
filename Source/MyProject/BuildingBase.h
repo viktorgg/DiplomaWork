@@ -66,9 +66,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UClass* WindowsClass;
+	virtual void PostInitializeComponents() override;
+
+	TSubclassOf<class AWindows> WindowsClass;
 
 	UClass* WindowEnemyClass;
+
+	class USoundCue* WindowSqueak;
 
 	UPROPERTY(VisibleAnywhere)
 		class UChildActorComponent* WindowsChild;

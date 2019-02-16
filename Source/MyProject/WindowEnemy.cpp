@@ -11,6 +11,8 @@
 #include "Runtime/Engine/Public/EngineUtils.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 
 
@@ -18,7 +20,7 @@ AWindowEnemy::AWindowEnemy() {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Health = 100.f;
+	Health = 150.f;
 	RifleFireRate = FMath::RandRange(2.0f, 3.5f);
 	bHavePistol = true;
 
@@ -33,6 +35,16 @@ AWindowEnemy::AWindowEnemy() {
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rifle Not Found In WEnemy!")));
 	}
+
+	// Find the Scream cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset(TEXT("SoundCue'/Game/Assets/Sound/ScreamCue.ScreamCue'"));
+	if (CueAsset.Succeeded() == true) {
+		Scream = CueAsset.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Scream Cue Not Found In WEnemy!")));
+	}
 }
 
 void AWindowEnemy::BeginPlay()
@@ -41,6 +53,10 @@ void AWindowEnemy::BeginPlay()
 
 	FActorSpawnParameters ActorSpawnParams;
 	ARifle* SpawnedRifle = GetWorld()->SpawnActor<ARifle>(RifleClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
+
+	// Enemy can't fire half a second after spawning
+	GetWorldTimerManager().SetTimer(FireDelayHandle, this, &AWindowEnemy::ResetFireDelay, 0.5f, false, 0.5f);
+
 }
 
 void AWindowEnemy::Tick(float DeltaTime)
@@ -48,7 +64,9 @@ void AWindowEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (Health > 0) {
-		Fire();
+		if (bCanFire == true) {
+			Fire();
+		}
 		RotateToCharacter();
 	}
 }
@@ -86,6 +104,7 @@ void AWindowEnemy::DestroyChar()
 
 	if (EnemyHandler->GetWindowsActor() != nullptr) {
 		EnemyHandler->GetWindowsActor()->Close();
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandler->GetWindowsActor()->GetActorLocation(), WindowSqueak->GetVolumeMultiplier(), WindowSqueak->GetPitchMultiplier());
 	}
 
 	LevelHandlerActor->WEnemyHandler();
@@ -97,5 +116,8 @@ void AWindowEnemy::DestroyChar()
 void AWindowEnemy::DestroyAfterTime()
 {
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AWindowEnemy::DestroyChar, 1, false, 1);
+	if (FMath::RandRange(0, 100) <= 20) {
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Scream, GetActorLocation(), Scream->GetVolumeMultiplier(), Scream->GetPitchMultiplier());
+	}
 }
 

@@ -14,6 +14,7 @@
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "EngineUtils.h"
 
 
@@ -55,7 +56,7 @@ void ARevolver::SpawnProjectile()
 
 		if (MainCharacter->GetZooming() == true) {
 
-			if (ChanceToHit < 30) {		// There's a 30% chance the bullet will go exactly at crosshair when zooming
+			if (ChanceToHit <= 30) {		// There's a 30% chance the bullet will go exactly at crosshair when zooming
 				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
@@ -68,7 +69,7 @@ void ARevolver::SpawnProjectile()
 			}
 		}
 		else {
-			if (ChanceToHit < 15) {		// There's a 15% chance the bullet will go exactly at crosshair when not zooming
+			if (ChanceToHit <= 15) {		// There's a 15% chance the bullet will go exactly at crosshair when not zooming
 				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
@@ -89,8 +90,8 @@ void ARevolver::SpawnProjectile()
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
-		// There's a 60% chance the bullet will go exactly at player's character
-		if (ChanceToHit < 60) {		
+		// There's a 25% chance the bullet will go exactly at player's character
+		if (ChanceToHit <= 25) {		
 			float BulletOffsetPitch;
 			float BulletOffsetYaw;
 			BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
@@ -107,11 +108,17 @@ void ARevolver::SpawnProjectile()
 
 	// Wait 0.2 seconds when player is firing for animation synchronization
 	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
-		if (Cast<AMyCharacter>(CharacterActor)->GetZooming() == true) {
+		AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterActor);
+		if (MainChar->GetZooming() == true) {
 			SpawnEmitter();
 		}
 		else {
-			GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARevolver::SpawnEmitter, 0.2f, false, 0.2f);
+			if (MainChar->GetSlowMo() == true) {
+				GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARevolver::SpawnEmitter, 0.08f, false, 0.08f);
+			}
+			else {
+				GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARevolver::SpawnEmitter, 0.2f, false, 0.2f);
+			}
 		}
 	}
 	else {
@@ -122,6 +129,12 @@ void ARevolver::SpawnProjectile()
 void ARevolver::SpawnEmitter()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
+	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+		UGameplayStatics::PlaySound2D(GetWorld(), RevolverShot, RevolverShot->GetVolumeMultiplier(), RevolverShot->GetPitchMultiplier());
+	}
+	else {
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RevolverShot3D, GunMesh->GetSocketLocation("Muzzle"), RevolverShot3D->GetVolumeMultiplier(), RevolverShot3D->GetPitchMultiplier());
+	}
 }
 
 void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -136,6 +149,10 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 			CharacterActor = CharacterEntered;
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 			SphereCollision->SetSimulatePhysics(false);		// Enable it's physics when character dies
+
+			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
+				UGameplayStatics::PlaySound2D(GetWorld(), PickUp, PickUp->GetVolumeMultiplier(), PickUp->GetPitchMultiplier());
+			}
 		}
 		else {
 			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == nullptr)) {
@@ -143,6 +160,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 				if (MainChar->GetCurrPistolMagazine() < MainChar->GetPistolMagazineLimit()) {
 					MainChar->SetCurrPistolMagazine(MainChar->GetPistolMagazineLimit());
 					Destroy();
+					UGameplayStatics::PlaySound2D(GetWorld(), PickUp, PickUp->GetVolumeMultiplier(), PickUp->GetPitchMultiplier());
 				}
 			}
 		}

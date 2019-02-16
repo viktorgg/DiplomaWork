@@ -14,6 +14,7 @@
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "EngineUtils.h"
 
 
@@ -52,7 +53,7 @@ void ARifle::SpawnProjectile()
 		}
 		else {
 
-			if (ChanceToHit < 35) {		// There's a 35% chance the bullet will go exactly at crosshair when not zooming
+			if (ChanceToHit <= 35) {		// There's a 35% chance the bullet will go exactly at crosshair when not zooming
 				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
@@ -73,8 +74,8 @@ void ARifle::SpawnProjectile()
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
-		// There's a 50% chance the bullet will go exactly at player's character
-		if (ChanceToHit < 50) {
+		// There's a 35% chance the bullet will go exactly at player's character
+		if (ChanceToHit <= 35) {
 			float BulletOffsetPitch;
 			float BulletOffsetYaw;
 			BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom * 2.5f, ProjectileOffsetNoZoom * 2.5f);
@@ -91,11 +92,17 @@ void ARifle::SpawnProjectile()
 
 	// Wait 0.2 seconds when player is firing for animation synchronization
 	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
-		if (Cast<AMyCharacter>(CharacterActor)->GetZooming() == true) {
+		AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterActor);
+		if (MainChar->GetZooming() == true) {
 			SpawnEmitter();
 		}
 		else {
-			GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARifle::SpawnEmitter, 0.2f, false, 0.2f);
+			if (MainChar->GetSlowMo() == true) {
+				GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARifle::SpawnEmitter, 0.08f, false, 0.08f);
+			}
+			else {
+				GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARifle::SpawnEmitter, 0.2f, false, 0.2f);
+			}
 		}
 	}
 	else {
@@ -106,6 +113,12 @@ void ARifle::SpawnProjectile()
 void ARifle::SpawnEmitter()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
+	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+		UGameplayStatics::PlaySound2D(GetWorld(), RifleShot, RifleShot->GetVolumeMultiplier(), RifleShot->GetPitchMultiplier());
+	}
+	else {
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RifleShot3D, GunMesh->GetSocketLocation("Muzzle"), RifleShot3D->GetVolumeMultiplier(), RifleShot3D->GetPitchMultiplier());
+	}
 }
 
 void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -120,6 +133,10 @@ void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 			CharacterActor = CharacterEntered;
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
 			SphereCollision->SetSimulatePhysics(false);		// Enable it's physics when character dies
+
+			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
+				UGameplayStatics::PlaySound2D(GetWorld(), PickUp, PickUp->GetVolumeMultiplier(), PickUp->GetPitchMultiplier());
+			}
 		}
 		else {
 			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == nullptr)) {
@@ -127,6 +144,7 @@ void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 				if (MainChar->GetCurrRifleMagazine() < MainChar->GetRifleMagazineLimit()) {
 					MainChar->SetCurrRifleMagazine(MainChar->GetRifleMagazineLimit());
 					Destroy();
+					UGameplayStatics::PlaySound2D(GetWorld(), PickUp, PickUp->GetVolumeMultiplier(), PickUp->GetPitchMultiplier());
 				}
 			}
 		}

@@ -36,6 +36,8 @@ AMyCharacter::AMyCharacter()
 	LookUpperLimit = -50.0f;
 	LookLowerLimit = 65.0f;
 
+	HealthRegenSpeed = 20.f;
+
 	bZooming = false;
 
 	bSlowMo = false;
@@ -88,7 +90,7 @@ void AMyCharacter::Tick(float DeltaTime)
 
 	// Regenerate health
 	if (Health < 500.f) {
-		Health += DeltaTime * 20.f;
+		Health += DeltaTime * HealthRegenSpeed;
 	}
 
 	// Slowly deplete SlowMo's capacity when ON
@@ -281,6 +283,7 @@ void AMyCharacter::EnterSlowMo()
 		CharacterSpeed *= 2.5f;
 		PistolFireRate /= 2.5f;
 		RifleFireRate /= 2.5f;
+		HealthRegenSpeed *= 2.5f;
 		bSlowMo = true;
 	}
 	else if(bSlowMo == true) {
@@ -288,6 +291,7 @@ void AMyCharacter::EnterSlowMo()
 		CharacterSpeed /= 2.5f;
 		PistolFireRate *= 2.5f;
 		RifleFireRate *= 2.5f;
+		HealthRegenSpeed /= 2.5f;
 		bSlowMo = false;
 	}
 }

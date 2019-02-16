@@ -12,6 +12,7 @@
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "DrawDebugHelpers.h"
 #include "EngineUtils.h"
 
@@ -53,6 +54,55 @@ AGunBase::AGunBase()
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Particle Not Found In GunBase!")));
 	}
 
+	// Find the Revolver 3D cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset(TEXT("SoundCue'/Game/Assets/Sound/RevolverCue3D.RevolverCue3D'"));
+	if (CueAsset.Succeeded() == true) {
+		RevolverShot3D = CueAsset.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Revolvre 3D Cue Not Found In GunBase!")));
+	}
+
+	// Find the Rifle 3D cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset2(TEXT("SoundCue'/Game/Assets/Sound/RifleCue3D.RifleCue3D'"));
+	if (CueAsset2.Succeeded() == true) {
+		RifleShot3D = CueAsset2.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rifle 3D Cue Not Found In GunBase!")));
+	}
+
+	// Find the Revolver cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset3(TEXT("SoundCue'/Game/Assets/Sound/RevolverCue.RevolverCue'"));
+	if (CueAsset3.Succeeded() == true) {
+		RevolverShot = CueAsset3.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Revolver Cue Not Found In GunBase!")));
+	}
+
+	// Find the Rifle cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset4(TEXT("SoundCue'/Game/Assets/Sound/RifleCue.RifleCue'"));
+	if (CueAsset4.Succeeded() == true) {
+		RifleShot = CueAsset4.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rfile Cue Not Found In GunBase!")));
+	}
+
+	// Find the PickUp cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset5(TEXT("SoundCue'/Game/Assets/Sound/PickUpCue.PickUpCue'"));
+	if (CueAsset5.Succeeded() == true) {
+		PickUp = CueAsset5.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("PickUp Cue Not Found In GunBase!")));
+	}
 }
 
 // Called when the game starts or when spawned

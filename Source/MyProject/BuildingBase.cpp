@@ -7,6 +7,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "Engine/GameEngine.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
 
@@ -57,10 +59,20 @@ ABuildingBase::ABuildingBase()
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Window Enemy Not Found In BuildingBase!")));
 	}
 
+	// Find the Window cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset(TEXT("SoundCue'/Game/Assets/Sound/Window_Cue.Window_Cue'"));
+	if (CueAsset.Succeeded() == true) {
+		WindowSqueak = CueAsset.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Window Cue Not Found In BuildingBase!")));
+	}
+
 	WindowsChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child"));
 	WindowsChild->SetChildActorClass(WindowsClass);
 	WindowsChild->SetupAttachment(MainBuildingMesh);
-
+	
 	WindowsChild2 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 2"));
 	WindowsChild2->SetChildActorClass(WindowsClass);
 	WindowsChild2->SetupAttachment(MainBuildingMesh);
@@ -72,6 +84,7 @@ ABuildingBase::ABuildingBase()
 	WindowsChild4 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 4"));
 	WindowsChild4->SetChildActorClass(WindowsClass);
 	WindowsChild4->SetupAttachment(MainBuildingMesh);
+	
 }
 
 // Called when the game starts or when spawned
@@ -88,25 +101,29 @@ void ABuildingBase::BeginPlay()
 
 	// Create the window actors and add them to array
 	WindowsChild->CreateChildActor();
-	EnemyHandler->SetWindowsActor(Cast<AWindows>(WindowsChild->GetChildActor()));
-
 	WindowsChild2->CreateChildActor();
-	EnemyHandler2->SetWindowsActor(Cast<AWindows>(WindowsChild2->GetChildActor()));
-
 	WindowsChild3->CreateChildActor();
-	EnemyHandler3->SetWindowsActor(Cast<AWindows>(WindowsChild3->GetChildActor()));
-
 	WindowsChild4->CreateChildActor();
+
+	EnemyHandler->SetWindowsActor(Cast<AWindows>(WindowsChild->GetChildActor()));
+	EnemyHandler2->SetWindowsActor(Cast<AWindows>(WindowsChild2->GetChildActor()));
+	EnemyHandler3->SetWindowsActor(Cast<AWindows>(WindowsChild3->GetChildActor()));
 	EnemyHandler4->SetWindowsActor(Cast<AWindows>(WindowsChild4->GetChildActor()));
-
 	EnemyHandler5->SetTerraceLoc(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 580.0f) + (MainBuildingMesh->GetUpVector() * 100.0f));
-
+	
 	// Add the structs to array
 	EnemyHandlerArray.Add(EnemyHandler);
 	EnemyHandlerArray.Add(EnemyHandler2);
 	EnemyHandlerArray.Add(EnemyHandler3);
 	EnemyHandlerArray.Add(EnemyHandler4);
 	EnemyHandlerArray.Add(EnemyHandler5);
+}
+
+void ABuildingBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	
 }
 
 // Called every frame
@@ -119,9 +136,11 @@ void ABuildingBase::Tick(float DeltaTime)
 // Spawn enemies just behind window or terrace
 void ABuildingBase::SpawnEnemy(int32 Place)
 {
-	if ((EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIfClosed() == true)) {
+	if ((EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed() == true)) {
 		
 		EnemyHandlerArray[Place]->GetWindowsActor()->Open();
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation(), WindowSqueak->GetVolumeMultiplier(), WindowSqueak->GetPitchMultiplier());
+
 		FVector LocOffset;
 		FRotator RotOffset;
 		if (Place < 2) {
@@ -140,6 +159,7 @@ void ABuildingBase::SpawnEnemy(int32 Place)
 
 		SpawnedEnemy->SetWindowsPlace(Place);
 		SpawnedEnemy->SetEnemyHandler(EnemyHandlerArray[Place]);
+		SpawnedEnemy->SetWindowSqueak(WindowSqueak);
 		EnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
 	}
 }

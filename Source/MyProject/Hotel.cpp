@@ -4,6 +4,8 @@
 #include "Windows.h"
 #include "WindowEnemy.h"
 #include "Engine/GameEngine.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Engine/World.h"
 
 
@@ -31,9 +33,10 @@ void AHotel::SpawnEnemy(int32 Place)
 {	
 	if (EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) {
 
-		if ((Place < 4) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIfClosed() == true)) {
+		if ((Place < 4) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed() == true)) {
 			
 			EnemyHandlerArray[Place]->GetWindowsActor()->Open();
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation(), WindowSqueak->GetVolumeMultiplier(), WindowSqueak->GetPitchMultiplier());
 
 			FVector LocOffset;
 			FRotator RotOffset;
@@ -54,6 +57,7 @@ void AHotel::SpawnEnemy(int32 Place)
 
 			SpawnedEnemy->SetWindowsPlace(Place);
 			SpawnedEnemy->SetEnemyHandler(EnemyHandlerArray[Place]);
+			SpawnedEnemy->SetWindowSqueak(WindowSqueak);
 			EnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
 		}
 		else {

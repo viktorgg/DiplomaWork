@@ -87,7 +87,7 @@ void AWindows::Close()
 	}
 }
 
-bool AWindows::GetIfClosed()
+bool AWindows::GetIsClosed()
 {
 	if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, -90.0f, 2.0f) == true) {
 

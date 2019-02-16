@@ -35,6 +35,8 @@ private:
 	// Need to know the window it stands behind in order to adjust rotation
 	int32 WindowsPlace;
 
+	class USoundCue* Scream;
+
 	virtual void Fire();
 
 	virtual void ResetRifleFire();

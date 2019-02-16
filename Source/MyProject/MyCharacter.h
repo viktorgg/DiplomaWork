@@ -44,6 +44,8 @@ private:
 	float LookUpperLimit;
 	float LookLowerLimit;
 
+	float HealthRegenSpeed;
+
 	bool bZooming;
 
 	bool bSlowMo;
@@ -118,4 +120,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		float GetSlowMoCapacity() const { return SlowMoCapacity; }
 	void AddSlowMoCapacity(float Amount) { if (SlowMoCapacity < 10.0f) { SlowMoCapacity += Amount; } }
+
+	bool GetSlowMo() const { return bSlowMo; }
 };

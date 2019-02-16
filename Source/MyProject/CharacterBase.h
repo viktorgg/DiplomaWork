@@ -33,6 +33,9 @@ protected:
 	bool bHavePistol;
 	bool bHaveRifle;
 
+	bool bCanFire;
+	FTimerHandle FireDelayHandle;
+
 	bool bCanFirePistol;
 	float PistolFireRate;
 	FTimerHandle PistolFireRateHandle;
@@ -60,11 +63,15 @@ protected:
 	UAnimSequence* EnemyDeathAnim;
 	UAnimSequence* EnemyDeathAnim2;
 
+	class USoundCue* WindowSqueak;
+
 	FEnemyHandler* EnemyHandler = new FEnemyHandler();
 
 	void ResetHitDelay();
 
 	void ResetHitRegularity();
+
+	void ResetFireDelay();
 
 	virtual void MoveForward(float Input) PURE_VIRTUAL(ACharacterBase::MoveForward, );
 
@@ -137,6 +144,7 @@ public:
 	ARifle* GetRifleActor() const { return RifleActor; }
 	void SetRifleActor(ARifle* RifleActor) { this->RifleActor = RifleActor; }
 
+	UFUNCTION(BlueprintCallable)
 	AMyCharacter* GetMainCharacterActor() const { return MainCharacterActor; }
 
 	UAnimSequence* GetMainDeathAnim() const { return MainCharDeathAnim; }
@@ -149,5 +157,6 @@ public:
 
 	void SetEnemyHandler(FEnemyHandler* EnemyHandler) { this->EnemyHandler = EnemyHandler; }
 
+	void SetWindowSqueak(USoundCue* WindowSqueak) { this->WindowSqueak = WindowSqueak; }
 };
 

@@ -27,7 +27,7 @@ public:
 
 	void Close();
 
-	bool GetIfClosed();
+	bool GetIsClosed();
 	
 private:
 

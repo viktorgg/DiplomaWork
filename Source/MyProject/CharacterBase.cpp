@@ -34,6 +34,8 @@ ACharacterBase::ACharacterBase()
 	ForwardInput = 0.0f;
 	RightInput = 0.0f;
 
+	bCanFire = false;
+
 	bHavePistol = false;
 	bHaveRifle = false;
 
@@ -54,8 +56,6 @@ ACharacterBase::ACharacterBase()
 	bCanHit = true;
 
 	RootComponent = GetCapsuleComponent();
-
-	GetArrowComponent()->SetupAttachment(RootComponent);
 
 	GetMesh()->SetupAttachment(RootComponent);
 
@@ -152,6 +152,12 @@ void ACharacterBase::ResetHitRegularity()
 {
 	GetWorldTimerManager().ClearTimer(HitDelay);
 	bCanHit = true;
+}
+
+void ACharacterBase::ResetFireDelay()
+{
+	GetWorldTimerManager().ClearTimer(FireDelayHandle);
+	bCanFire = true;
 }
 
 // Called every frame

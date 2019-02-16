@@ -3,13 +3,28 @@
 #include "SaloonGroundEnemy.h"
 #include "Revolver.h"
 #include "Engine/World.h"
+#include "Engine/GameEngine.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Public/TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 
 
 ASaloonGroundEnemy::ASaloonGroundEnemy() 
 {
 	bIsKicking = true;
 	CharacterSpeed = 250.0f;	// Enemy will go slower when kicking door
+
+	// Find the DoorKick cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset(TEXT("SoundCue'/Game/Assets/Sound/FullDoorKick_Cue.FullDoorKick_Cue'"));
+	if (CueAsset.Succeeded() == true) {
+		DoorKick = CueAsset.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("DoorKick Cue Not Found In SGEnemy!")));
+	}
 }
 
 void ASaloonGroundEnemy::BeginPlay()
@@ -18,6 +33,8 @@ void ASaloonGroundEnemy::BeginPlay()
 
 	// Kicking animation will stop after 1.5 seconds
 	GetWorldTimerManager().SetTimer(KickingHandle, this, &ASaloonGroundEnemy::ResetKicking, 1.5f, false, 1.5f);
+	// Play sound halfway through animation
+	GetWorldTimerManager().SetTimer(HalfwayKickHandle, this, &ASaloonGroundEnemy::PlaySound, 0.75f, false, 0.75f);
 }
 
 void ASaloonGroundEnemy::ResetKicking()
@@ -25,6 +42,11 @@ void ASaloonGroundEnemy::ResetKicking()
 	GetWorldTimerManager().ClearTimer(KickingHandle);
 	bIsKicking = false;
 	CharacterSpeed = 350.0f;
+}
+
+void ASaloonGroundEnemy::PlaySound()
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DoorKick, GetActorLocation(), DoorKick->GetVolumeMultiplier(), DoorKick->GetPitchMultiplier());
 }
 
 void ASaloonGroundEnemy::MoveForward(float Input)
