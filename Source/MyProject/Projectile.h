@@ -22,9 +22,6 @@ protected:
 
 private:
 
-	UPROPERTY(EditAnywhere)
-		float BulletSpeed;
-
 	int32 Damage;
 
 	class ALevelHandler* LevelHandlerActor;
@@ -35,22 +32,18 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* ProjectileMesh;
 
-	UPROPERTY(VisibleAnywhere)
-		class ACharacterBase* CharacterActor;
+	class ACharacterBase* CharacterActor;
 
-	UPROPERTY(VisibleAnywhere)
-		class UParticleSystem* HitFire;
+	class UParticleSystem* HitFire;
 
-	UPROPERTY(VisibleAnywhere)
-		class UParticleSystem* HitBlood;
+	class UParticleSystem* HitBlood;
 
-	UPROPERTY(VisibleAnywhere)
-		class UParticleSystem* ProjectileTrail;
+	class UParticleSystem* ProjectileTrail;
+
+	void SpawnEmitter();
 
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
-	void ProjectileTravel();
 
 public:	
 	// Called every frame
@@ -59,5 +52,4 @@ public:
 	void SetDamage(int32 Damage) { this->Damage = Damage; }
 
 	void SetCharacterActor(ACharacterBase* CharacterActor) { this->CharacterActor = CharacterActor; }
-
 };

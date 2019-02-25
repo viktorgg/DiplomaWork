@@ -89,7 +89,7 @@ void ARifle::SpawnProjectile()
 
 	SpawnedProjectile->SetCharacterActor(CharacterActor);
 	SpawnedProjectile->SetDamage(Damage);
-
+	
 	// Wait 0.2 seconds when player is firing for animation synchronization
 	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
 		AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterActor);

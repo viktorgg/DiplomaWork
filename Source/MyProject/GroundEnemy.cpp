@@ -58,7 +58,7 @@ void AGroundEnemy::Tick(float DeltaTime)
 			Fire();
 		}
 	}
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), bIsRotating));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), Health));
 }
 
 void AGroundEnemy::MoveForward(float Input)
@@ -130,10 +130,7 @@ void AGroundEnemy::DestroyChar()
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 
-	EnemyHandler->SetEnemyActor(nullptr);
-
 	LevelHandlerActor->GEnemyHandler();
-	// delete EnemyHandler;
 
 	Destroy();
 }
@@ -160,10 +157,6 @@ float AGroundEnemy::LineTrace()
 	GetWorld()->LineTraceSingleByChannel(OutHitFront, StartLocFront, EndLocFront, ECC_Camera, CollisionParams);
 	GetWorld()->LineTraceSingleByChannel(OutHitFrontL, StartLocFrontL, EndLocFrontL, ECC_Camera, CollisionParams);
 	GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
-
-	//DrawDebugLine(GetWorld(), StartLocFront, EndLocFront, FColor::Emerald, true, 1.f, 0, 10);
-	//DrawDebugLine(GetWorld(), StartLocFrontL, EndLocFrontL, FColor::Emerald, true, 1.f, 0, 10);
-	//DrawDebugLine(GetWorld(), StartLocFrontR, EndLocFrontR, FColor::Emerald, true, 1.f, 0, 10);
 
 	if (OutHitFront.GetActor() != this || OutHitFrontL.GetActor() != this || OutHitFrontR.GetActor() != this) {
 		

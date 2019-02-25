@@ -110,7 +110,8 @@ void AGunBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGunBase::OnEnterSphere);	// Calls OnEnterSphere when something enters sphere
+	// Calls OnEnterSphere when something enters sphere
+	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGunBase::OnEnterSphere);	
 
 }
 

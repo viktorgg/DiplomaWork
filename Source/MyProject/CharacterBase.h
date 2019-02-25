@@ -65,7 +65,7 @@ protected:
 
 	class USoundCue* WindowSqueak;
 
-	FEnemyHandler* EnemyHandler = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler;
 
 	void ResetHitDelay();
 

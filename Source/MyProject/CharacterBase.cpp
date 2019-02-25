@@ -52,6 +52,8 @@ ACharacterBase::ACharacterBase()
 	MainCharacterActor = nullptr;
 	LevelHandlerActor = nullptr;
 
+	EnemyHandler = nullptr;
+
 	bIsHit = false;
 	bCanHit = true;
 

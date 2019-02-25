@@ -26,7 +26,7 @@
 ALevelHandler::ALevelHandler()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	bEntered = false;
 
@@ -114,6 +114,7 @@ void ALevelHandler::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), NationalBankActor->GetEnemyHandlerArray()[1]->GetWindowsActor()->GetIsClosed()));
 }
 
 void ALevelHandler::SpawnGroundEnemy(int32 Place)

@@ -61,3 +61,12 @@ void ASaloonGroundEnemy::MoveForward(float Input)
 		SetActorLocation(NewLoc);
 	}
 }
+
+void ASaloonGroundEnemy::DestroyChar()
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+
+	EnemyHandler->SetEnemyActor(nullptr);
+
+	Destroy();
+}

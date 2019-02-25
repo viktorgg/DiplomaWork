@@ -84,13 +84,18 @@ ABuildingBase::ABuildingBase()
 	WindowsChild4 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 4"));
 	WindowsChild4->SetChildActorClass(WindowsClass);
 	WindowsChild4->SetupAttachment(MainBuildingMesh);
-	
 }
 
 // Called when the game starts or when spawned
 void ABuildingBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+}
+
+void ABuildingBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 
 	// Create structures for 5 possible enemies
 	FEnemyHandler* EnemyHandler = new FEnemyHandler();
@@ -110,20 +115,13 @@ void ABuildingBase::BeginPlay()
 	EnemyHandler3->SetWindowsActor(Cast<AWindows>(WindowsChild3->GetChildActor()));
 	EnemyHandler4->SetWindowsActor(Cast<AWindows>(WindowsChild4->GetChildActor()));
 	EnemyHandler5->SetTerraceLoc(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 580.0f) + (MainBuildingMesh->GetUpVector() * 100.0f));
-	
+
 	// Add the structs to array
 	EnemyHandlerArray.Add(EnemyHandler);
 	EnemyHandlerArray.Add(EnemyHandler2);
 	EnemyHandlerArray.Add(EnemyHandler3);
 	EnemyHandlerArray.Add(EnemyHandler4);
 	EnemyHandlerArray.Add(EnemyHandler5);
-}
-
-void ABuildingBase::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	
 }
 
 // Called every frame

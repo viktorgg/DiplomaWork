@@ -101,7 +101,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), Health));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), *SpringArm->GetForwardVector().ToString()));
 }
 
 // Called to bind functionality to input
@@ -124,7 +124,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void AMyCharacter::MoveForward(float Input)
 {
 	SetForwardInput(Input);		// Sets input to 1.0 when clicking W
-								// Sets input to -1.0 when clicking
+								// Sets input to -1.0 when clicking S
 	if (Input != 0.0) {
 		FVector CurrLoc = GetActorLocation();
 		FVector NewLoc;
@@ -149,12 +149,13 @@ void AMyCharacter::MoveRight(float Input)
 	if (Input != 0.0) {
 		FVector CurrLoc = GetActorLocation();
 		FVector NewLoc;
+		FVector SpringArmRight = SpringArm->GetRightVector();
 
 		if (GetForwardInput() != 0.0) {
-			NewLoc = CurrLoc + (SpringArm->GetRightVector() * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
+			NewLoc = CurrLoc + (SpringArmRight * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
-			NewLoc = CurrLoc + (SpringArm->GetRightVector() * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
+			NewLoc = CurrLoc + (SpringArmRight * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
 		}
 		SetActorLocation(NewLoc);
 
@@ -176,9 +177,10 @@ void AMyCharacter::LookUp(float Input)
 	if (Input != 0.0f) {	// Camera rotates up when moving mouse up on Y axis
 		
 		float CurrRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Pitch;
-
 		float NewRot = LookSpeed * Input;
-		if ((CurrRot + NewRot) > LookUpperLimit && (CurrRot + NewRot) < LookLowerLimit) {	// Limit the rotation at some point
+
+		// Limit the rotation at some point
+		if ((CurrRot + NewRot) > LookUpperLimit && (CurrRot + NewRot) < LookLowerLimit) {	
 			SpringArm->AddRelativeRotation(FRotator(NewRot, 0.0f, 0.0f));
 		}
 	}

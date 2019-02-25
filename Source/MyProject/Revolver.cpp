@@ -55,27 +55,30 @@ void ARevolver::SpawnProjectile()
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
 		if (MainCharacter->GetZooming() == true) {
-
-			if (ChanceToHit <= 30) {		// There's a 30% chance the bullet will go exactly at crosshair when zooming
+			// There's a 30% chance the bullet will go exactly at crosshair when zooming
+			if (ChanceToHit <= 30) {		
 				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
-				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);		// Add a random deviation to the crosshair's location
+				// Add a random deviation to the crosshair's location
+				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);		
 				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
 				FRotator CurrRot = GetHitRot(SpawnLocation, MainCharacter);
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);	
 			}
 		}
 		else {
-			if (ChanceToHit <= 15) {		// There's a 15% chance the bullet will go exactly at crosshair when not zooming
+			// There's a 15% chance the bullet will go exactly at crosshair when not zooming
+			if (ChanceToHit <= 15) {		
 				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 			}
 			else {
 				float BulletOffsetPitch;
 				float BulletOffsetYaw;
-				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);		// Add an even bigger random deviation to the crosshair's location
+				// Add an even bigger random deviation to the crosshair's location
+				BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);		
 				BulletOffsetYaw = FMath::RandRange(-ProjectileOffsetNoZoom, ProjectileOffsetNoZoom);
 				FRotator CurrRot = GetHitRot(SpawnLocation, MainCharacter);
 				SpawnRotation = FRotator(CurrRot.Pitch + BulletOffsetPitch, CurrRot.Yaw + BulletOffsetYaw, CurrRot.Roll);
