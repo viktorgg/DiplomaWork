@@ -20,6 +20,11 @@ void AGeneralStore::BeginPlay()
 
 }
 
+void AGeneralStore::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+}
+
 void AGeneralStore::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

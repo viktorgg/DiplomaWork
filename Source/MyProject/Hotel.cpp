@@ -23,6 +23,11 @@ void AHotel::BeginPlay()
 
 }
 
+void AHotel::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+}
+
 void AHotel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

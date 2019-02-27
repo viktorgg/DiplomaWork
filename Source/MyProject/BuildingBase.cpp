@@ -70,19 +70,15 @@ ABuildingBase::ABuildingBase()
 	}
 
 	WindowsChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child"));
-	WindowsChild->SetChildActorClass(WindowsClass);
 	WindowsChild->SetupAttachment(MainBuildingMesh);
 	
 	WindowsChild2 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 2"));
-	WindowsChild2->SetChildActorClass(WindowsClass);
 	WindowsChild2->SetupAttachment(MainBuildingMesh);
 
 	WindowsChild3 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 3"));
-	WindowsChild3->SetChildActorClass(WindowsClass);
 	WindowsChild3->SetupAttachment(MainBuildingMesh);
 
 	WindowsChild4 = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child 4"));
-	WindowsChild4->SetChildActorClass(WindowsClass);
 	WindowsChild4->SetupAttachment(MainBuildingMesh);
 }
 
@@ -103,6 +99,12 @@ void ABuildingBase::PostInitializeComponents()
 	FEnemyHandler* EnemyHandler3 = new FEnemyHandler();
 	FEnemyHandler* EnemyHandler4 = new FEnemyHandler();
 	FEnemyHandler* EnemyHandler5 = new FEnemyHandler();
+
+	// Set the class of child actor
+	WindowsChild->SetChildActorClass(WindowsClass);
+	WindowsChild2->SetChildActorClass(WindowsClass);
+	WindowsChild3->SetChildActorClass(WindowsClass);
+	WindowsChild4->SetChildActorClass(WindowsClass);
 
 	// Create the window actors and add them to array
 	WindowsChild->CreateChildActor();

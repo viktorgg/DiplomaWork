@@ -43,12 +43,7 @@ private:
 	FVector GEnemyBarn = FVector(1104.f, 2335.f, 205.f);
 	FVector GEnemyEnd = FVector(3610.f, 3633.f, 205.f);
 
-	FVector HotelTerraceLoc = FVector(2355.f, 4662.f, 580.f);
-	FVector SaloonTerraceLoc = FVector(1633.f, 1352.f, 560.f);
-	FVector SaloonTerraceLoc2 = FVector(3011.f, 3095.f, 550.f);
-
-	FTimerHandle GEnemyHandle;
-	FTimerHandle WEnemyHandle;
+	// FTimerHandle WEnemyHandle;
 	FTimerHandle HotelTerraceHandle;
 	FTimerHandle SaloonOutHandle;
 	FTimerHandle SaloonOutHandle2;
@@ -86,9 +81,6 @@ private:
 	class AHotel* HotelActor;
 
 	class AGeneralStore* GeneralStoreActor;
-
-	// One time use
-	void SpawnGEnemy();
 
 	bool IfEnemyInSight(FVector Loc);
 

@@ -32,6 +32,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* ProjectileMesh;
 
+	UPROPERTY(VisibleAnywhere)
+		class UProjectileMovementComponent* ProjectileMovement;
+
 	class ACharacterBase* CharacterActor;
 
 	class UParticleSystem* HitFire;

@@ -22,6 +22,11 @@ void ANationalBank::BeginPlay()
 	
 }
 
+void ANationalBank::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+}
+
 void ANationalBank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

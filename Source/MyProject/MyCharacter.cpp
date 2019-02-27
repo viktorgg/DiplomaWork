@@ -36,7 +36,7 @@ AMyCharacter::AMyCharacter()
 	LookUpperLimit = -50.0f;
 	LookLowerLimit = 65.0f;
 
-	HealthRegenSpeed = 20.f;
+	HealthRegenSpeed = 12.5f;
 
 	bZooming = false;
 
