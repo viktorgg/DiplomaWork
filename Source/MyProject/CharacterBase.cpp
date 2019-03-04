@@ -115,6 +115,7 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::PlayMainDeathAnim()
 {
 	GetMesh()->PlayAnimation(MainCharDeathAnim, false);
+	Cast<AMyCharacter>(this)->DestroyAfterTime();
 }
 
 void ACharacterBase::PlayEnemyDeathAnim()

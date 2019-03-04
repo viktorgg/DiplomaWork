@@ -31,6 +31,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void DestroyAfterTime();
 
 private:
 
@@ -80,6 +81,8 @@ private:
 
 	virtual void ResetRifleAnim();
 
+	virtual void DestroyChar();
+
 	void LookSide(float Input);
 
 	void LookUp(float Input);
@@ -102,6 +105,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		WeaponInHand GetWInHand() const { return WInHand; }
+
+	UFUNCTION(BlueprintCallable)
+		float GetLookSpeed() const { return LookSpeed; }
+	UFUNCTION(BlueprintCallable)
+		void SetLookSpeed(float NewLookSpeed) { LookSpeed = NewLookSpeed; }
 
 	UCameraComponent* GetCamera() const { return Camera; }
 

@@ -3,5 +3,11 @@
 #include "MyProjectGameModeBase.h"
 
 
+AMyProjectGameModeBase::AMyProjectGameModeBase() {
+
+	VolumeControl = 1.f;
+}
+
+
 
 

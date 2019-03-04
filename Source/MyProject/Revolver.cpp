@@ -5,6 +5,7 @@
 #include "MyCharacter.h"
 #include "CharacterBase.h"
 #include "GroundEnemy.h"
+#include "MyProjectGameModeBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
@@ -24,7 +25,7 @@ ARevolver::ARevolver()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Damage = 20;
+	Damage = 25;
 	SetProjectileOffsetNoZoom(2.5f);
 	SetProjectileOffsetZoom(1.5f);
 }
@@ -133,10 +134,13 @@ void ARevolver::SpawnEmitter()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
 	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
-		UGameplayStatics::PlaySound2D(GetWorld(), RevolverShot, RevolverShot->GetVolumeMultiplier(), RevolverShot->GetPitchMultiplier());
+
+		float VolumeControl = RevolverShot->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		UGameplayStatics::PlaySound2D(GetWorld(), RevolverShot, VolumeControl, RevolverShot->GetPitchMultiplier());
 	}
 	else {
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RevolverShot3D, GunMesh->GetSocketLocation("Muzzle"), RevolverShot3D->GetVolumeMultiplier(), RevolverShot3D->GetPitchMultiplier());
+		float VolumeControl = RevolverShot3D->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RevolverShot3D, GunMesh->GetSocketLocation("Muzzle"), VolumeControl, RevolverShot3D->GetPitchMultiplier());
 	}
 }
 
@@ -154,7 +158,9 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 			SphereCollision->SetSimulatePhysics(false);		// Enable it's physics when character dies
 
 			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
-				UGameplayStatics::PlaySound2D(GetWorld(), PickUp, PickUp->GetVolumeMultiplier(), PickUp->GetPitchMultiplier());
+
+				float VolumeControl = PickUp->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+				UGameplayStatics::PlaySound2D(GetWorld(), PickUp, VolumeControl, PickUp->GetPitchMultiplier());
 			}
 		}
 		else {
@@ -163,7 +169,9 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 				if (MainChar->GetCurrPistolMagazine() < MainChar->GetPistolMagazineLimit()) {
 					MainChar->SetCurrPistolMagazine(MainChar->GetPistolMagazineLimit());
 					Destroy();
-					UGameplayStatics::PlaySound2D(GetWorld(), PickUp, PickUp->GetVolumeMultiplier(), PickUp->GetPitchMultiplier());
+
+					float VolumeControl = PickUp->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+					UGameplayStatics::PlaySound2D(GetWorld(), PickUp, VolumeControl, PickUp->GetPitchMultiplier());
 				}
 			}
 		}

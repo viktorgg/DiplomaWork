@@ -2,6 +2,7 @@
 
 #include "SaloonGroundEnemy.h"
 #include "Revolver.h"
+#include "MyProjectGameModeBase.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/Engine/Public/TimerManager.h"
@@ -46,7 +47,8 @@ void ASaloonGroundEnemy::ResetKicking()
 
 void ASaloonGroundEnemy::PlaySound()
 {
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DoorKick, GetActorLocation(), DoorKick->GetVolumeMultiplier(), DoorKick->GetPitchMultiplier());
+	float VolumeControl = DoorKick->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DoorKick, GetActorLocation(), VolumeControl, DoorKick->GetPitchMultiplier());
 }
 
 void ASaloonGroundEnemy::MoveForward(float Input)

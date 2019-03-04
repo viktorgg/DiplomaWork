@@ -101,7 +101,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), *SpringArm->GetForwardVector().ToString()));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), *ControlInputVector.ToString()));
 }
 
 // Called to bind functionality to input
@@ -126,19 +126,18 @@ void AMyCharacter::MoveForward(float Input)
 	SetForwardInput(Input);		// Sets input to 1.0 when clicking W
 								// Sets input to -1.0 when clicking S
 	if (Input != 0.0) {
-		FVector CurrLoc = GetActorLocation();
-		FVector NewLoc;
+	
 		FVector SpringArmForward = SpringArm->GetForwardVector();
 
 		if (RightInput != 0.0) {	// Lowers the speed when holding both W/S and D/A so that character doesn't move faster diagonally
-			NewLoc = CurrLoc + (SpringArmForward * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
+			AddActorWorldOffset(SpringArmForward * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
-			NewLoc = CurrLoc + (SpringArmForward * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
+			AddActorWorldOffset(SpringArmForward * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
 		}
-		SetActorLocation(NewLoc);
 		
 		LerpPlayerToCamera(6.0f);	// Character turns to camera direction when moving
+		// AddMovementInput(SpringArm->GetForwardVector() * Input);
 	}
 }
 
@@ -147,19 +146,18 @@ void AMyCharacter::MoveRight(float Input)
 	RightInput = Input;
 
 	if (Input != 0.0) {
-		FVector CurrLoc = GetActorLocation();
-		FVector NewLoc;
+	
 		FVector SpringArmRight = SpringArm->GetRightVector();
 
 		if (GetForwardInput() != 0.0) {
-			NewLoc = CurrLoc + (SpringArmRight * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
+			AddActorWorldOffset(SpringArmRight * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
-			NewLoc = CurrLoc + (SpringArmRight * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
+			AddActorWorldOffset(SpringArmRight * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
 		}
-		SetActorLocation(NewLoc);
 
 		LerpPlayerToCamera(6.0f);
+		// AddMovementInput(SpringArm->GetRightVector() * Input);
 	}
 }
 
@@ -314,4 +312,16 @@ void AMyCharacter::ResetRifleAnim()
 {
 	GetWorldTimerManager().ClearTimer(RifleAnimHandle);
 	bCanRifleAnim = true;
+}
+
+// Calls DestroyChar after 2 seconds
+void AMyCharacter::DestroyAfterTime()
+{
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AMyCharacter::DestroyChar, 2, false, 2);
+}
+
+// Opens menu level
+void AMyCharacter::DestroyChar()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("MenuLevel"));
 }

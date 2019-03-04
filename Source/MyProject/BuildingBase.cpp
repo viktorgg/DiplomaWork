@@ -3,6 +3,7 @@
 #include "BuildingBase.h"
 #include "Windows.h"
 #include "WindowEnemy.h"
+#include "MyProjectGameModeBase.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/ChildActorComponent.h"
@@ -38,6 +39,9 @@ ABuildingBase::ABuildingBase()
 
 	SecondFloorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Second Floor"));
 	SecondFloorMesh->SetupAttachment(MainBuildingMesh);
+
+	MovementBlock = CreateDefaultSubobject<UBoxComponent>(TEXT("Movement Block"));
+	MovementBlock->SetupAttachment(MainBuildingMesh);
 
 	// Find windows class in content browser
 	static ConstructorHelpers::FClassFinder<AWindows>
@@ -139,7 +143,9 @@ void ABuildingBase::SpawnEnemy(int32 Place)
 	if ((EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed() == true)) {
 		
 		EnemyHandlerArray[Place]->GetWindowsActor()->Open();
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation(), WindowSqueak->GetVolumeMultiplier(), WindowSqueak->GetPitchMultiplier());
+
+		float VolumeControl = WindowSqueak->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation(), VolumeControl, WindowSqueak->GetPitchMultiplier());
 
 		FVector LocOffset;
 		FRotator RotOffset;

@@ -65,9 +65,7 @@ void AGroundEnemy::MoveForward(float Input)
 {
 	if (GetDistanceToMain() >= DistanceToWalk) {
 		ForwardInput = 1.f;
-		FVector CurrLoc = GetActorLocation();
-		FVector NewLoc = CurrLoc + (GetActorForwardVector() * CharacterSpeed * GetWorld()->GetDeltaSeconds());
-		SetActorLocation(NewLoc);
+		AddActorWorldOffset(GetActorForwardVector() * CharacterSpeed * GetWorld()->GetDeltaSeconds());
 	}
 	else {
 		ForwardInput = 0.f;

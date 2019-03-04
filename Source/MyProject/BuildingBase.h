@@ -107,6 +107,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* SecondFloorMesh;
 
+	UPROPERTY(VisibleAnywhere)
+		class UBoxComponent* MovementBlock;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

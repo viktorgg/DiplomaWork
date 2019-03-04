@@ -105,7 +105,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		}
 		if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && (OtherActor != CharacterActor)) {
 
-			if (Cast<AMyCharacter>(CharacterActor) == NULL && Cast<AMyCharacter>(Hit.GetActor()) == NULL) {
+			if ((Cast<AMyCharacter>(CharacterActor) == NULL) && (Cast<AMyCharacter>(Hit.GetActor()) == NULL)) {
 				Destroy();		// If enemy hits another enemy bullet vanishes
 			}
 			else {
@@ -131,7 +131,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 							HitActor->PlayMainDeathAnim();
 							HitActor->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 						}
-						// If ground enemy dies it's pistol becomes retrievable
+						// If GEnemy dies it's pistol becomes retrievable
 						else if (Cast<AGroundEnemy>(HitActor) != NULL) {
 							AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
 							GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
@@ -139,7 +139,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 							HitActor->PlayEnemyDeathAnim();
 							GroundEnemy->DestroyAfterTime();
 						}
-						// If window enemy dies it's rifle becomes retrievable and flies off to the ground
+						// If WEnemy dies it's rifle becomes retrievable and flies off to the ground
 						else if (Cast<AWindowEnemy>(HitActor) != NULL) {
 							AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor);
 							WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);

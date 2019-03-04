@@ -5,6 +5,7 @@
 #include "MyCharacter.h"
 #include "CharacterBase.h"
 #include "WindowEnemy.h"
+#include "MyProjectGameModeBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
@@ -114,10 +115,13 @@ void ARifle::SpawnEmitter()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
 	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
-		UGameplayStatics::PlaySound2D(GetWorld(), RifleShot, RifleShot->GetVolumeMultiplier(), RifleShot->GetPitchMultiplier());
+
+		float VolumeControl = RifleShot->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		UGameplayStatics::PlaySound2D(GetWorld(), RifleShot, VolumeControl, RifleShot->GetPitchMultiplier());
 	}
 	else {
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RifleShot3D, GunMesh->GetSocketLocation("Muzzle"), RifleShot3D->GetVolumeMultiplier(), RifleShot3D->GetPitchMultiplier());
+		float VolumeControl = RifleShot3D->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RifleShot3D, GunMesh->GetSocketLocation("Muzzle"), VolumeControl, RifleShot3D->GetPitchMultiplier());
 	}
 }
 
@@ -135,7 +139,9 @@ void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 			SphereCollision->SetSimulatePhysics(false);		// Enable it's physics when character dies
 
 			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
-				UGameplayStatics::PlaySound2D(GetWorld(), PickUp, PickUp->GetVolumeMultiplier(), PickUp->GetPitchMultiplier());
+
+				float VolumeControl = PickUp->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+				UGameplayStatics::PlaySound2D(GetWorld(), PickUp, VolumeControl, PickUp->GetPitchMultiplier());
 			}
 		}
 		else {
@@ -144,7 +150,9 @@ void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 				if (MainChar->GetCurrRifleMagazine() < MainChar->GetRifleMagazineLimit()) {
 					MainChar->SetCurrRifleMagazine(MainChar->GetRifleMagazineLimit());
 					Destroy();
-					UGameplayStatics::PlaySound2D(GetWorld(), PickUp, PickUp->GetVolumeMultiplier(), PickUp->GetPitchMultiplier());
+
+					float VolumeControl = PickUp->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+					UGameplayStatics::PlaySound2D(GetWorld(), PickUp, VolumeControl, PickUp->GetPitchMultiplier());
 				}
 			}
 		}
