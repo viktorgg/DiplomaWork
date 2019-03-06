@@ -3,7 +3,7 @@
 #include "BuildingBase.h"
 #include "Windows.h"
 #include "WindowEnemy.h"
-#include "MyProjectGameModeBase.h"
+#include "MyProjectGameInstance.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/ChildActorComponent.h"
@@ -144,7 +144,7 @@ void ABuildingBase::SpawnEnemy(int32 Place)
 		
 		EnemyHandlerArray[Place]->GetWindowsActor()->Open();
 
-		float VolumeControl = WindowSqueak->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation(), VolumeControl, WindowSqueak->GetPitchMultiplier());
 
 		FVector LocOffset;

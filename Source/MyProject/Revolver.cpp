@@ -5,7 +5,7 @@
 #include "MyCharacter.h"
 #include "CharacterBase.h"
 #include "GroundEnemy.h"
-#include "MyProjectGameModeBase.h"
+#include "MyProjectGameInstance.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
@@ -135,11 +135,11 @@ void ARevolver::SpawnEmitter()
 	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
 	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
 
-		float VolumeControl = RevolverShot->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 		UGameplayStatics::PlaySound2D(GetWorld(), RevolverShot, VolumeControl, RevolverShot->GetPitchMultiplier());
 	}
 	else {
-		float VolumeControl = RevolverShot3D->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RevolverShot3D, GunMesh->GetSocketLocation("Muzzle"), VolumeControl, RevolverShot3D->GetPitchMultiplier());
 	}
 }
@@ -159,7 +159,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 
 			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
 
-				float VolumeControl = PickUp->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+				float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 				UGameplayStatics::PlaySound2D(GetWorld(), PickUp, VolumeControl, PickUp->GetPitchMultiplier());
 			}
 		}
@@ -170,7 +170,7 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 					MainChar->SetCurrPistolMagazine(MainChar->GetPistolMagazineLimit());
 					Destroy();
 
-					float VolumeControl = PickUp->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+					float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 					UGameplayStatics::PlaySound2D(GetWorld(), PickUp, VolumeControl, PickUp->GetPitchMultiplier());
 				}
 			}

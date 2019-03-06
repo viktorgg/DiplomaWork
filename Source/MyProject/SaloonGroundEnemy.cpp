@@ -2,7 +2,7 @@
 
 #include "SaloonGroundEnemy.h"
 #include "Revolver.h"
-#include "MyProjectGameModeBase.h"
+#include "MyProjectGameInstance.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/Engine/Public/TimerManager.h"
@@ -19,7 +19,7 @@ ASaloonGroundEnemy::ASaloonGroundEnemy()
 
 	// Find the DoorKick cue in content browser by reference
 	static ConstructorHelpers::FObjectFinder<USoundCue>
-		CueAsset(TEXT("SoundCue'/Game/Assets/Sound/FullDoorKick_Cue.FullDoorKick_Cue'"));
+		CueAsset(TEXT("SoundCue'/Game/Assets/Sound/FullDoorKickCue.FullDoorKickCue'"));
 	if (CueAsset.Succeeded() == true) {
 		DoorKick = CueAsset.Object;
 	}
@@ -47,7 +47,7 @@ void ASaloonGroundEnemy::ResetKicking()
 
 void ASaloonGroundEnemy::PlaySound()
 {
-	float VolumeControl = DoorKick->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+	float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DoorKick, GetActorLocation(), VolumeControl, DoorKick->GetPitchMultiplier());
 }
 

@@ -43,7 +43,7 @@ private:
 	FVector GEnemyBarn = FVector(1104.f, 2335.f, 205.f);
 	FVector GEnemyEnd = FVector(3610.f, 3633.f, 205.f);
 
-	// FTimerHandle WEnemyHandle;
+	FTimerHandle WEnemyHandle;
 	FTimerHandle HotelTerraceHandle;
 	FTimerHandle SaloonOutHandle;
 	FTimerHandle SaloonOutHandle2;

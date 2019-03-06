@@ -6,7 +6,7 @@
 #include "Windows.h"
 #include "LevelHandler.h"
 #include "BuildingBase.h"
-#include "MyProjectGameModeBase.h"
+#include "MyProjectGameInstance.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
@@ -107,7 +107,7 @@ void AWindowEnemy::DestroyChar()
 	if (EnemyHandler->GetWindowsActor() != nullptr) {
 		EnemyHandler->GetWindowsActor()->Close();
 
-		float VolumeControl = WindowSqueak->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandler->GetWindowsActor()->GetActorLocation(), VolumeControl, WindowSqueak->GetPitchMultiplier());
 	}
 
@@ -121,7 +121,7 @@ void AWindowEnemy::DestroyAfterTime()
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AWindowEnemy::DestroyChar, 1, false, 1);
 	if (FMath::RandRange(0, 100) <= 20) {
 
-		float VolumeControl = Scream->GetVolumeMultiplier() * Cast<AMyProjectGameModeBase>(GetWorld()->GetAuthGameMode())->VolumeControl;
+		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Scream, GetActorLocation(), VolumeControl, Scream->GetPitchMultiplier());
 	}
 }

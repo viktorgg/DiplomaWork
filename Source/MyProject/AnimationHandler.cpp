@@ -20,7 +20,6 @@ void UAnimationHandler::UpdateAnimationProperties()
 		bRifleAnim = !CharacterRef->GetCanRifleAnim();
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			FString::Printf(TEXT("Char Not Found In AnimHandler!")));
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found In AnimHandler!")));
 	}
 }

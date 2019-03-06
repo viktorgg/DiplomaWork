@@ -4,6 +4,7 @@
 #include "Revolver.h"
 #include "Rifle.h"
 #include "Projectile.h"
+#include "MyProjectGameInstance.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
@@ -36,7 +37,7 @@ AMyCharacter::AMyCharacter()
 	LookUpperLimit = -50.0f;
 	LookLowerLimit = 65.0f;
 
-	HealthRegenSpeed = 12.5f;
+	HealthRegenSpeed = 20.f;
 
 	bZooming = false;
 
@@ -61,6 +62,13 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Configure difficulty variables
+	if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Medium) {
+		HealthRegenSpeed -= 3.75f;
+	}
+	else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Hard) {
+		HealthRegenSpeed -= 7.5f;
+	}
 }
 
 // Called every frame
@@ -80,11 +88,11 @@ void AMyCharacter::Tick(float DeltaTime)
 	}
 
 	// Character to face camera's direction when shooting
-	if (GetCanFirePistol() == false) {
+	if (bCanFirePistol == false) {
 		LerpPlayerToCamera(15.0f);
 	}
 
-	if (GetCanRifleAnim() == false) {
+	if (bCanRifleAnim == false) {
 		LerpPlayerToCamera(15.0f);
 	}
 
@@ -100,8 +108,7 @@ void AMyCharacter::Tick(float DeltaTime)
 			EnterSlowMo();		// Disable slow mo when out of capacity
 		}
 	}
-
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), *ControlInputVector.ToString()));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), Difficulty));
 }
 
 // Called to bind functionality to input
@@ -136,7 +143,7 @@ void AMyCharacter::MoveForward(float Input)
 			AddActorWorldOffset(SpringArmForward * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
 		}
 		
-		LerpPlayerToCamera(6.0f);	// Character turns to camera direction when moving
+		LerpPlayerToCamera(8.0f);	// Character turns to camera direction when moving
 		// AddMovementInput(SpringArm->GetForwardVector() * Input);
 	}
 }
@@ -156,7 +163,7 @@ void AMyCharacter::MoveRight(float Input)
 			AddActorWorldOffset(SpringArmRight * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
 		}
 
-		LerpPlayerToCamera(6.0f);
+		LerpPlayerToCamera(8.0f);
 		// AddMovementInput(SpringArm->GetRightVector() * Input);
 	}
 }
@@ -280,7 +287,7 @@ void AMyCharacter::EnterSlowMo()
 {
 	if ((bSlowMo == false) && (SlowMoCapacity > 0.0f)) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.4f);
-		CharacterSpeed *= 2.5f;
+		CharacterSpeed *=  2.5f;
 		PistolFireRate /= 2.5f;
 		RifleFireRate /= 2.5f;
 		HealthRegenSpeed *= 2.5f;

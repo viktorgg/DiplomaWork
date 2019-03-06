@@ -8,6 +8,7 @@
 #include "GeneralStore.h"
 #include "MyCharacter.h"
 #include "Windows.h"
+#include "MyProjectGameInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
@@ -368,8 +369,8 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 			GetWorldTimerManager().SetTimer(HotelEnemyHandle, HotelEnemyDel, 3.0f, false, 3.0f);
 			GetWorldTimerManager().SetTimer(GEnemyHandle, GEnemyDel, 7.0f, false, 7.0f);
 
-			// Spawns a window enemy every minute
-			// GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 60.0f, true, 7.0f);
+			// Spawns a window enemy every half minute
+			GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 30.0f, true, 7.0f);
 
 			// Tries to spawn an enemy at hotel terrace every 20 seconds
 			HotelTerraceDel.BindUFunction(this, FName("SpawnHotelEnemy"), 4);
