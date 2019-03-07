@@ -24,7 +24,7 @@ ARifle::ARifle() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Damage = 50;
-	SetProjectileOffsetNoZoom(2.5f);
+	ProjectileOffsetNoZoom = 2.5f;
 }
 
 void ARifle::BeginPlay()
@@ -74,9 +74,17 @@ void ARifle::SpawnProjectile()
 		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, EnemyCharacter->GetMainCharacterActor()->GetActorLocation());
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
+		int32 Percentage = 35;
 
-		// There's a 35% chance the bullet will go exactly at player's character
-		if (ChanceToHit <= 35) {
+		// Configure difficulty variables
+		if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Medium) {
+			Percentage += 25;
+		}
+		else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Hard) {
+			Percentage += 50;
+		}
+		// There's a Percentage chance the bullet will go exactly at player's character
+		if (ChanceToHit <= Percentage) {
 			float BulletOffsetPitch;
 			float BulletOffsetYaw;
 			BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetNoZoom * 2.5f, ProjectileOffsetNoZoom * 2.5f);

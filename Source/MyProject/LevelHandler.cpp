@@ -369,8 +369,19 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 			GetWorldTimerManager().SetTimer(HotelEnemyHandle, HotelEnemyDel, 3.0f, false, 3.0f);
 			GetWorldTimerManager().SetTimer(GEnemyHandle, GEnemyDel, 7.0f, false, 7.0f);
 
-			// Spawns a window enemy every half minute
-			GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 30.0f, true, 7.0f);
+			// Configure difficulty variables
+			if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Easy) {
+				// Spawns a window enemy every minute
+				GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 60.0f, true, 7.0f);
+			}
+			else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Medium) {
+				// Spawns a window enemy every half minute
+				GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 30.0f, true, 7.0f);
+			}
+			else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Hard) {
+				// Spawns a window enemy every quarter minute
+				GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 15.0f, true, 7.0f);
+			}
 
 			// Tries to spawn an enemy at hotel terrace every 20 seconds
 			HotelTerraceDel.BindUFunction(this, FName("SpawnHotelEnemy"), 4);

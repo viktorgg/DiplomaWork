@@ -68,6 +68,10 @@ void AMyCharacter::BeginPlay()
 	}
 	else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Hard) {
 		HealthRegenSpeed -= 7.5f;
+		PistolMagazineLimit -= 10;
+		CurrPistolMagazine -= 10;
+		RifleMagazineLimit -= 3;
+		CurrRifleMagazine -= 3;
 	}
 }
 

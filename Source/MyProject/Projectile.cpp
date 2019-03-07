@@ -10,6 +10,7 @@
 #include "GroundEnemy.h"
 #include "WindowEnemy.h"
 #include "Windows.h"
+#include "MyProjectGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
@@ -148,8 +149,18 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 							HitActor->PlayEnemyDeathAnim();
 							WindowEnemy->DestroyAfterTime();
 						}
-						// Everytime player makes a kill slow mo capacity increases and enemy animation plays
-						HitActor->GetMainCharacterActor()->AddSlowMoCapacity(1.0f);
+
+						// Configure difficulty variables
+						// Everytime player makes a kill slow mo capacity increases	
+						if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Easy) {
+							HitActor->GetMainCharacterActor()->AddSlowMoCapacity(1.f);
+						}
+						else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Medium) {			
+							HitActor->GetMainCharacterActor()->AddSlowMoCapacity(0.75f);
+						}
+						else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Hard) {
+							HitActor->GetMainCharacterActor()->AddSlowMoCapacity(0.5f);
+						}
 						HitActor->GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 					}
 				}

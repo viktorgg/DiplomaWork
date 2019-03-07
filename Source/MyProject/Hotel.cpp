@@ -57,10 +57,11 @@ void AHotel::SpawnEnemy(int32 Place)
 				RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 			}
 			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
 
 			SpawnedEnemy->SetWindowsPlace(Place);
+			SpawnedEnemy->SetBuildingActor(this);
 			SpawnedEnemy->SetEnemyHandler(EnemyHandlerArray[Place]);
 			SpawnedEnemy->SetWindowSqueak(WindowSqueak);
 			EnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);

@@ -6,6 +6,9 @@
 #include "Windows.h"
 #include "LevelHandler.h"
 #include "BuildingBase.h"
+#include "NationalBank.h"
+#include "GeneralStore.h"
+#include "Hotel.h"
 #include "MyProjectGameInstance.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
@@ -26,6 +29,8 @@ AWindowEnemy::AWindowEnemy() {
 	bHavePistol = true;
 
 	WindowsPlace = 3;
+
+	BuildingActor = nullptr;
 
 	// Find the rifle class in content browser
 	static ConstructorHelpers::FClassFinder<ARifle>
@@ -54,6 +59,9 @@ void AWindowEnemy::BeginPlay()
 
 	FActorSpawnParameters ActorSpawnParams;
 	ARifle* SpawnedRifle = GetWorld()->SpawnActor<ARifle>(RifleClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
+
+	// WEnemy should look directly at Main Character when spawend otherwise LimitRotation will cause issues
+	SetActorRotation(FRotator(-20.0f, LookAtChar().Yaw, 0.0f));
 
 	// Enemy can't fire half a second after spawning
 	GetWorldTimerManager().SetTimer(FireDelayHandle, this, &AWindowEnemy::ResetFireDelay, 0.5f, false, 0.5f);
@@ -90,11 +98,23 @@ void AWindowEnemy::ResetRifleFire()
 void AWindowEnemy::RotateToCharacter()
 {
 	// If window is on second floor the enemy will be more leaned towards ground
-	if (WindowsPlace < 2) {	
-		SetActorRotation(FRotator(-40.0f, LookAtChar().Yaw, 0.0f));
+	if ((BuildingActor != nullptr)) {
+		if (LimitRotation(LookAtChar()) == true) {
+			if (WindowsPlace < 2) {
+				SetActorRotation(FRotator(-40.0f, LookAtChar().Yaw, 0.0f));
+			}
+			else {
+				SetActorRotation(FRotator(-20.0f, LookAtChar().Yaw, 0.0f));
+			}
+		}
 	}
 	else {
-		SetActorRotation(FRotator(-20.0f, LookAtChar().Yaw, 0.0f));
+		if (WindowsPlace < 2) {
+			SetActorRotation(FRotator(-40.0f, LookAtChar().Yaw, 0.0f));
+		}
+		else {
+			SetActorRotation(FRotator(-20.0f, LookAtChar().Yaw, 0.0f));
+		}
 	}
 }
 
@@ -114,6 +134,31 @@ void AWindowEnemy::DestroyChar()
 	LevelHandlerActor->WEnemyHandler();
 
 	Destroy();
+}
+
+bool AWindowEnemy::LimitRotation(FRotator LookAtRot)
+{
+	FVector CharForwardVector = UKismetMathLibrary::GetForwardVector(LookAtRot);
+	FVector BuildingForwardVector;
+
+	if (Cast<ANationalBank>(BuildingActor) != NULL) {
+		BuildingForwardVector = BuildingActor->GetActorRightVector();
+	}
+	else if (Cast<AGeneralStore>(BuildingActor) != NULL) {
+		BuildingForwardVector = BuildingActor->GetActorRightVector() * -1.f;
+	}
+	else if (Cast<AHotel>(BuildingActor) != NULL) {
+		BuildingForwardVector = BuildingActor->GetActorForwardVector();
+	}
+
+	float Angle = FVector::DotProduct(CharForwardVector, BuildingForwardVector);
+	
+	if (Angle >= 0.55f) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 void AWindowEnemy::DestroyAfterTime()

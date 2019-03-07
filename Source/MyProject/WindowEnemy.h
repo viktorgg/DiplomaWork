@@ -35,6 +35,8 @@ private:
 	// Need to know the window it stands behind in order to adjust rotation
 	int32 WindowsPlace;
 
+	class ABuildingBase* BuildingActor;
+
 	class USoundCue* Scream;
 
 	virtual void Fire();
@@ -45,10 +47,13 @@ private:
 
 	virtual void DestroyChar();
 
+	bool LimitRotation(FRotator LookAtRot);
+
 public:
 
 	virtual void DestroyAfterTime();
 
 	void SetWindowsPlace(int32 WindowsPlace) { this->WindowsPlace = WindowsPlace; }
 	
+	void SetBuildingActor(ABuildingBase* BuildingActor) { this->BuildingActor = BuildingActor; }
 };

@@ -26,8 +26,8 @@ ARevolver::ARevolver()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Damage = 25;
-	SetProjectileOffsetNoZoom(2.5f);
-	SetProjectileOffsetZoom(1.5f);
+	ProjectileOffsetNoZoom = 2.5f;
+	ProjectileOffsetZoom = 1.5f;
 }
 
 // Called when the game starts or when spawned
@@ -93,9 +93,16 @@ void ARevolver::SpawnProjectile()
 		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, EnemyCharacter->GetMainCharacterActor()->GetActorLocation());
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
+		int32 Percentage = 35;
 
-		// There's a 25% chance the bullet will go exactly at player's character
-		if (ChanceToHit <= 25) {		
+		// Configure difficulty variables
+		if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Medium) {
+			Percentage += 25;
+		}
+		else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Hard) {
+			Percentage += 50;
+		}
+		if (ChanceToHit <= Percentage) {		
 			float BulletOffsetPitch;
 			float BulletOffsetYaw;
 			BulletOffsetPitch = FMath::RandRange(-ProjectileOffsetZoom, ProjectileOffsetZoom);
