@@ -4,6 +4,7 @@
 #include "MyCharacter.h"
 #include "Revolver.h"
 #include "LevelHandler.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
@@ -18,13 +19,13 @@ AGroundEnemy::AGroundEnemy() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Health = 150.f;
-	CharacterSpeed = 350.f;
+	CharacterMovement->MaxWalkSpeed = 400.f;
 	PistolFireRate = FMath::RandRange(0.75f, 1.5f);
 	bHaveRifle = true;
 	bIsRotating = false;
 
 	DistanceToWalk = 500.f;	// Distance to reach between him and player 
-	
+
 	// Find the revolver class in content browser
 	static ConstructorHelpers::FClassFinder<ARevolver>
 		PistolBP(TEXT("Blueprint'/Game/Blueprints/RevolverBP.RevolverBP_C'"));
@@ -65,7 +66,7 @@ void AGroundEnemy::MoveForward(float Input)
 {
 	if (GetDistanceToMain() >= DistanceToWalk) {
 		ForwardInput = 1.f;
-		AddActorWorldOffset(GetActorForwardVector() * CharacterSpeed * GetWorld()->GetDeltaSeconds());
+		AddActorWorldOffset(GetActorForwardVector() * CharacterMovement->MaxWalkSpeed * GetWorld()->GetDeltaSeconds());
 	}
 	else {
 		ForwardInput = 0.f;
@@ -157,7 +158,7 @@ float AGroundEnemy::LineTrace()
 	GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
 
 	if (OutHitFront.GetActor() != this || OutHitFrontL.GetActor() != this || OutHitFrontR.GetActor() != this) {
-		
+
 		if (OutHitFrontL.GetActor() != this) {
 			DistanceLeft = OutHitFrontL.Distance;
 		}

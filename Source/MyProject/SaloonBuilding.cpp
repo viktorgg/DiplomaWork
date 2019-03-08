@@ -20,24 +20,6 @@ ASaloonBuilding::ASaloonBuilding()
 	MainBuildingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Main Building Mesh"));
 	RootComponent = MainBuildingMesh;
 
-	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
-	BoxCollision->SetupAttachment(MainBuildingMesh);
-
-	BoxCollision2 = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision 2"));
-	BoxCollision2->SetupAttachment(MainBuildingMesh);
-
-	BoxCollision3 = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision 3"));
-	BoxCollision3->SetupAttachment(MainBuildingMesh);
-
-	BoxCollision4 = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision 4"));
-	BoxCollision4->SetupAttachment(MainBuildingMesh);
-
-	BoxCollision5 = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision 5"));
-	BoxCollision5->SetupAttachment(MainBuildingMesh);
-
-	BoxCollision6 = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision 6"));
-	BoxCollision6->SetupAttachment(MainBuildingMesh);
-
 	DoorsChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child"));
 	DoorsChild->SetupAttachment(MainBuildingMesh);
 

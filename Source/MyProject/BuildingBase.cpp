@@ -40,9 +40,6 @@ ABuildingBase::ABuildingBase()
 	SecondFloorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Second Floor"));
 	SecondFloorMesh->SetupAttachment(MainBuildingMesh);
 
-	MovementBlock = CreateDefaultSubobject<UBoxComponent>(TEXT("Movement Block"));
-	MovementBlock->SetupAttachment(MainBuildingMesh);
-
 	// Find windows class in content browser
 	static ConstructorHelpers::FClassFinder<AWindows>
 		WindowsBP(TEXT("Blueprint'/Game/Blueprints/WindowsBP.WindowsBP_C'"));

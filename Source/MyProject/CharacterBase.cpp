@@ -11,6 +11,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -28,8 +29,9 @@ ACharacterBase::ACharacterBase()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Health = 0.0f;
-	CharacterSpeed = 0.0f;
+	CharacterMovement->MaxWalkSpeed = 0.f;
+
+	Health = 0.f;
 
 	ForwardInput = 0.0f;
 	RightInput = 0.0f;

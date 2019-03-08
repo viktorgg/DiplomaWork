@@ -10,6 +10,7 @@
 #include "Components/BoxComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Math/UnrealMathUtility.h"
@@ -25,9 +26,9 @@ AMyCharacter::AMyCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Health = 500.f;
-	CharacterSpeed = 450.0f;
-	ZoomedCharSpeed = CharacterSpeed / 2.5f;
-	NotZoomedCharSpeed = CharacterSpeed;
+	CharacterMovement->MaxWalkSpeed = 550.f;
+	ZoomedCharSpeed = CharacterMovement->MaxWalkSpeed / 2.5f;
+	NotZoomedCharSpeed = CharacterMovement->MaxWalkSpeed;
 	SlowMoCapacity = 0.0f;
 
 	PistolFireRate = 0.25f;
@@ -49,7 +50,7 @@ AMyCharacter::AMyCharacter()
 	CurrPistolMagazine = 30;
 	RifleMagazineLimit = 10;
 	CurrRifleMagazine = 10;
-	
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 
@@ -82,7 +83,7 @@ void AMyCharacter::Tick(float DeltaTime)
 
 	// Call CameraZoom() in tick so it changes position smoothly
 	if (bZooming == true && SpringArm->TargetArmLength != 151.0f) {
-		CameraZoom();	
+		CameraZoom();
 		LerpPlayerToCamera(6.0f);
 	}
 
@@ -137,18 +138,18 @@ void AMyCharacter::MoveForward(float Input)
 	SetForwardInput(Input);		// Sets input to 1.0 when clicking W
 								// Sets input to -1.0 when clicking S
 	if (Input != 0.0) {
-	
+
 		FVector SpringArmForward = SpringArm->GetForwardVector();
 
-		if (RightInput != 0.0) {	// Lowers the speed when holding both W/S and D/A so that character doesn't move faster diagonally
+		/*if (RightInput != 0.0) {	// Lowers the speed when holding both W/S and D/A so that character doesn't move faster diagonally
 			AddActorWorldOffset(SpringArmForward * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
 			AddActorWorldOffset(SpringArmForward * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
-		}
-		
+		}*/
+		AddMovementInput(SpringArmForward, Input);
+
 		LerpPlayerToCamera(8.0f);	// Character turns to camera direction when moving
-		// AddMovementInput(SpringArm->GetForwardVector() * Input);
 	}
 }
 
@@ -157,18 +158,18 @@ void AMyCharacter::MoveRight(float Input)
 	RightInput = Input;
 
 	if (Input != 0.0) {
-	
+
 		FVector SpringArmRight = SpringArm->GetRightVector();
 
-		if (GetForwardInput() != 0.0) {
+		/*if (GetForwardInput() != 0.0) {
 			AddActorWorldOffset(SpringArmRight * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
 		}
 		else {
 			AddActorWorldOffset(SpringArmRight * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
-		}
+		}*/
+		AddMovementInput(SpringArmRight, Input);
 
 		LerpPlayerToCamera(8.0f);
-		// AddMovementInput(SpringArm->GetRightVector() * Input);
 	}
 }
 
@@ -184,12 +185,12 @@ void AMyCharacter::LookSide(float Input)
 void AMyCharacter::LookUp(float Input)
 {
 	if (Input != 0.0f) {	// Camera rotates up when moving mouse up on Y axis
-		
+
 		float CurrRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Pitch;
 		float NewRot = LookSpeed * Input;
 
 		// Limit the rotation at some point
-		if ((CurrRot + NewRot) > LookUpperLimit && (CurrRot + NewRot) < LookLowerLimit) {	
+		if ((CurrRot + NewRot) > LookUpperLimit && (CurrRot + NewRot) < LookLowerLimit) {
 			SpringArm->AddRelativeRotation(FRotator(NewRot, 0.0f, 0.0f));
 		}
 	}
@@ -199,10 +200,11 @@ void AMyCharacter::CameraZoom()
 {
 	if (WInHand != None) {
 		if (bSlowMo == true) {
-			CharacterSpeed = ZoomedCharSpeed * 2.5;		// Increase character speed when time is slowed for player's advantage when aiming
+			// Increase character speed when time is slowed for player's advantage when aiming
+			CharacterMovement->MaxWalkSpeed = ZoomedCharSpeed * 2.5f;
 		}
 		else {
-			CharacterSpeed = ZoomedCharSpeed;
+			CharacterMovement->MaxWalkSpeed = ZoomedCharSpeed;
 		}
 		SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 150.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
 		SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 80.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
@@ -215,10 +217,11 @@ void AMyCharacter::CameraZoom()
 void AMyCharacter::CameraOutZoom()
 {
 	if (bSlowMo == true) {
-		CharacterSpeed = NotZoomedCharSpeed * 2.5;		// Increase character speed when time is slowed for player's advantage when not aiming
+		// Increase character speed when time is slowed for player's advantage when not aiming
+		CharacterMovement->MaxWalkSpeed = NotZoomedCharSpeed * 2.5f;
 	}
 	else {
-		CharacterSpeed = NotZoomedCharSpeed;
+		CharacterMovement->MaxWalkSpeed = NotZoomedCharSpeed;
 	}
 	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, 400.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
 	SpringArm->SocketOffset = FMath::VInterpTo(SpringArm->SocketOffset, FVector(0.0f, 0.0f, 150.0f), GetWorld()->GetDeltaSeconds(), 10.0f);
@@ -264,7 +267,7 @@ void AMyCharacter::ChangeToPistol()
 		if (WInHand == None) {
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
 		}
-		if (WInHand == Rifle){
+		if (WInHand == Rifle) {
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
 		}
@@ -291,15 +294,15 @@ void AMyCharacter::EnterSlowMo()
 {
 	if ((bSlowMo == false) && (SlowMoCapacity > 0.0f)) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.4f);
-		CharacterSpeed *=  2.5f;
+		CharacterMovement->MaxWalkSpeed *= 2.5f;
 		PistolFireRate /= 2.5f;
 		RifleFireRate /= 2.5f;
 		HealthRegenSpeed *= 2.5f;
 		bSlowMo = true;
 	}
-	else if(bSlowMo == true) {
+	else if (bSlowMo == true) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
-		CharacterSpeed /= 2.5f;
+		CharacterMovement->MaxWalkSpeed /= 2.5f;
 		PistolFireRate *= 2.5f;
 		RifleFireRate *= 2.5f;
 		HealthRegenSpeed /= 2.5f;

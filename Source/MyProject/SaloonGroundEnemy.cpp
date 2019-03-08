@@ -3,6 +3,7 @@
 #include "SaloonGroundEnemy.h"
 #include "Revolver.h"
 #include "MyProjectGameInstance.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/World.h"
 #include "Engine/GameEngine.h"
 #include "Runtime/Engine/Public/TimerManager.h"
@@ -12,10 +13,11 @@
 #include "Kismet/GameplayStatics.h"
 
 
-ASaloonGroundEnemy::ASaloonGroundEnemy() 
+ASaloonGroundEnemy::ASaloonGroundEnemy()
 {
+	CharacterMovement->MaxWalkSpeed = 300.f;
+
 	bIsKicking = true;
-	CharacterSpeed = 250.0f;	// Enemy will go slower when kicking door
 
 	// Find the DoorKick cue in content browser by reference
 	static ConstructorHelpers::FObjectFinder<USoundCue>
@@ -42,7 +44,7 @@ void ASaloonGroundEnemy::ResetKicking()
 {
 	GetWorldTimerManager().ClearTimer(KickingHandle);
 	bIsKicking = false;
-	CharacterSpeed = 350.0f;
+	CharacterMovement->MaxWalkSpeed = 400.0f;
 }
 
 void ASaloonGroundEnemy::PlaySound()
@@ -58,9 +60,8 @@ void ASaloonGroundEnemy::MoveForward(float Input)
 		Super::MoveForward(NULL);
 	}
 	else {
-		FVector CurrLoc = GetActorLocation();
-		FVector NewLoc = CurrLoc + (GetActorForwardVector() * CharacterSpeed * GetWorld()->GetDeltaSeconds());
-		SetActorLocation(NewLoc);
+
+		AddActorWorldOffset(GetActorForwardVector() * CharacterMovement->MaxWalkSpeed * GetWorld()->GetDeltaSeconds());
 	}
 }
 

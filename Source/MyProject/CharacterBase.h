@@ -24,8 +24,8 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 		float Health;
-	UPROPERTY(EditAnywhere)
-		float CharacterSpeed;
+
+	class UCharacterMovementComponent* MovementComponent;
 
 	float ForwardInput;
 	float RightInput;
@@ -105,9 +105,6 @@ public:
 		float GetHealth() const { return Health; }
 	void SetHealth(float Health) { this->Health = Health; }
 
-	float GetCharacterSpeed() const { return CharacterSpeed; }
-	void SetCharacterSpeed(float CharacterSpeed) { this->CharacterSpeed = CharacterSpeed; }
-
 	UFUNCTION(BlueprintCallable)
 		float GetForwardInput() const { return ForwardInput; }
 	void SetForwardInput(float Input) { ForwardInput = Input; }
@@ -121,7 +118,7 @@ public:
 	bool GetHaveRifle() const { return bHaveRifle; }
 	void SetHaveRifle(bool bHaveRifle) { this->bHaveRifle = bHaveRifle; }
 
-	UFUNCTION(BlueprintCallable) 
+	UFUNCTION(BlueprintCallable)
 		bool GetCanFirePistol() const { return bCanFirePistol; }
 	void SetCanFirePistol(bool bCanFirePistol) { this->bCanFirePistol = bCanFirePistol; }
 
@@ -145,7 +142,7 @@ public:
 	void SetRifleActor(ARifle* RifleActor) { this->RifleActor = RifleActor; }
 
 	UFUNCTION(BlueprintCallable)
-	AMyCharacter* GetMainCharacterActor() const { return MainCharacterActor; }
+		AMyCharacter* GetMainCharacterActor() const { return MainCharacterActor; }
 
 	UAnimSequence* GetMainDeathAnim() const { return MainCharDeathAnim; }
 
@@ -159,4 +156,3 @@ public:
 
 	void SetWindowSqueak(USoundCue* WindowSqueak) { this->WindowSqueak = WindowSqueak; }
 };
-

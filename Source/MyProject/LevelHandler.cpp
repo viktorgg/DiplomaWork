@@ -108,6 +108,7 @@ void ALevelHandler::BeginPlay()
 			GeneralStoreActor = *ActorItr;
 		}
 	}
+	// SpawnGroundEnemy(Start);
 }
 
 // Called every frame

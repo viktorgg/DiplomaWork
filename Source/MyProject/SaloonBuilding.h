@@ -42,24 +42,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UChildActorComponent* DoorsChild;
 
-	UPROPERTY(VisibleAnywhere)
-		class UBoxComponent* BoxCollision;
-
-	UPROPERTY(VisibleAnywhere)
-		class UBoxComponent* BoxCollision2;
-
-	UPROPERTY(VisibleAnywhere)
-		class UBoxComponent* BoxCollision3;
-
-	UPROPERTY(VisibleAnywhere)
-		class UBoxComponent* BoxCollision4;
-
-	UPROPERTY(VisibleAnywhere)
-		class UBoxComponent* BoxCollision5;
-
-	UPROPERTY(VisibleAnywhere)
-		class UBoxComponent* BoxCollision6;
-
 public:
 
 	TArray<FEnemyHandler*> GetSEnemyHandlerArray() const { return SEnemyHandlerArray; }
