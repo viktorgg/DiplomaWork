@@ -92,6 +92,7 @@ void AGroundEnemy::ResetPistolFire()
 float AGroundEnemy::GetDistanceToMain()
 {
 	FVector DistanceVector = GetActorLocation() - MainCharacterActor->GetActorLocation();
+	// Gets the length of vector
 	float Distance = DistanceVector.Size();
 
 	return Distance;

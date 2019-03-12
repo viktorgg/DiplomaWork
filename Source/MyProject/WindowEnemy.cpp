@@ -99,7 +99,7 @@ void AWindowEnemy::RotateToCharacter()
 {
 	// If window is on second floor the enemy will be more leaned towards ground
 	if ((BuildingActor != nullptr)) {
-		if (LimitRotation(LookAtChar()) == true) {
+		if (LimitRotation() == true) {
 			if (WindowsPlace < 2) {
 				SetActorRotation(FRotator(-40.0f, LookAtChar().Yaw, 0.0f));
 			}
@@ -136,9 +136,9 @@ void AWindowEnemy::DestroyChar()
 	Destroy();
 }
 
-bool AWindowEnemy::LimitRotation(FRotator LookAtRot)
+bool AWindowEnemy::LimitRotation()
 {
-	FVector CharForwardVector = UKismetMathLibrary::GetForwardVector(LookAtRot);
+	FVector CharForwardVector = UKismetMathLibrary::GetForwardVector(LookAtChar());
 	FVector BuildingForwardVector;
 
 	if (Cast<ANationalBank>(BuildingActor) != NULL) {
@@ -153,7 +153,7 @@ bool AWindowEnemy::LimitRotation(FRotator LookAtRot)
 
 	float Angle = FVector::DotProduct(CharForwardVector, BuildingForwardVector);
 	
-	if (Angle >= 0.55f) {
+	if (Angle >= 0.5f) {
 		return true;
 	}
 	else {

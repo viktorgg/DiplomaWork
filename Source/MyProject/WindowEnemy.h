@@ -47,7 +47,7 @@ private:
 
 	virtual void DestroyChar();
 
-	bool LimitRotation(FRotator LookAtRot);
+	bool LimitRotation();
 
 public:
 

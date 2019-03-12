@@ -15,6 +15,7 @@
 #include "Engine/GameEngine.h"
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
@@ -56,6 +57,16 @@ AMyCharacter::AMyCharacter()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
+
+	// Find the SlowMo cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset(TEXT("SoundCue'/Game/Assets/Sound/SlowMoCue.SlowMoCue'"));
+	if (CueAsset.Succeeded() == true) {
+		SlowMoWoosh = CueAsset.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("SlowMo Cue Not Found In MyChar!")));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -113,7 +124,7 @@ void AMyCharacter::Tick(float DeltaTime)
 			EnterSlowMo();		// Disable slow mo when out of capacity
 		}
 	}
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), Difficulty));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), LookSpeed));
 }
 
 // Called to bind functionality to input
@@ -141,12 +152,6 @@ void AMyCharacter::MoveForward(float Input)
 
 		FVector SpringArmForward = SpringArm->GetForwardVector();
 
-		/*if (RightInput != 0.0) {	// Lowers the speed when holding both W/S and D/A so that character doesn't move faster diagonally
-			AddActorWorldOffset(SpringArmForward * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
-		}
-		else {
-			AddActorWorldOffset(SpringArmForward * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
-		}*/
 		AddMovementInput(SpringArmForward, Input);
 
 		LerpPlayerToCamera(8.0f);	// Character turns to camera direction when moving
@@ -161,23 +166,20 @@ void AMyCharacter::MoveRight(float Input)
 
 		FVector SpringArmRight = SpringArm->GetRightVector();
 
-		/*if (GetForwardInput() != 0.0) {
-			AddActorWorldOffset(SpringArmRight * (CharacterSpeed / 1.3) * Input * GetWorld()->GetDeltaSeconds());
-		}
-		else {
-			AddActorWorldOffset(SpringArmRight * CharacterSpeed * Input * GetWorld()->GetDeltaSeconds());
-		}*/
 		AddMovementInput(SpringArmRight, Input);
 
 		LerpPlayerToCamera(8.0f);
 	}
 }
 
-// Sets input to 1.0 when moving mouse right; Sets input to -1.0 when moving mouse left
+// Sets input to 1.0 when moving mouse right
+// Sets input to -1.0 when moving mouse left
 void AMyCharacter::LookSide(float Input)
 {
-	if (Input != 0.0) {		// Camera rotates right when moving mouse right on X axis
+	// Camera rotates right when moving mouse right on X axis
+	if (Input != 0.0) {		
 		float NewRot = LookSpeed * Input;
+		
 		SpringArm->AddRelativeRotation(FRotator(0.0f, NewRot, 0.0f));
 	}
 }
@@ -233,9 +235,12 @@ void AMyCharacter::CameraOutZoom()
 // Character's direction rotates to match camera's direction
 void AMyCharacter::LerpPlayerToCamera(float Speed)
 {
-	float CurrRot = GetMesh()->GetRelativeTransform().GetRotation().Rotator().Yaw;
-	float NewRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Yaw;
-	GetMesh()->SetRelativeRotation(FMath::Lerp(FRotator(0.0f, CurrRot, 0.0f), FRotator(0.0f, NewRot, 0.0f), Speed * GetWorld()->GetDeltaSeconds()));
+	float CurrYawRot = GetMesh()->GetRelativeTransform().GetRotation().Rotator().Yaw;
+	float NewYawRot = SpringArm->GetRelativeTransform().GetRotation().Rotator().Yaw;
+	FRotator CurrRot = FRotator(0.0f, CurrYawRot, 0.0f);
+	FRotator NewRot = FRotator(0.0f, NewYawRot, 0.0f);
+
+	GetMesh()->SetRelativeRotation(FMath::Lerp(CurrRot, NewRot, Speed * GetWorld()->GetDeltaSeconds()));
 }
 
 void AMyCharacter::Fire()
@@ -248,7 +253,7 @@ void AMyCharacter::Fire()
 			GetWorldTimerManager().SetTimer(PistolFireRateHandle, this, &AMyCharacter::ResetPistolFire, PistolFireRate, false, PistolFireRate);
 		}
 	}
-	if (WInHand == Rifle) {
+	else if (WInHand == Rifle) {
 		if ((RifleActor != nullptr) && (bCanFireRifle == true) && (CurrRifleMagazine > 0)) {
 			RifleActor->SpawnProjectile();
 			bCanRifleAnim = false;		// Use this variable to speed up animation(visual purposes)
@@ -299,6 +304,9 @@ void AMyCharacter::EnterSlowMo()
 		RifleFireRate /= 2.5f;
 		HealthRegenSpeed *= 2.5f;
 		bSlowMo = true;
+
+		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
+		UGameplayStatics::PlaySound2D(GetWorld(), SlowMoWoosh, VolumeControl, SlowMoWoosh->GetPitchMultiplier());
 	}
 	else if (bSlowMo == true) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);

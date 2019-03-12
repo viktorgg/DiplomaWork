@@ -146,6 +146,7 @@ void ABuildingBase::SpawnEnemy(int32 Place)
 
 		FVector LocOffset;
 		FRotator RotOffset;
+
 		if (Place < 2) {
 			LocOffset = (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorUpVector() * 10)
 				+ (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorForwardVector() * 10.0f);

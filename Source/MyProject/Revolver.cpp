@@ -162,7 +162,8 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 			CharacterEntered->SetHavePistol(true);
 			CharacterActor = CharacterEntered;
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
-			SphereCollision->SetSimulatePhysics(false);		// Enable it's physics when character dies
+			// Enable it's physics when character dies
+			SphereCollision->SetSimulatePhysics(false);		
 
 			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
 

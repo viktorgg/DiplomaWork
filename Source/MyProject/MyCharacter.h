@@ -50,6 +50,7 @@ private:
 	bool bZooming;
 
 	bool bSlowMo;
+	class USoundCue* SlowMoWoosh;
 
 	WeaponInHand WInHand;
 
@@ -129,5 +130,6 @@ public:
 		float GetSlowMoCapacity() const { return SlowMoCapacity; }
 	void AddSlowMoCapacity(float Amount) { if (SlowMoCapacity < 10.0f) { SlowMoCapacity += Amount; } }
 
-	bool GetSlowMo() const { return bSlowMo; }
+	UFUNCTION(BlueprintCallable)
+		bool GetSlowMo() const { return bSlowMo; }
 };
