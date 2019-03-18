@@ -39,13 +39,13 @@ private:
 
 	class USoundCue* Scream;
 
-	virtual void Fire();
+	virtual void Fire() override;
 
-	virtual void ResetRifleFire();
+	virtual void ResetRifleFire() override;
 
-	virtual void RotateToCharacter();
+	virtual void DestroyChar() override;
 
-	virtual void DestroyChar();
+	void RotateToCharacter();
 
 	bool LimitRotation();
 

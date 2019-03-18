@@ -31,19 +31,19 @@ protected:
 	UPROPERTY(EditAnywhere)
 		float DistanceToWalk;
 
-	virtual void MoveForward(float Input);
+	virtual void MoveForward(float Input) override;
 
-	virtual void Fire();
+	virtual void Fire() override;
 
-	virtual void ResetPistolFire();
+	virtual void ResetPistolFire() override;
 
-	virtual void RotateToCharacter();
+	virtual void DestroyChar() override;
+
+	void RotateToCharacter();
 
 	float GetDistanceToMain();
 
 	void Rotate(float Direction);
-
-	virtual void DestroyChar();
 
 	float LineTrace();
 

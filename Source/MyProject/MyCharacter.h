@@ -70,19 +70,17 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UCameraComponent* Camera;
 
-	virtual void MoveForward(float Input);
+	virtual void MoveForward(float Input) override;
 
-	virtual void MoveRight(float Input);
+	virtual void MoveRight(float Input) override;
 
-	virtual void Fire();
+	virtual void Fire() override;
 
-	virtual void ResetPistolFire();
+	virtual void ResetPistolFire() override;
 
-	virtual void ResetRifleFire();
+	virtual void ResetRifleFire() override;
 
-	virtual void ResetRifleAnim();
-
-	virtual void DestroyChar();
+	virtual void DestroyChar() override;
 
 	void LookSide(float Input);
 
@@ -93,6 +91,8 @@ private:
 	void CameraOutZoom();
 
 	void LerpPlayerToCamera(float Speed);
+
+	void ResetRifleAnim();
 
 	void ChangeToPistol();
 

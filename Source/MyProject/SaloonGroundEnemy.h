@@ -38,7 +38,7 @@ private:
 
 	virtual void MoveForward(float Input) override;
 	
-	virtual void DestroyChar();
+	virtual void DestroyChar() override;
 
 public:
 
