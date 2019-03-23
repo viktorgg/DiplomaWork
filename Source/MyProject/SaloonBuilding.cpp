@@ -8,6 +8,7 @@
 #include "Components/ChildActorComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/GameEngine.h"
+#include "Runtime/Core/Public/Templates/SharedPointer.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
 
@@ -50,20 +51,25 @@ void ASaloonBuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+
+void ASaloonBuilding::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
 	// Create structures for 3 possible enemies
-	FEnemyHandler* SEnemyHandler = new FEnemyHandler();
-	FEnemyHandler* SEnemyHandler2 = new FEnemyHandler();
-	FEnemyHandler* SEnemyHandler3 = new FEnemyHandler();
+	TSharedPtr<FEnemyHandler> SEnemyHandler = MakeShared<FEnemyHandler>();
+	TSharedPtr<FEnemyHandler> SEnemyHandler2 = MakeShared<FEnemyHandler>();
+	TSharedPtr<FEnemyHandler> SEnemyHandler3 = MakeShared<FEnemyHandler>();
 
 	//Inverted Directions, forward vector = right vector, right vector = forward vector
-	SEnemyHandler->SetInLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 180.0f) 
+	SEnemyHandler->SetInLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 180.0f)
 		+ (MainBuildingMesh->GetRightVector() * 365.0f) + (MainBuildingMesh->GetUpVector() * -181.0f)));
 
 	SEnemyHandler2->SetOutLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 4.0f)
-		+ (MainBuildingMesh->GetRightVector() * -470.0f) + (MainBuildingMesh->GetUpVector() * 137.0f)));
+		+ (MainBuildingMesh->GetRightVector() * -510.0f) + (MainBuildingMesh->GetUpVector() * 137.0f)));
 
 	SEnemyHandler3->SetDoorLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetRightVector() * -100.0f) + (MainBuildingMesh->GetUpVector() * -157.0f)));
-
 
 	// Add the structs to array
 	SEnemyHandlerArray.Add(SEnemyHandler);

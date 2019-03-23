@@ -29,7 +29,8 @@ public:
 
 private:
 
-	TArray<AActor*> SaloonArray;
+	UPROPERTY()
+		TArray<AActor*> SaloonArray;
 
 	bool bEntered;
 
@@ -64,23 +65,27 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UBoxComponent* BoxCollisionEnd;
 
-	class AMyCharacter* MainCharacter;
+	UPROPERTY()
+		class AMyCharacter* MainCharacter;
 
-	class AGroundEnemy* GroundEnemy;
+	UPROPERTY()
+		class AGroundEnemy* GroundEnemy;
 
-	UClass* GroundEnemyClass;
+	UPROPERTY()
+		UClass* GroundEnemyClass;
+	UPROPERTY()
+		UClass* SaloonBuildingClass;
 
-	UClass* SaloonBuildingClass;
-
+	UPROPERTY()
 	class ASaloonBuilding* SaloonBuildingActor;
-
-	class ASaloonBuilding* SaloonBuildingActor2;
-
-	class ANationalBank* NationalBankActor;
-
-	class AHotel* HotelActor;
-
-	class AGeneralStore* GeneralStoreActor;
+		UPROPERTY()
+		class ASaloonBuilding* SaloonBuildingActor2;
+	UPROPERTY()
+		class ANationalBank* NationalBankActor;
+	UPROPERTY()
+		class AHotel* HotelActor;
+	UPROPERTY()
+		class AGeneralStore* GeneralStoreActor;
 
 	bool IfEnemyInSight(FVector Loc);
 

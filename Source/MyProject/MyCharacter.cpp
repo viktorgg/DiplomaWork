@@ -256,7 +256,8 @@ void AMyCharacter::Fire()
 	else if (WInHand == Rifle) {
 		if ((RifleActor != nullptr) && (bCanFireRifle == true) && (CurrRifleMagazine > 0)) {
 			RifleActor->SpawnProjectile();
-			bCanRifleAnim = false;		// Use this variable to speed up animation(visual purposes)
+			// Use this variable to speed up animation(visual purposes)
+			bCanRifleAnim = false;		
 			bCanFireRifle = false;
 			CurrRifleMagazine--;
 			GetWorldTimerManager().SetTimer(RifleAnimHandle, this, &AMyCharacter::ResetRifleAnim, 0.4f, false, 0.4f);
@@ -267,7 +268,8 @@ void AMyCharacter::Fire()
 
 void AMyCharacter::ChangeToPistol()
 {
-	if ((bHavePistol == true) && (WInHand != Pistol) && (bZooming == false)) {		// Can't change weapons when aimed
+	// Can't change weapons when aimed
+	if ((bHavePistol == true) && (WInHand != Pistol) && (bZooming == false)) {		
 
 		if (WInHand == None) {
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
@@ -282,7 +284,8 @@ void AMyCharacter::ChangeToPistol()
 
 void AMyCharacter::ChangeToRifle()
 {
-	if ((bHaveRifle == true) && (WInHand != Rifle) && (bZooming == false)) {		// Can't change weapons when aimed
+	// Can't change weapons when aimed
+	if ((bHaveRifle == true) && (WInHand != Rifle) && (bZooming == false)) {		
 
 		if (WInHand == None) {
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));

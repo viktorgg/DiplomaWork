@@ -20,6 +20,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Timer to handle paritcle effects delay
 	FTimerHandle ParticleDelayHandle;
 
 	UPROPERTY(EditAnywhere)
@@ -46,11 +47,16 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		class UParticleSystem* FireExplosion;
 
-	class USoundCue* RevolverShot3D;
-	class USoundCue* RevolverShot;
-	class USoundCue* RifleShot3D;
-	class USoundCue* RifleShot;
-	class USoundCue* PickUp;
+	UPROPERTY()
+		class USoundCue* RevolverShot3D;
+	UPROPERTY()
+		class USoundCue* RevolverShot;
+	UPROPERTY()
+		class USoundCue* RifleShot3D;
+	UPROPERTY()
+		class USoundCue* RifleShot;
+	UPROPERTY()
+		class USoundCue* PickUp;
 
 	virtual void SpawnProjectile() PURE_VIRTUAL(AGunBase::SpawnProjectile, );
 

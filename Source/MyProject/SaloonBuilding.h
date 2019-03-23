@@ -22,19 +22,23 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void PostInitializeComponents() override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Array to store structure of every enemy
-	TArray<FEnemyHandler*> SEnemyHandlerArray;
+	TArray<TSharedPtr<FEnemyHandler>> SEnemyHandlerArray;
 
 	void SpawnEnemy(int32 Place);
 
 private:
 	
-	UClass* WindowEnemyClass;
-	UClass* SaloonGroundEnemyClass;
+	UPROPERTY()
+		UClass* WindowEnemyClass;
+	UPROPERTY()
+		UClass* SaloonGroundEnemyClass;
 
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* MainBuildingMesh;
@@ -44,6 +48,6 @@ private:
 
 public:
 
-	TArray<FEnemyHandler*> GetSEnemyHandlerArray() const { return SEnemyHandlerArray; }
+	TArray<TSharedPtr<FEnemyHandler>> GetSEnemyHandlerArray() const { return SEnemyHandlerArray; }
 
 };

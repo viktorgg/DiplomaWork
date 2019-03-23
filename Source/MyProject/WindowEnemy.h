@@ -30,14 +30,17 @@ public:
 
 private:
 
-	UClass* RifleClass;
+	UPROPERTY()
+		UClass* RifleClass;
 
 	// Need to know the window it stands behind in order to adjust rotation
 	int32 WindowsPlace;
 
-	class ABuildingBase* BuildingActor;
+	UPROPERTY()
+		class ABuildingBase* BuildingActor;
 
-	class USoundCue* Scream;
+	UPROPERTY()
+		class USoundCue* Scream;
 
 	virtual void Fire() override;
 
@@ -51,7 +54,7 @@ private:
 
 public:
 
-	virtual void DestroyAfterTime();
+	virtual void DestroyAfterTime() override;
 
 	void SetWindowsPlace(int32 WindowsPlace) { this->WindowsPlace = WindowsPlace; }
 	

@@ -108,18 +108,33 @@ void AGroundEnemy::DestroyAfterTime()
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AGroundEnemy::DestroyChar, 3, false, 3);
 }
 
-void AGroundEnemy::Rotate(float Direction)
+// Determines if character should rotate in one place
+void AGroundEnemy::StationaryRotation()
 {
-	// Determine if character should rotate in one place
 	if ((MainCharacterActor->GetForwardInput() == 0.f) && (MainCharacterActor->GetRightInput() == 0.f)) {
 		bIsRotating = false;
 	}
 	else {
-		bIsRotating = true;
+		// Calculate the direction of movement of Main Character
+		FVector MainCharDirection = MainCharacterActor->GetVelocity();
+
+		MainCharDirection /= MainCharDirection.Size();
+	
+		// Calculate angle between the MovementDirection and ActorForwardVector vectors
+		float Angle = UKismetMathLibrary::DegAcos(FVector::DotProduct(MainCharDirection, GetActorForwardVector()));
+		
+		if ((UKismetMathLibrary::Abs(Angle) >= 75.f) && (UKismetMathLibrary::Abs(Angle) <= 105.f)) {
+			bIsRotating = true;
+		}
 	}
+}
+
+void AGroundEnemy::Rotate(float Direction)
+{
+	StationaryRotation();
+
 	if (Direction != 0.f) {
 		AddActorWorldRotation(FRotator(0.f, 350.f * Direction * GetWorld()->DeltaTimeSeconds, 0.f));
-		bIsRotating = true;
 	}
 	else {
 		RotateToCharacter();

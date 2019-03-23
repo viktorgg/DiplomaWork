@@ -26,11 +26,14 @@ protected:
 
 private:
 
+	// Timer to handle kicking animation
 	bool bIsKicking;
 	FTimerHandle KickingHandle;
 
+	// Timer to handle Kicking sound 
 	FTimerHandle HalfwayKickHandle;
-	class USoundCue* DoorKick;
+	UPROPERTY()
+		class USoundCue* DoorKick;
 
 	void ResetKicking();
 

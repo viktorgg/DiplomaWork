@@ -31,7 +31,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual void DestroyAfterTime();
+	virtual void DestroyAfterTime() override;
 
 private:
 
@@ -50,11 +50,10 @@ private:
 	bool bZooming;
 
 	bool bSlowMo;
-	class USoundCue* SlowMoWoosh;
+	UPROPERTY()
+		class USoundCue* SlowMoWoosh;
 
 	WeaponInHand WInHand;
-
-	FTimerHandle Handle;
 
 	int32 CurrPistolMagazine;
 	UPROPERTY(EditAnywhere)

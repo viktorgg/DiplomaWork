@@ -68,10 +68,8 @@ void ARifle::SpawnProjectile()
 		}
 	}
 	else if (Cast<AWindowEnemy>(CharacterActor) != NULL) {
-
-		AWindowEnemy* EnemyCharacter = Cast<AWindowEnemy>(CharacterActor);
 		// Find the rotation to look at main character
-		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, EnemyCharacter->GetMainCharacterActor()->GetActorLocation());
+		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, CharacterActor->GetMainCharacterActor()->GetActorLocation());
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 		int32 Percentage = 35;

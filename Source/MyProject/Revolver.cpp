@@ -87,10 +87,8 @@ void ARevolver::SpawnProjectile()
 		}
 	}
 	else if (Cast<AGroundEnemy>(GetCharacterActor()) != NULL) {
-
-		AGroundEnemy* EnemyCharacter = Cast<AGroundEnemy>(CharacterActor);
 		// Find the rotation to look at main character
-		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, EnemyCharacter->GetMainCharacterActor()->GetActorLocation());
+		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, CharacterActor->GetMainCharacterActor()->GetActorLocation());
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 		int32 Percentage = 35;

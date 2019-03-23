@@ -25,47 +25,59 @@ protected:
 	UPROPERTY(EditAnywhere)
 		float Health;
 
-	class UCharacterMovementComponent* MovementComponent;
-
 	float ForwardInput;
 	float RightInput;
 
 	bool bHavePistol;
 	bool bHaveRifle;
 
+	// Timer to handle enemy characters fire delay after spawn 
 	bool bCanFire;
 	FTimerHandle FireDelayHandle;
 
+	// Timer to handle pistol fire rate
 	bool bCanFirePistol;
 	float PistolFireRate;
 	FTimerHandle PistolFireRateHandle;
 
+	// Timer to handle rifle fire rate
 	bool bCanFireRifle;
 	float RifleFireRate;
 	FTimerHandle RifleFireRateHandle;
 
+	// Timer to handle rifle animation transitions (visual purposes)
 	bool bCanRifleAnim;
 	FTimerHandle RifleAnimHandle;
 
+	// Timer to handle destruction of character
 	FTimerHandle DestroyHandle;
 
+	// Timer to handle hit reactions
 	bool bIsHit;
 	bool bCanHit;
 	FTimerHandle HitDelay;
 	FTimerHandle HitRegularity;
 
-	class ARevolver* PistolActor;
-	class ARifle* RifleActor;
-	class AMyCharacter* MainCharacterActor;
-	class ALevelHandler* LevelHandlerActor;
+	UPROPERTY()
+		class ARevolver* PistolActor;
+	UPROPERTY()
+		class ARifle* RifleActor;
+	UPROPERTY()
+		class AMyCharacter* MainCharacterActor;
+	UPROPERTY()
+		class ALevelHandler* LevelHandlerActor;
 
-	UAnimSequence* MainCharDeathAnim;
-	UAnimSequence* EnemyDeathAnim;
-	UAnimSequence* EnemyDeathAnim2;
+	UPROPERTY()
+		UAnimSequence* MainCharDeathAnim;
+	UPROPERTY()
+		UAnimSequence* EnemyDeathAnim;
+	UPROPERTY()
+		UAnimSequence* EnemyDeathAnim2;
 
-	class USoundCue* WindowSqueak;
+	UPROPERTY()
+		class USoundCue* WindowSqueak;
 
-	FEnemyHandler* EnemyHandler;
+	TSharedPtr<FEnemyHandler> EnemyHandler;
 
 	void ResetHitDelay();
 
@@ -152,7 +164,7 @@ public:
 		bool GetIsHit() const { return bIsHit; }
 	void SetIsHit(bool bIsHit);
 
-	void SetEnemyHandler(FEnemyHandler* EnemyHandler) { this->EnemyHandler = EnemyHandler; }
+	void SetEnemyHandler(TSharedPtr<FEnemyHandler> EnemyHandler) { this->EnemyHandler = EnemyHandler; }
 
 	void SetWindowSqueak(USoundCue* WindowSqueak) { this->WindowSqueak = WindowSqueak; }
 };

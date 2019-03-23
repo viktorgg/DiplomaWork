@@ -15,9 +15,11 @@ struct FEnemyHandler
 
 private:
 
-	class AWindows* WindowsActor;
+	UPROPERTY()
+		class AWindows* WindowsActor;
 
-	class ACharacterBase* EnemyActor;
+	UPROPERTY()
+		class ACharacterBase* EnemyActor;
 
 	// Variable for hotel
 	FVector TerraceLoc;
@@ -68,11 +70,14 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
-	TSubclassOf<class AWindows> WindowsClass;
+	UPROPERTY()
+		TSubclassOf<class AWindows> WindowsClass;
 
-	UClass* WindowEnemyClass;
+	UPROPERTY()
+		UClass* WindowEnemyClass;
 
-	class USoundCue* WindowSqueak;
+	UPROPERTY()
+		class USoundCue* WindowSqueak;
 
 	UPROPERTY(VisibleAnywhere)
 		class UChildActorComponent* WindowsChild;
@@ -113,12 +118,12 @@ public:
 
 	virtual void SpawnEnemy(int32 Place);
 
-	// Array to hold structure of every enemy
-	TArray<FEnemyHandler*> EnemyHandlerArray;
+	// Array to hold structure of every enemy building position
+	TArray<TSharedPtr<FEnemyHandler>> EnemyHandlerArray;
 
 	UClass* GetWindowEnemyClass() const { return WindowEnemyClass; }
 
-	TArray<FEnemyHandler*> GetEnemyHandlerArray() const { return EnemyHandlerArray; }
+	TArray<TSharedPtr<FEnemyHandler>> GetEnemyHandlerArray() const { return EnemyHandlerArray; }
 
 	UChildActorComponent* GetWindowsChild() const { return WindowsChild; }
 

@@ -24,8 +24,6 @@ private:
 
 	int32 Damage;
 
-	class ALevelHandler* LevelHandlerActor;
-
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* SphereCollision;
 
@@ -35,13 +33,20 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UProjectileMovementComponent* ProjectileMovement;
 
-	class ACharacterBase* CharacterActor;
+	UPROPERTY()
+		class ACharacterBase* CharacterActor;
 
-	class UParticleSystem* HitFire;
+	UPROPERTY()
+		class UParticleSystem* HitFire;
 
-	class UParticleSystem* HitBlood;
+	UPROPERTY()
+		class UParticleSystem* HitBlood;
 
-	class UParticleSystem* ProjectileTrail;
+	UPROPERTY()
+		class UParticleSystem* ProjectileTrail;
+
+	UPROPERTY()
+		class ALevelHandler* LevelHandlerActor;
 
 	void SpawnEmitter();
 

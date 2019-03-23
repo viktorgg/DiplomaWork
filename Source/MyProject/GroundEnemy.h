@@ -24,7 +24,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UClass* PistolClass;
+	UPROPERTY()
+		UClass* PistolClass;
 
 	bool bIsRotating;
 
@@ -40,6 +41,8 @@ protected:
 	virtual void DestroyChar() override;
 
 	void RotateToCharacter();
+
+	void StationaryRotation();
 
 	float GetDistanceToMain();
 

@@ -15,7 +15,7 @@
 
 ASaloonGroundEnemy::ASaloonGroundEnemy()
 {
-	CharacterMovement->MaxWalkSpeed = 300.f;
+	CharacterMovement->MaxWalkSpeed = 275.f;
 
 	bIsKicking = true;
 
