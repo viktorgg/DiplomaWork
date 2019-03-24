@@ -95,7 +95,7 @@ float AGroundEnemy::GetDistanceToMain()
 	// Gets the length of vector
 	float Distance = DistanceVector.Size();
 
-	return Distance;
+	return FMath::Abs(Distance);
 }
 
 void AGroundEnemy::RotateToCharacter()
@@ -123,7 +123,7 @@ void AGroundEnemy::StationaryRotation()
 		// Calculate angle between the MovementDirection and ActorForwardVector vectors
 		float Angle = UKismetMathLibrary::DegAcos(FVector::DotProduct(MainCharDirection, GetActorForwardVector()));
 		
-		if ((UKismetMathLibrary::Abs(Angle) >= 75.f) && (UKismetMathLibrary::Abs(Angle) <= 105.f)) {
+		if ((UKismetMathLibrary::Abs(Angle) >= 45.f) && (UKismetMathLibrary::Abs(Angle) <= 135.f)) {
 			bIsRotating = true;
 		}
 	}
@@ -173,8 +173,9 @@ float AGroundEnemy::LineTrace()
 	GetWorld()->LineTraceSingleByChannel(OutHitFrontL, StartLocFrontL, EndLocFrontL, ECC_Camera, CollisionParams);
 	GetWorld()->LineTraceSingleByChannel(OutHitFrontR, StartLocFrontR, EndLocFrontR, ECC_Camera, CollisionParams);
 
-	if (OutHitFront.GetActor() != this || OutHitFrontL.GetActor() != this || OutHitFrontR.GetActor() != this) {
-
+	// Start rotating unless Main Char is in front
+	if ((OutHitFront.GetActor() != GetMainCharacterActor()) && (OutHitFrontL.GetActor() != GetMainCharacterActor()) && (OutHitFrontR.GetActor() != GetMainCharacterActor())) {
+		
 		if (OutHitFrontL.GetActor() != this) {
 			DistanceLeft = OutHitFrontL.Distance;
 		}

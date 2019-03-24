@@ -33,6 +33,8 @@ public:
 
 	virtual void DestroyAfterTime() override;
 
+	void ZoomedKills(float Distance);
+
 private:
 
 	float ZoomedCharSpeed;
@@ -54,6 +56,10 @@ private:
 		class USoundCue* SlowMoWoosh;
 
 	WeaponInHand WInHand;
+
+	bool bZoomedKills;
+	// Timer to handle camera zoom on eliminating enemies
+	FTimerHandle ZoomedKillHandle;
 
 	int32 CurrPistolMagazine;
 	UPROPERTY(EditAnywhere)
@@ -99,6 +105,8 @@ private:
 
 	void EnterSlowMo();
 
+	void ResetZoomedKills();
+
 public:
 
 	bool GetZooming() const { return bZooming; }
@@ -131,4 +139,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		bool GetSlowMo() const { return bSlowMo; }
+
 };

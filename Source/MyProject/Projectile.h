@@ -50,6 +50,8 @@ private:
 
 	void SpawnEmitter();
 
+	float DistanceToEnemy(ACharacterBase* HitEnemy);
+
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 

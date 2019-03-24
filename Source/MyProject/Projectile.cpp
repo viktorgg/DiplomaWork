@@ -52,7 +52,7 @@ AProjectile::AProjectile()
 		HitFire = ParticleSystem.Object;
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Fire Particle Not Found In Projectile!")));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Fire Particle Not Found In Projectile!")));
 	}
 
 	// Find the blood splatter particle asset in content browser by reference
@@ -64,7 +64,7 @@ AProjectile::AProjectile()
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Blood Particle Not Found In Projectile!")));
 	}
-	
+
 	// Find the projectile trail particle asset in content browser by reference
 	static ConstructorHelpers::FObjectFinder<UParticleSystem>
 		ParticleSystem3(TEXT("ParticleSystem'/Game/Assets/Particles/ProjectileTrail.ProjectileTrail'"));
@@ -98,77 +98,109 @@ void AProjectile::SpawnEmitter()
 	UGameplayStatics::SpawnEmitterAtLocation(this, ProjectileTrail, GetActorLocation(), GetActorRotation(), FVector(1.0f, 1.0f, 1.0f), true);
 }
 
+float AProjectile::DistanceToEnemy(ACharacterBase* HitEnemy)
+{
+	FVector DistanceVector = CharacterActor->GetActorLocation() - HitEnemy->GetActorLocation();
+	// Gets the length of vector
+	float Distance = DistanceVector.Size();
+
+	return FMath::Abs(Distance);
+}
+
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (OtherActor == CharacterActor) {
+		Destroy();
+	}
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && (OtherActor != CharacterActor)) {
 
-		if (OtherActor == CharacterActor) {
-			Destroy();
+		if ((Cast<AMyCharacter>(CharacterActor) == NULL) && (Cast<AMyCharacter>(Hit.GetActor()) == NULL)) {
+			Destroy();		// If enemy hits another enemy bullet vanishes
 		}
-		if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && (OtherActor != CharacterActor)) {
+		else {
+			ACharacterBase* HitActor = Cast<ACharacterBase>(Hit.GetComponent()->GetOwner());
 
-			if ((Cast<AMyCharacter>(CharacterActor) == NULL) && (Cast<AMyCharacter>(Hit.GetActor()) == NULL)) {
-				Destroy();		// If enemy hits another enemy bullet vanishes
-			}
-			else {
-				ACharacterBase* HitActor = Cast<ACharacterBase>(Hit.GetComponent()->GetOwner());
+			if (Hit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass()) == true) {
 
-				if (Hit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass()) == true) {
+				FVector BloodSplatterLoc = Hit.GetActor()->GetActorLocation() + (Hit.GetActor()->GetActorUpVector() * 20.0f);
+				UGameplayStatics::SpawnEmitterAtLocation(this, HitBlood, BloodSplatterLoc, FRotator(0.0f, 0.0f, 0.0f), FVector(1.2f, 1.2f, 1.2f), true);
 
-					FVector BloodSplatterLoc = Hit.GetActor()->GetActorLocation() + (Hit.GetActor()->GetActorUpVector() * 20.0f);
-					UGameplayStatics::SpawnEmitterAtLocation(this, HitBlood, BloodSplatterLoc, FRotator(0.0f, 0.0f, 0.0f), FVector(1.2f, 1.2f, 1.2f), true);
-
-					// Headshot damage
-					if ((Hit.BoneName.ToString() == "Head") || (Hit.BoneName.ToString() == "HeadTop_End")) {
-						HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5f);
-					}
-					else {
-						HitActor->SetHealth(HitActor->GetHealth() - Damage);
-					}
-					HitActor->SetIsHit(true);
-
-					if (HitActor->GetHealth() <= 0) {
-						// If Main Character dies play death animation and disable player input
-						if (Cast<AMyCharacter>(HitActor) != NULL) {
-							HitActor->PlayMainDeathAnim();
-							HitActor->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-						}
-						// If GEnemy dies it's pistol becomes retrievable
-						else if (Cast<AGroundEnemy>(HitActor) != NULL) {
-							AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
-							GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
-							GroundEnemy->GetPistolActor()->SetCharacterActor(nullptr);
-							HitActor->PlayEnemyDeathAnim();
-							GroundEnemy->DestroyAfterTime();
-						}
-						// If WEnemy dies it's rifle becomes retrievable and flies off to the ground
-						else if (Cast<AWindowEnemy>(HitActor) != NULL) {
-							AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor);
-							WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);
-							WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() / GetWorld()->DeltaTimeSeconds * 800.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
-							WindowEnemy->GetRifleActor()->SetCharacterActor(nullptr);
-							HitActor->PlayEnemyDeathAnim();
-							WindowEnemy->DestroyAfterTime();
-						}
-
-						// Configure difficulty variables
-						// Everytime player makes a kill slow mo capacity increases	
-						if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Easy) {
-							HitActor->GetMainCharacterActor()->AddSlowMoCapacity(1.f);
-						}
-						else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Medium) {			
-							HitActor->GetMainCharacterActor()->AddSlowMoCapacity(0.75f);
-						}
-						else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Hard) {
-							HitActor->GetMainCharacterActor()->AddSlowMoCapacity(0.5f);
-						}
-						HitActor->GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-					}
+				// Headshot damage
+				if ((Hit.BoneName.ToString() == "Head") || (Hit.BoneName.ToString() == "HeadTop_End")) {
+					HitActor->SetHealth(HitActor->GetHealth() - Damage * 2.5f);
 				}
 				else {
-					UGameplayStatics::SpawnEmitterAtLocation(this, HitFire, Hit.Location, FRotator(0.0f, 0.0f, 0.0f), FVector(0.1f, 0.1f, 0.1f), true);
+					HitActor->SetHealth(HitActor->GetHealth() - Damage);
+				}
+				HitActor->SetIsHit(true);
+
+				if (HitActor->GetHealth() <= 0) {
+					// If Main Character dies play death animation and disable player input
+					if (Cast<AMyCharacter>(HitActor) != NULL) {
+						HitActor->PlayMainDeathAnim();
+						HitActor->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+					}
+					// If GEnemy dies it's pistol becomes retrievable
+					else if (Cast<AGroundEnemy>(HitActor) != NULL) {
+						AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
+						GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
+						GroundEnemy->GetPistolActor()->SetCharacterActor(nullptr);
+						GroundEnemy->PlayEnemyDeathAnim();
+						GroundEnemy->DestroyAfterTime();
+
+						// Call ZoomedKills when GEnemy dies
+						if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+							if (DistanceToEnemy(GroundEnemy) > 1000.f) {
+
+								// 45% Chance to zoom camera to enemy
+								int32 Chance = FMath::RandRange(1, 100);
+								if (Chance <= 45) {
+									Cast<AMyCharacter>(CharacterActor)->ZoomedKills(DistanceToEnemy(GroundEnemy));
+								}
+							}
+						}
+					}
+					// If WEnemy dies it's rifle becomes retrievable and flies off to the ground
+					else if (Cast<AWindowEnemy>(HitActor) != NULL) {
+						AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor);
+						WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);
+						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() / GetWorld()->DeltaTimeSeconds * 800.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
+						WindowEnemy->GetRifleActor()->SetCharacterActor(nullptr);
+						WindowEnemy->PlayEnemyDeathAnim();
+						WindowEnemy->DestroyAfterTime();
+
+						// Call ZoomedKills when WEnemy dies
+						if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+							if (DistanceToEnemy(WindowEnemy) > 1000.f) {
+
+								// 45% Chance to zoom camera to enemy
+								int32 Chance = FMath::RandRange(1, 100);
+								if (Chance <= 45) {
+									Cast<AMyCharacter>(CharacterActor)->ZoomedKills(DistanceToEnemy(WindowEnemy));
+								}
+							}
+						}
+					}
+
+					// Configure difficulty variables
+					// Everytime player makes a kill slow mo capacity increases	
+					if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Easy) {
+						HitActor->GetMainCharacterActor()->AddSlowMoCapacity(1.f);
+					}
+					else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Medium) {
+						HitActor->GetMainCharacterActor()->AddSlowMoCapacity(0.75f);
+					}
+					else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Hard) {
+						HitActor->GetMainCharacterActor()->AddSlowMoCapacity(0.5f);
+					}
+					HitActor->GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 				}
 			}
-			Destroy();
+			else {
+				UGameplayStatics::SpawnEmitterAtLocation(this, HitFire, Hit.Location, FRotator(0.0f, 0.0f, 0.0f), FVector(0.1f, 0.1f, 0.1f), true);
+			}
+		Destroy();
 		}
+	}
 }
 

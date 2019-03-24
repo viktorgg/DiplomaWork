@@ -144,17 +144,20 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("SlowMo", IE_Pressed, this, &AMyCharacter::EnterSlowMo);
 }
 
+// Sets input to 1.0 when clicking W
+								// Sets input to -1.0 when clicking S
 void AMyCharacter::MoveForward(float Input)
 {
-	SetForwardInput(Input);		// Sets input to 1.0 when clicking W
-								// Sets input to -1.0 when clicking S
+	SetForwardInput(Input);	
+
 	if (Input != 0.0) {
 
 		FVector SpringArmForward = SpringArm->GetForwardVector();
 
 		AddMovementInput(SpringArmForward, Input);
 
-		LerpPlayerToCamera(8.0f);	// Character turns to camera direction when moving
+		// Character turns to camera direction when moving
+		LerpPlayerToCamera(8.0f);	
 	}
 }
 
@@ -319,6 +322,51 @@ void AMyCharacter::EnterSlowMo()
 		HealthRegenSpeed /= 2.5f;
 		bSlowMo = false;
 	}
+}
+
+void AMyCharacter::ZoomedKills(float Distance)
+{
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.3f);
+
+	// Hide the character and weapons
+	SetActorHiddenInGame(true);
+	if (PistolActor != nullptr) {
+		PistolActor->SetActorHiddenInGame(true);
+	}
+	if (RifleActor != nullptr) {
+		RifleActor->SetActorHiddenInGame(true);
+	}
+
+	float NewFOV = 30000 / Distance;
+
+	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	GetCamera()->SetFieldOfView(NewFOV);
+	GetWorldTimerManager().SetTimer(ZoomedKillHandle, this, &AMyCharacter::ResetZoomedKills, 0.5f, false, 0.5f);
+}
+
+void AMyCharacter::ResetZoomedKills()
+{
+	GetWorldTimerManager().ClearTimer(ZoomedKillHandle);
+
+	// Check if SlowMo was used
+	if (bSlowMo == true) {
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.4f);
+	}
+	else {
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
+	}
+
+	// Show the character and weapons
+	SetActorHiddenInGame(false);
+	if (PistolActor != nullptr) {
+		PistolActor->SetActorHiddenInGame(false);
+	}
+	if (RifleActor != nullptr) {
+		RifleActor->SetActorHiddenInGame(false);
+	}
+
+	GetCamera()->SetFieldOfView(90.f);
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 }
 
 void AMyCharacter::ResetPistolFire()
