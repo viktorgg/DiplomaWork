@@ -112,15 +112,15 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	if (OtherActor == CharacterActor) {
 		Destroy();
 	}
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && (OtherActor != CharacterActor)) {
+	if (OtherActor && (OtherActor != this) && OtherComp && (OtherActor != CharacterActor)) {
 
-		if ((Cast<AMyCharacter>(CharacterActor) == NULL) && (Cast<AMyCharacter>(Hit.GetActor()) == NULL)) {
+		if (!Cast<AMyCharacter>(CharacterActor) && !Cast<AMyCharacter>(Hit.GetActor())) {
 			Destroy();		// If enemy hits another enemy bullet vanishes
 		}
 		else {
 			ACharacterBase* HitActor = Cast<ACharacterBase>(Hit.GetComponent()->GetOwner());
 
-			if (Hit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass()) == true) {
+			if (Hit.GetComponent()->IsA(USkeletalMeshComponent::StaticClass())) {
 
 				FVector BloodSplatterLoc = Hit.GetActor()->GetActorLocation() + (Hit.GetActor()->GetActorUpVector() * 20.0f);
 				UGameplayStatics::SpawnEmitterAtLocation(this, HitBlood, BloodSplatterLoc, FRotator(0.0f, 0.0f, 0.0f), FVector(1.2f, 1.2f, 1.2f), true);
@@ -136,33 +136,30 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 
 				if (HitActor->GetHealth() <= 0) {
 					// If Main Character dies play death animation and disable player input
-					if (Cast<AMyCharacter>(HitActor) != NULL) {
+					if (Cast<AMyCharacter>(HitActor)) {
 						HitActor->PlayMainDeathAnim();
 						HitActor->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 					}
 					// If GEnemy dies it's pistol becomes retrievable
-					else if (Cast<AGroundEnemy>(HitActor) != NULL) {
-						AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor);
+					else if (AGroundEnemy* GroundEnemy = Cast<AGroundEnemy>(HitActor)) {
 						GroundEnemy->GetPistolActor()->GetSphereCollision()->SetSimulatePhysics(true);
 						GroundEnemy->GetPistolActor()->SetCharacterActor(nullptr);
 						GroundEnemy->PlayEnemyDeathAnim();
 						GroundEnemy->DestroyAfterTime();
 
-						// Call ZoomedKills when GEnemy dies
-						if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+						// Call ZoomedKills when GEnemy dies if distance is over 1000 points away
+						if (Cast<AMyCharacter>(CharacterActor)) {
 							if (DistanceToEnemy(GroundEnemy) > 1000.f) {
-
-								// 45% Chance to zoom camera to enemy
+								// 25% Chance to zoom camera to enemy
 								int32 Chance = FMath::RandRange(1, 100);
-								if (Chance <= 45) {
+								if (Chance <= 25) {
 									Cast<AMyCharacter>(CharacterActor)->ZoomedKills(DistanceToEnemy(GroundEnemy));
 								}
 							}
 						}
 					}
 					// If WEnemy dies it's rifle becomes retrievable and flies off to the ground
-					else if (Cast<AWindowEnemy>(HitActor) != NULL) {
-						AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor);
+					else if (AWindowEnemy* WindowEnemy = Cast<AWindowEnemy>(HitActor)) {
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->SetSimulatePhysics(true);
 						WindowEnemy->GetRifleActor()->GetSphereCollision()->AddForce(WindowEnemy->GetActorForwardVector() / GetWorld()->DeltaTimeSeconds * 800.0f * WindowEnemy->GetRifleActor()->GetSphereCollision()->GetMass());
 						WindowEnemy->GetRifleActor()->SetCharacterActor(nullptr);
@@ -170,13 +167,13 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 						WindowEnemy->DestroyAfterTime();
 
 						// Call ZoomedKills when WEnemy dies
-						if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+						if (AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor)) {
 							if (DistanceToEnemy(WindowEnemy) > 1000.f) {
 
 								// 45% Chance to zoom camera to enemy
 								int32 Chance = FMath::RandRange(1, 100);
 								if (Chance <= 45) {
-									Cast<AMyCharacter>(CharacterActor)->ZoomedKills(DistanceToEnemy(WindowEnemy));
+									MainCharacter->ZoomedKills(DistanceToEnemy(WindowEnemy));
 								}
 							}
 						}

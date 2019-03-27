@@ -126,7 +126,7 @@ FRotator AGunBase::GetHitRot(FVector SocketLoc, class AMyCharacter* MainChar)
 	// Fire a ray from camera to it's forward direction and save result in FHitResult struct
 	GetWorld()->LineTraceSingleByChannel(HitResult, MainChar->GetCamera()->GetComponentLocation(), EndLoc, ECC_Camera, CollisionParams);
 
-	if (HitResult.bBlockingHit == true) {
+	if (HitResult.bBlockingHit) {
 		return UKismetMathLibrary::FindLookAtRotation(SocketLoc, HitResult.ImpactPoint);
 	}
 	else {

@@ -36,9 +36,9 @@ void AHotel::Tick(float DeltaTime)
 
 void AHotel::SpawnEnemy(int32 Place)
 {	
-	if (EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) {
+	if (!EnemyHandlerArray[Place]->GetEnemyActor()) {
 
-		if ((Place < 4) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed() == true)) {
+		if ((Place < 4) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed())) {
 			
 			EnemyHandlerArray[Place]->GetWindowsActor()->Open();
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation(), WindowSqueak->GetVolumeMultiplier(), WindowSqueak->GetPitchMultiplier());

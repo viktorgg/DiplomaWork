@@ -130,7 +130,7 @@ void ALevelHandler::SpawnGroundEnemy(int32 Place)
 		SpawnLoc = GEnemyStart;
 		SpawnRot = FRotator(0.f, 90.f, 0.f);
 
-		if (IfEnemyInSight(SpawnLoc) == true) {
+		if (IfEnemyInSight(SpawnLoc)) {
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 			AGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AGroundEnemy>(GroundEnemyClass, SpawnLoc, SpawnRot, ActorSpawnParams);
@@ -143,8 +143,8 @@ void ALevelHandler::SpawnGroundEnemy(int32 Place)
 		SpawnLoc = GEnemyBarn;
 		SpawnRot = FRotator(0.f, 0.f, 0.f);
 
-		if (BoxCollisionBarn->IsOverlappingActor(MainCharacter) == true) {
-			if (IfEnemyInSight(SpawnLoc) == true) {
+		if (BoxCollisionBarn->IsOverlappingActor(MainCharacter)) {
+			if (IfEnemyInSight(SpawnLoc)) {
 				FActorSpawnParameters ActorSpawnParams;
 				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 				AGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AGroundEnemy>(GroundEnemyClass, SpawnLoc, SpawnRot, ActorSpawnParams);
@@ -163,8 +163,8 @@ void ALevelHandler::SpawnGroundEnemy(int32 Place)
 		SpawnLoc = GEnemyEnd;
 		SpawnRot = FRotator(0.f, 180.f, 0.f);
 
-		if (BoxCollisionEnd->IsOverlappingActor(MainCharacter) == true) {
-			if (IfEnemyInSight(SpawnLoc) == true) {
+		if (BoxCollisionEnd->IsOverlappingActor(MainCharacter)) {
+			if (IfEnemyInSight(SpawnLoc)) {
 				FActorSpawnParameters ActorSpawnParams;
 				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 				AGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AGroundEnemy>(GroundEnemyClass, SpawnLoc, SpawnRot, ActorSpawnParams);
@@ -180,7 +180,7 @@ void ALevelHandler::SpawnGroundEnemy(int32 Place)
 		}
 	}
 	// If unable to spawn enemy first try, loop until succeeds 
-	if (bCanSpawn == false) {
+	if (!bCanSpawn) {
 		SpawnGroundEnemy(FMath::RandRange(Start, End));
 	}
 }
@@ -281,7 +281,7 @@ bool ALevelHandler::IfEnemyInSight(FVector Loc)
 
 void ALevelHandler::SpawnBankEnemy(int32 Place)
 {
-	if (NationalBankActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed() == false) {
+	if (!NationalBankActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed()) {
 		WEnemyHandler();
 	}
 	else {
@@ -292,11 +292,11 @@ void ALevelHandler::SpawnBankEnemy(int32 Place)
 void ALevelHandler::SpawnHotelEnemy(int32 Place)
 {
 	if (Place == 4) {
-		if (IfEnemyInSight(HotelActor->GetEnemyHandlerArray()[Place]->GetTerraceLoc()) == true) {
+		if (IfEnemyInSight(HotelActor->GetEnemyHandlerArray()[Place]->GetTerraceLoc())) {
 			HotelActor->SpawnEnemy(Place);
 		}
 	}
-	else if (HotelActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed() == false) {
+	else if (!HotelActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed()) {
 		WEnemyHandler();
 	}
 	else {
@@ -306,7 +306,7 @@ void ALevelHandler::SpawnHotelEnemy(int32 Place)
 
 void ALevelHandler::SpawnStoreEnemy(int32 Place)
 {
-	if (GeneralStoreActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed() == false) {
+	if (!GeneralStoreActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed()) {
 		WEnemyHandler();
 	}
 	else {
@@ -317,11 +317,11 @@ void ALevelHandler::SpawnStoreEnemy(int32 Place)
 void ALevelHandler::SpawnSaloonEnemy(int32 Place)
 {
 	if (Place == 1) {
-		if (IfEnemyInSight(SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->GetOutLoc()) == true) {
+		if (IfEnemyInSight(SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->GetOutLoc())) {
 			SaloonBuildingActor->SpawnEnemy(Place);
 		}
 	}
-	else if (SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->GetEnemyActor() != nullptr) {
+	else if (SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->GetEnemyActor()) {
 		WEnemyHandler();
 	}
 	else {
@@ -332,11 +332,11 @@ void ALevelHandler::SpawnSaloonEnemy(int32 Place)
 void ALevelHandler::SpawnSaloonEnemy2(int32 Place)
 {
 	if (Place == 1) {
-		if (IfEnemyInSight(SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->GetOutLoc()) == true) {
+		if (IfEnemyInSight(SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->GetOutLoc())) {
 			SaloonBuildingActor2->SpawnEnemy(Place);
 		}
 	}
-	else if (SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->GetEnemyActor() != nullptr) {
+	else if (SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->GetEnemyActor()) {
 		WEnemyHandler();
 	}
 	else {
@@ -347,8 +347,8 @@ void ALevelHandler::SpawnSaloonEnemy2(int32 Place)
 // One time use
 void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bEntered == false) {
-		if (Cast<AMyCharacter>(OtherActor) != NULL) {
+	if (!bEntered) {
+		if (Cast<AMyCharacter>(OtherActor)) {
 
 			SaloonBuildingActor->SpawnEnemy(2);
 			

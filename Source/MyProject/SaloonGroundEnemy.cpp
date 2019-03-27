@@ -55,12 +55,11 @@ void ASaloonGroundEnemy::PlaySound()
 
 void ASaloonGroundEnemy::MoveForward(float Input)
 {
-	if (bIsKicking == false) {
+	if (!bIsKicking) {
 
 		Super::MoveForward(NULL);
 	}
 	else {
-
 		AddActorWorldOffset(GetActorForwardVector() * CharacterMovement->MaxWalkSpeed * GetWorld()->GetDeltaSeconds());
 	}
 }

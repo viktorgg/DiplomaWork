@@ -42,13 +42,11 @@ void ARifle::SpawnProjectile()
 	FRotator SpawnRotation;
 	FVector SpawnLocation = GunMesh->GetSocketLocation("Muzzle");
 
-	if (Cast<AMyCharacter>(GetCharacterActor()) != NULL) {
-
-		AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor);
+	if (AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor)) {
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
-		if (MainCharacter->GetZooming() == true) {
+		if (MainCharacter->GetZooming()) {
 
 			SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
 		}
@@ -67,7 +65,7 @@ void ARifle::SpawnProjectile()
 			}
 		}
 	}
-	else if (Cast<AWindowEnemy>(CharacterActor) != NULL) {
+	else if (Cast<AWindowEnemy>(CharacterActor)) {
 		// Find the rotation to look at main character
 		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, CharacterActor->GetMainCharacterActor()->GetActorLocation());
 
@@ -98,13 +96,13 @@ void ARifle::SpawnProjectile()
 	SpawnedProjectile->SetDamage(Damage);
 	
 	// Wait 0.2 seconds when player is firing for animation synchronization
-	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
-		AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterActor);
-		if (MainChar->GetZooming() == true) {
+	if (AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor)) {
+
+		if (MainCharacter->GetZooming()) {
 			SpawnEmitter();
 		}
 		else {
-			if (MainChar->GetSlowMo() == true) {
+			if (MainCharacter->GetSlowMo()) {
 				GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARifle::SpawnEmitter, 0.08f, false, 0.08f);
 			}
 			else {
@@ -120,7 +118,7 @@ void ARifle::SpawnProjectile()
 void ARifle::SpawnEmitter()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
-	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+	if (Cast<AMyCharacter>(CharacterActor)) {
 
 		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 		UGameplayStatics::PlaySound2D(GetWorld(), RifleShot, VolumeControl, RifleShot->GetPitchMultiplier());
@@ -133,25 +131,23 @@ void ARifle::SpawnEmitter()
 
 void ARifle::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<ACharacterBase>(OtherActor) != NULL) {
+	if (ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor)) {
 
-		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
-
-		if ((CharacterEntered->GetHaveRifle() == false) && (CharacterActor == nullptr)) {
+		if (!CharacterEntered->GetHaveRifle() && !CharacterActor) {
 			CharacterEntered->SetRifleActor(this);
 			CharacterEntered->SetHaveRifle(true);
 			CharacterActor = CharacterEntered;
 			this->AttachToComponent(CharacterEntered->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
 			SphereCollision->SetSimulatePhysics(false);		// Enable it's physics when character dies
 
-			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
+			if (Cast<AMyCharacter>(CharacterEntered)) {
 
 				float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 				UGameplayStatics::PlaySound2D(GetWorld(), PickUp, VolumeControl, PickUp->GetPitchMultiplier());
 			}
 		}
 		else {
-			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == nullptr)) {
+			if (Cast<AMyCharacter>(CharacterEntered) && !CharacterActor) {
 				AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterEntered);
 				if (MainChar->GetCurrRifleMagazine() < MainChar->GetRifleMagazineLimit()) {
 					MainChar->SetCurrRifleMagazine(MainChar->GetRifleMagazineLimit());

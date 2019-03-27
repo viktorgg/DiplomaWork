@@ -138,7 +138,7 @@ void ABuildingBase::Tick(float DeltaTime)
 // Spawn enemies just behind window or terrace
 void ABuildingBase::SpawnEnemy(int32 Place)
 {
-	if ((EnemyHandlerArray[Place]->GetEnemyActor() == nullptr) && (EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed() == true)) {
+	if (!EnemyHandlerArray[Place]->GetEnemyActor() && EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed()) {
 		
 		EnemyHandlerArray[Place]->GetWindowsActor()->Open();
 

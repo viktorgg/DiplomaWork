@@ -40,10 +40,10 @@ void ALamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if ((bIfTurnOn == true) && (FMath::IsNearlyEqual(PointLight->Intensity, MaxIntensity, 1.f) == false)) {
+	if (bIfTurnOn && !FMath::IsNearlyEqual(PointLight->Intensity, MaxIntensity, 1.f)) {
 		TurnOnLight();
 	}
-	else if((bIfTurnOn == false) && (FMath::IsNearlyEqual(PointLight->Intensity, 0.f, 1.f) == false)){
+	else if(!bIfTurnOn && !FMath::IsNearlyEqual(PointLight->Intensity, 0.f, 1.f)){
 		TurnOffLight();
 	}
 

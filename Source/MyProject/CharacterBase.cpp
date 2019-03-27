@@ -122,7 +122,7 @@ void ACharacterBase::PlayMainDeathAnim()
 
 void ACharacterBase::PlayEnemyDeathAnim()
 {
-	if (Cast<AWindowEnemy>(this) != NULL) {
+	if (Cast<AWindowEnemy>(this)) {
 		GetMesh()->PlayAnimation(EnemyDeathAnim, false);
 	}
 	else {
@@ -139,7 +139,7 @@ void ACharacterBase::PlayEnemyDeathAnim()
 
 void ACharacterBase::SetIsHit(bool bIsHit)
 {
-	if (bCanHit == true) {
+	if (bCanHit) {
 		this->bIsHit = bIsHit;
 		bCanHit = false;
 		GetWorldTimerManager().SetTimer(HitDelay, this, &ACharacterBase::ResetHitDelay, 1.f, false, 1.f);

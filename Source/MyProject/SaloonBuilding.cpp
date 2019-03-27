@@ -86,7 +86,7 @@ void ASaloonBuilding::Tick(float DeltaTime)
 
 void ASaloonBuilding::SpawnEnemy(int32 Place)
 {
-	if (SEnemyHandlerArray[Place]->GetEnemyActor() == nullptr) {
+	if (!SEnemyHandlerArray[Place]->GetEnemyActor()) {
 
 		if (Place == 0) {		// Spawns behind bar
 			FActorSpawnParameters ActorSpawnParams;

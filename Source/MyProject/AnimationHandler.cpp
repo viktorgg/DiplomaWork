@@ -10,7 +10,7 @@ void UAnimationHandler::UpdateAnimationProperties()
 {
 	AMyCharacter* CharacterRef = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	if (CharacterRef != nullptr) {
+	if (CharacterRef) {
 		ForwardInput = CharacterRef->GetForwardInput();
 		RightInput = CharacterRef->GetRightInput();
 		bIdleAim = CharacterRef->GetZooming();
@@ -20,6 +20,6 @@ void UAnimationHandler::UpdateAnimationProperties()
 		bRifleAnim = !CharacterRef->GetCanRifleAnim();
 	}
 	else {
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found In AnimHandler!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Char Not Found In AnimHandler!")));
 	}
 }

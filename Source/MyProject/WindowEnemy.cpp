@@ -73,7 +73,7 @@ void AWindowEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (Health > 0) {
-		if (bCanFire == true) {
+		if (bCanFire) {
 			Fire();
 		}
 		RotateToCharacter();
@@ -82,7 +82,7 @@ void AWindowEnemy::Tick(float DeltaTime)
 
 void AWindowEnemy::Fire()
 {
-	if ((RifleActor != nullptr) && (bHaveRifle == true) && (bCanFireRifle == true)) {
+	if (RifleActor && bHaveRifle && bCanFireRifle) {
 		RifleActor->SpawnProjectile();
 		bCanFireRifle = false;
 		GetWorldTimerManager().SetTimer(RifleFireRateHandle, this, &AWindowEnemy::ResetRifleFire, RifleFireRate, false, RifleFireRate);
@@ -98,8 +98,8 @@ void AWindowEnemy::ResetRifleFire()
 void AWindowEnemy::RotateToCharacter()
 {
 	// If window is on second floor the enemy will be more leaned towards ground
-	if ((BuildingActor != nullptr)) {
-		if (LimitRotation() == true) {
+	if (BuildingActor) {
+		if (LimitRotation()) {
 			if (WindowsPlace < 2) {
 				SetActorRotation(FRotator(-40.0f, LookAtChar().Yaw, 0.0f));
 			}
@@ -124,7 +124,7 @@ void AWindowEnemy::DestroyChar()
 
 	EnemyHandler->SetEnemyActor(nullptr);
 
-	if (EnemyHandler->GetWindowsActor() != nullptr) {
+	if (EnemyHandler->GetWindowsActor()) {
 		EnemyHandler->GetWindowsActor()->Close();
 
 		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
@@ -141,13 +141,13 @@ bool AWindowEnemy::LimitRotation()
 	FVector CharForwardVector = UKismetMathLibrary::GetForwardVector(LookAtChar());
 	FVector BuildingForwardVector;
 
-	if (Cast<ANationalBank>(BuildingActor) != NULL) {
+	if (Cast<ANationalBank>(BuildingActor)) {
 		BuildingForwardVector = BuildingActor->GetActorRightVector();
 	}
-	else if (Cast<AGeneralStore>(BuildingActor) != NULL) {
+	else if (Cast<AGeneralStore>(BuildingActor)) {
 		BuildingForwardVector = BuildingActor->GetActorRightVector() * -1.f;
 	}
-	else if (Cast<AHotel>(BuildingActor) != NULL) {
+	else if (Cast<AHotel>(BuildingActor)) {
 		BuildingForwardVector = BuildingActor->GetActorForwardVector();
 	}
 

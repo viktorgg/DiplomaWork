@@ -104,11 +104,11 @@ void AMyCharacter::Tick(float DeltaTime)
 	}
 
 	// Character to face camera's direction when shooting
-	if (bCanFirePistol == false) {
+	if (!bCanFirePistol) {
 		LerpPlayerToCamera(15.0f);
 	}
 
-	if (bCanRifleAnim == false) {
+	if (!bCanRifleAnim) {
 		LerpPlayerToCamera(15.0f);
 	}
 
@@ -118,7 +118,7 @@ void AMyCharacter::Tick(float DeltaTime)
 	}
 
 	// Slowly deplete SlowMo's capacity when ON
-	if (bSlowMo == true) {
+	if (bSlowMo) {
 		SlowMoCapacity -= DeltaTime * 1.5f;
 		if (SlowMoCapacity <= 0.0f) {
 			EnterSlowMo();		// Disable slow mo when out of capacity
@@ -204,7 +204,7 @@ void AMyCharacter::LookUp(float Input)
 void AMyCharacter::CameraZoom()
 {
 	if (WInHand != None) {
-		if (bSlowMo == true) {
+		if (bSlowMo) {
 			// Increase character speed when time is slowed for player's advantage when aiming
 			CharacterMovement->MaxWalkSpeed = ZoomedCharSpeed * 2.5f;
 		}
@@ -221,7 +221,7 @@ void AMyCharacter::CameraZoom()
 
 void AMyCharacter::CameraOutZoom()
 {
-	if (bSlowMo == true) {
+	if (bSlowMo) {
 		// Increase character speed when time is slowed for player's advantage when not aiming
 		CharacterMovement->MaxWalkSpeed = NotZoomedCharSpeed * 2.5f;
 	}
@@ -249,7 +249,7 @@ void AMyCharacter::LerpPlayerToCamera(float Speed)
 void AMyCharacter::Fire()
 {
 	if (WInHand == Pistol) {
-		if ((PistolActor != nullptr) && (bCanFirePistol == true) && (CurrPistolMagazine > 0)) {
+		if (PistolActor && bCanFirePistol && (CurrPistolMagazine > 0)) {
 			PistolActor->SpawnProjectile();
 			bCanFirePistol = false;
 			CurrPistolMagazine--;
@@ -257,7 +257,7 @@ void AMyCharacter::Fire()
 		}
 	}
 	else if (WInHand == Rifle) {
-		if ((RifleActor != nullptr) && (bCanFireRifle == true) && (CurrRifleMagazine > 0)) {
+		if (RifleActor && bCanFireRifle && (CurrRifleMagazine > 0)) {
 			RifleActor->SpawnProjectile();
 			// Use this variable to speed up animation(visual purposes)
 			bCanRifleAnim = false;		
@@ -272,7 +272,7 @@ void AMyCharacter::Fire()
 void AMyCharacter::ChangeToPistol()
 {
 	// Can't change weapons when aimed
-	if ((bHavePistol == true) && (WInHand != Pistol) && (bZooming == false)) {		
+	if (bHavePistol && (WInHand != Pistol) && !bZooming) {		
 
 		if (WInHand == None) {
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketPistol"));
@@ -288,7 +288,7 @@ void AMyCharacter::ChangeToPistol()
 void AMyCharacter::ChangeToRifle()
 {
 	// Can't change weapons when aimed
-	if ((bHaveRifle == true) && (WInHand != Rifle) && (bZooming == false)) {		
+	if (bHaveRifle && (WInHand != Rifle) && !bZooming) {		
 
 		if (WInHand == None) {
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HandSocketRifle"));
@@ -303,7 +303,7 @@ void AMyCharacter::ChangeToRifle()
 
 void AMyCharacter::EnterSlowMo()
 {
-	if ((bSlowMo == false) && (SlowMoCapacity > 0.0f)) {
+	if (!bSlowMo && (SlowMoCapacity > 0.0f)) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.4f);
 		CharacterMovement->MaxWalkSpeed *= 2.5f;
 		PistolFireRate /= 2.5f;
@@ -314,7 +314,7 @@ void AMyCharacter::EnterSlowMo()
 		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 		UGameplayStatics::PlaySound2D(GetWorld(), SlowMoWoosh, VolumeControl, SlowMoWoosh->GetPitchMultiplier());
 	}
-	else if (bSlowMo == true) {
+	else if (bSlowMo) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 		CharacterMovement->MaxWalkSpeed /= 2.5f;
 		PistolFireRate *= 2.5f;
@@ -326,22 +326,22 @@ void AMyCharacter::EnterSlowMo()
 
 void AMyCharacter::ZoomedKills(float Distance)
 {
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.3f);
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.25f);
 
 	// Hide the character and weapons
 	SetActorHiddenInGame(true);
-	if (PistolActor != nullptr) {
+	if (PistolActor) {
 		PistolActor->SetActorHiddenInGame(true);
 	}
-	if (RifleActor != nullptr) {
+	if (RifleActor) {
 		RifleActor->SetActorHiddenInGame(true);
 	}
-
-	float NewFOV = 30000 / Distance;
+	// Generate new FOV based on enemy's distance from player
+	float NewFOV = 30000 / (Distance / 1.1f);
 
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	GetCamera()->SetFieldOfView(NewFOV);
-	GetWorldTimerManager().SetTimer(ZoomedKillHandle, this, &AMyCharacter::ResetZoomedKills, 0.5f, false, 0.5f);
+	GetWorldTimerManager().SetTimer(ZoomedKillHandle, this, &AMyCharacter::ResetZoomedKills, 0.75f, false, 0.75f);
 }
 
 void AMyCharacter::ResetZoomedKills()
@@ -349,7 +349,7 @@ void AMyCharacter::ResetZoomedKills()
 	GetWorldTimerManager().ClearTimer(ZoomedKillHandle);
 
 	// Check if SlowMo was used
-	if (bSlowMo == true) {
+	if (bSlowMo) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.4f);
 	}
 	else {
@@ -358,10 +358,10 @@ void AMyCharacter::ResetZoomedKills()
 
 	// Show the character and weapons
 	SetActorHiddenInGame(false);
-	if (PistolActor != nullptr) {
+	if (PistolActor) {
 		PistolActor->SetActorHiddenInGame(false);
 	}
-	if (RifleActor != nullptr) {
+	if (RifleActor) {
 		RifleActor->SetActorHiddenInGame(false);
 	}
 

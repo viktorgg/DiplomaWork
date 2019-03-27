@@ -55,7 +55,7 @@ void AGroundEnemy::Tick(float DeltaTime)
 
 	if (Health > 0.f) {
 		MoveForward(NULL);
-		if (bCanFire == true) {
+		if (bCanFire) {
 			Fire();
 		}
 	}
@@ -76,7 +76,7 @@ void AGroundEnemy::MoveForward(float Input)
 
 void AGroundEnemy::Fire()
 {
-	if ((PistolActor != nullptr) && (bHavePistol == true) && (bCanFirePistol == true)) {
+	if (PistolActor && bHavePistol && bCanFirePistol) {
 		PistolActor->SpawnProjectile();
 		bCanFirePistol = false;
 		GetWorldTimerManager().SetTimer(PistolFireRateHandle, this, &AGroundEnemy::ResetPistolFire, PistolFireRate, false, PistolFireRate);

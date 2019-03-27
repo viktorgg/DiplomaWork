@@ -49,13 +49,11 @@ void ARevolver::SpawnProjectile()
 	FRotator SpawnRotation;
 	FVector SpawnLocation = GunMesh->GetSocketLocation("Muzzle");
 
-	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
-
-		AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor);
+	if (AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor)) {
 
 		int32 ChanceToHit = FMath::FRandRange(1, 100);
 
-		if (MainCharacter->GetZooming() == true) {
+		if (MainCharacter->GetZooming()) {
 			// There's a 30% chance the bullet will go exactly at crosshair when zooming
 			if (ChanceToHit <= 30) {		
 				SpawnRotation = GetHitRot(SpawnLocation, MainCharacter);
@@ -86,7 +84,7 @@ void ARevolver::SpawnProjectile()
 			}
 		}
 	}
-	else if (Cast<AGroundEnemy>(GetCharacterActor()) != NULL) {
+	else if (Cast<AGroundEnemy>(GetCharacterActor())) {
 		// Find the rotation to look at main character
 		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, CharacterActor->GetMainCharacterActor()->GetActorLocation());
 
@@ -116,13 +114,13 @@ void ARevolver::SpawnProjectile()
 	SpawnedProjectile->SetDamage(Damage);
 
 	// Wait 0.2 seconds when player is firing for animation synchronization
-	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
-		AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterActor);
-		if (MainChar->GetZooming() == true) {
+	if (AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor)) {
+		
+		if (MainCharacter->GetZooming()) {
 			SpawnEmitter();
 		}
 		else {
-			if (MainChar->GetSlowMo() == true) {
+			if (MainCharacter->GetSlowMo()) {
 				GetWorldTimerManager().SetTimer(ParticleDelayHandle, this, &ARevolver::SpawnEmitter, 0.08f, false, 0.08f);
 			}
 			else {
@@ -138,7 +136,7 @@ void ARevolver::SpawnProjectile()
 void ARevolver::SpawnEmitter()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
-	if (Cast<AMyCharacter>(CharacterActor) != NULL) {
+	if (Cast<AMyCharacter>(CharacterActor)) {
 
 		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 		UGameplayStatics::PlaySound2D(GetWorld(), RevolverShot, VolumeControl, RevolverShot->GetPitchMultiplier());
@@ -151,11 +149,9 @@ void ARevolver::SpawnEmitter()
 
 void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<ACharacterBase>(OtherActor) != NULL) {
+	if (ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor)) {
 
-		ACharacterBase* CharacterEntered = Cast<ACharacterBase>(OtherActor);
-
-		if ((CharacterEntered->GetHavePistol() == false) && (CharacterActor == nullptr)) {
+		if (!CharacterEntered->GetHavePistol() && !CharacterActor) {
 			CharacterEntered->SetPistolActor(this);
 			CharacterEntered->SetHavePistol(true);
 			CharacterActor = CharacterEntered;
@@ -163,17 +159,19 @@ void ARevolver::OnEnterSphere(UPrimitiveComponent* OverlappedComp, AActor* Other
 			// Enable it's physics when character dies
 			SphereCollision->SetSimulatePhysics(false);		
 
-			if (Cast<AMyCharacter>(CharacterEntered) != NULL) {
+			if (Cast<AMyCharacter>(CharacterEntered)) {
 
 				float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 				UGameplayStatics::PlaySound2D(GetWorld(), PickUp, VolumeControl, PickUp->GetPitchMultiplier());
 			}
 		}
 		else {
-			if ((Cast<AMyCharacter>(CharacterEntered) != NULL) && (CharacterActor == nullptr)) {
-				AMyCharacter* MainChar = Cast<AMyCharacter>(CharacterEntered);
-				if (MainChar->GetCurrPistolMagazine() < MainChar->GetPistolMagazineLimit()) {
-					MainChar->SetCurrPistolMagazine(MainChar->GetPistolMagazineLimit());
+			if (Cast<AMyCharacter>(CharacterEntered) && !CharacterActor) {
+
+				AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterEntered);
+
+				if (MainCharacter->GetCurrPistolMagazine() < MainCharacter->GetPistolMagazineLimit()) {
+					MainCharacter->SetCurrPistolMagazine(MainCharacter->GetPistolMagazineLimit());
 					Destroy();
 
 					float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;

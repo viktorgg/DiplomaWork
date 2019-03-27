@@ -38,10 +38,10 @@ void AWindows::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bOpening == true) {
+	if (bOpening) {
 		Open();
 	}
-	if (bClosing == true) {
+	if (bClosing) {
 		Close();
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw));
@@ -49,7 +49,7 @@ void AWindows::Tick(float DeltaTime)
 
 void AWindows::Open()
 {
-	if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, 110.0f, 2.0f) == false) {
+	if (!FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, 110.0f, 2.0f)) {
 		
 		bOpening = true;
 
@@ -69,7 +69,7 @@ void AWindows::Open()
 
 void AWindows::Close()
 {
-	if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, -90.0f, 2.0f) == false) {
+	if (!FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, -90.0f, 2.0f)) {
 
 		bClosing = true;
 
@@ -89,7 +89,7 @@ void AWindows::Close()
 
 bool AWindows::GetIsClosed()
 {
-	if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, -90.0f, 2.0f) == true) {
+	if (FMath::IsNearlyEqual(WindowRMesh->GetRelativeTransform().GetRotation().Rotator().Yaw, -90.0f, 2.0f)) {
 
 		return true; 
 	}
