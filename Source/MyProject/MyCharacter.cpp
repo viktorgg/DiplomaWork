@@ -113,12 +113,12 @@ void AMyCharacter::Tick(float DeltaTime)
 	}
 
 	// Regenerate health
-	if (Health < 500.f) {
+	if ((Health < 500.f) && !bZoomedKills) {
 		Health += DeltaTime * HealthRegenSpeed;
 	}
 
 	// Slowly deplete SlowMo's capacity when ON
-	if (bSlowMo) {
+	if (bSlowMo && !bZoomedKills) {
 		SlowMoCapacity -= DeltaTime * 1.5f;
 		if (SlowMoCapacity <= 0.0f) {
 			EnterSlowMo();		// Disable slow mo when out of capacity
@@ -327,6 +327,7 @@ void AMyCharacter::EnterSlowMo()
 void AMyCharacter::ZoomedKills(float Distance)
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.25f);
+	bZoomedKills = true;
 
 	// Hide the character and weapons
 	SetActorHiddenInGame(true);
@@ -347,6 +348,7 @@ void AMyCharacter::ZoomedKills(float Distance)
 void AMyCharacter::ResetZoomedKills()
 {
 	GetWorldTimerManager().ClearTimer(ZoomedKillHandle);
+	bZoomedKills = false;
 
 	// Check if SlowMo was used
 	if (bSlowMo) {

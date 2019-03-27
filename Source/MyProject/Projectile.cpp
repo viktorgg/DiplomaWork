@@ -170,9 +170,9 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 						if (AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor)) {
 							if (DistanceToEnemy(WindowEnemy) > 1000.f) {
 
-								// 45% Chance to zoom camera to enemy
+								// 25% Chance to zoom camera to enemy
 								int32 Chance = FMath::RandRange(1, 100);
-								if (Chance <= 45) {
+								if (Chance <= 25) {
 									MainCharacter->ZoomedKills(DistanceToEnemy(WindowEnemy));
 								}
 							}
