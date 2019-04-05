@@ -46,6 +46,16 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UChildActorComponent* DoorsChild;
 
+	// Used for entering saloon check
+	UPROPERTY(VisibleAnywhere)
+		class UBoxComponent* BoxCollision;
+
+	UFUNCTION()
+		void OnEnterBox(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void OnLeaveBox(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 public:
 
 	TArray<TSharedPtr<FEnemyHandler>> GetSEnemyHandlerArray() const { return SEnemyHandlerArray; }

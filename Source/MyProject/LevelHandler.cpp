@@ -76,6 +76,7 @@ void ALevelHandler::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Calls OnEnterBox
 	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &ALevelHandler::OnEnterBox);
 
 	// Get Character from level

@@ -68,7 +68,6 @@ protected:
 		virtual void OnEnterSphere(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) PURE_VIRTUAL(AGunBase::OnEnterSphere, );
 
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

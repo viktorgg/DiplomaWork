@@ -148,12 +148,16 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 						GroundEnemy->DestroyAfterTime();
 
 						// Call ZoomedKills when GEnemy dies if distance is over 1000 points away
-						if (Cast<AMyCharacter>(CharacterActor)) {
+						if (AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor)) {
+
+							// Increment killed enemies count
+							MainCharacter->SetKilledEnemies(MainCharacter->GetKilledEnemies() + 1);
+
 							if (DistanceToEnemy(GroundEnemy) > 1000.f) {
 								// 25% Chance to zoom camera to enemy
 								int32 Chance = FMath::RandRange(1, 100);
 								if (Chance <= 25) {
-									Cast<AMyCharacter>(CharacterActor)->ZoomedKills(DistanceToEnemy(GroundEnemy));
+									MainCharacter->ZoomedKills(DistanceToEnemy(GroundEnemy));
 								}
 							}
 						}
@@ -168,6 +172,10 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 
 						// Call ZoomedKills when WEnemy dies
 						if (AMyCharacter* MainCharacter = Cast<AMyCharacter>(CharacterActor)) {
+
+							// Increment killed enemies count
+							MainCharacter->SetKilledEnemies(MainCharacter->GetKilledEnemies() + 1);
+
 							if (DistanceToEnemy(WindowEnemy) > 1000.f) {
 
 								// 25% Chance to zoom camera to enemy

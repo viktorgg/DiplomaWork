@@ -59,4 +59,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		bool GetIsRotating() const { return bIsRotating; }
+
+	void SetDistanceToWalk(float DistanceToWalk) { this->DistanceToWalk = DistanceToWalk; }
 };

@@ -26,6 +26,8 @@ AMyCharacter::AMyCharacter()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	KilledEnemies = 0;
+
 	Health = 500.f;
 	CharacterMovement->MaxWalkSpeed = 550.f;
 	ZoomedCharSpeed = CharacterMovement->MaxWalkSpeed / 2.5f;
@@ -342,7 +344,7 @@ void AMyCharacter::ZoomedKills(float Distance)
 
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	GetCamera()->SetFieldOfView(NewFOV);
-	GetWorldTimerManager().SetTimer(ZoomedKillHandle, this, &AMyCharacter::ResetZoomedKills, 0.75f, false, 0.75f);
+	GetWorldTimerManager().SetTimer(ZoomedKillHandle, this, &AMyCharacter::ResetZoomedKills, 0.5f, false, 0.5f);
 }
 
 void AMyCharacter::ResetZoomedKills()

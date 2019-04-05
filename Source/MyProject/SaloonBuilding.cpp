@@ -3,11 +3,17 @@
 #include "SaloonBuilding.h"
 #include "BuildingBase.h"
 #include "WindowEnemy.h"
+#include "GroundEnemy.h"
+#include "MyCharacter.h"
+#include "LevelHandler.h"
 #include "SaloonGroundEnemy.h"
+#include "MyProjectGameInstance.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/GameEngine.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Public/EngineUtils.h"
 #include "Runtime/Core/Public/Templates/SharedPointer.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
@@ -17,13 +23,16 @@ ASaloonBuilding::ASaloonBuilding()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	MainBuildingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Main Building Mesh"));
 	RootComponent = MainBuildingMesh;
 
 	DoorsChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("Windows Child"));
 	DoorsChild->SetupAttachment(MainBuildingMesh);
 
+	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
+	BoxCollision->SetupAttachment(MainBuildingMesh);
+	
 	// Find window enemy class in content browser
 	static ConstructorHelpers::FClassFinder<AWindowEnemy>
 		WindowEnemyBP(TEXT("Blueprint'/Game/Blueprints/WindowEnemyBP.WindowEnemyBP_C'"));
@@ -51,6 +60,10 @@ void ASaloonBuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Calls OnEnterBox when something enters sphere
+	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &ASaloonBuilding::OnEnterBox); 
+	// Calls OnLeaveBox when something leaves sphere
+	BoxCollision->OnComponentEndOverlap.AddDynamic(this, &ASaloonBuilding::OnLeaveBox);
 }
 
 void ASaloonBuilding::PostInitializeComponents()
@@ -69,7 +82,7 @@ void ASaloonBuilding::PostInitializeComponents()
 	SEnemyHandler2->SetOutLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 4.0f)
 		+ (MainBuildingMesh->GetRightVector() * -510.0f) + (MainBuildingMesh->GetUpVector() * 137.0f)));
 
-	SEnemyHandler3->SetDoorLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetRightVector() * -100.0f) + (MainBuildingMesh->GetUpVector() * -157.0f)));
+	SEnemyHandler3->SetDoorLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetRightVector() * -100.0f) + (MainBuildingMesh->GetUpVector() * -200.0f)));
 
 	// Add the structs to array
 	SEnemyHandlerArray.Add(SEnemyHandler);
@@ -114,4 +127,38 @@ void ASaloonBuilding::SpawnEnemy(int32 Place)
 		}
 	}
 }
+
+void ASaloonBuilding::OnEnterBox(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	if (OtherActor && Cast<AMyCharacter>(OtherActor)) {
+		// Get all GEnemies from level
+		for (TActorIterator<AGroundEnemy> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+			if (ActorItr) {
+				ActorItr->SetDistanceToWalk(200.f);
+			}
+		}
+		// Spawn extra GEnemy when difficulty isn't easy
+		for (TActorIterator<ALevelHandler> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+			if (ActorItr) {
+				if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount != Easy) {
+					ActorItr->SpawnGroundEnemy(1);
+				}
+			}
+		}
+	}
+}
+
+void ASaloonBuilding::OnLeaveBox(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && Cast<AMyCharacter>(OtherActor)) {
+		// Get all GEnemies from level
+		for (TActorIterator<AGroundEnemy> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+			if (ActorItr) {
+				ActorItr->SetDistanceToWalk(500.f);
+			}
+		}
+	}
+}
+
+
 

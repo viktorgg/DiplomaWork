@@ -108,7 +108,7 @@ void AGroundEnemy::DestroyAfterTime()
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AGroundEnemy::DestroyChar, 3, false, 3);
 }
 
-// Determines if character should rotate in one place
+// Determines if character should play rotate animation in one place
 void AGroundEnemy::StationaryRotation()
 {
 	if ((MainCharacterActor->GetForwardInput() == 0.f) && (MainCharacterActor->GetRightInput() == 0.f)) {
@@ -134,7 +134,7 @@ void AGroundEnemy::Rotate(float Direction)
 	StationaryRotation();
 
 	if (Direction != 0.f) {
-		AddActorWorldRotation(FRotator(0.f, 350.f * Direction * GetWorld()->DeltaTimeSeconds, 0.f));
+		AddActorWorldRotation(FRotator(0.f, 1000.f * Direction * GetWorld()->DeltaTimeSeconds, 0.f));
 	}
 	else {
 		RotateToCharacter();

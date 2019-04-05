@@ -37,6 +37,8 @@ public:
 
 private:
 
+	int32 KilledEnemies;
+
 	float ZoomedCharSpeed;
 	float NotZoomedCharSpeed;
 
@@ -108,6 +110,10 @@ private:
 	void ResetZoomedKills();
 
 public:
+
+	UFUNCTION(BlueprintCallable)
+		int32 GetKilledEnemies() const { return KilledEnemies; }
+	void SetKilledEnemies(int32 KilledEnemies) { this->KilledEnemies = KilledEnemies; }
 
 	bool GetZooming() const { return bZooming; }
 
