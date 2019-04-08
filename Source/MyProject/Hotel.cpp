@@ -44,23 +44,22 @@ void AHotel::SpawnEnemy(int32 Place)
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation(), WindowSqueak->GetVolumeMultiplier(), WindowSqueak->GetPitchMultiplier());
 
 			FVector LocOffset;
-			FRotator RotOffset;
 
+			// Configure spawn location and rotation depending on floor
 			if (Place < 2) {
 				LocOffset = (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorUpVector() * 10)
 					+ (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorForwardVector() * 10.0f);
-				RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 			}
 			else {
 				LocOffset = (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorUpVector() * 10)
 					+ (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorForwardVector() * 10.0f);
-				RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 			}
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
+			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation(), ActorSpawnParams);
 
 			SpawnedEnemy->SetWindowsPlace(Place);
+			SpawnedEnemy->SetEntryRotation(GetActorRotation());
 			SpawnedEnemy->SetBuildingActor(this);
 			SpawnedEnemy->SetEnemyHandler(EnemyHandlerArray[Place]);
 			SpawnedEnemy->SetWindowSqueak(WindowSqueak);

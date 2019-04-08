@@ -4,6 +4,8 @@
 #include "Windows.h"
 #include "WindowEnemy.h"
 #include "MyProjectGameInstance.h"
+#include "NationalBank.h"
+#include "GeneralStore.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/ChildActorComponent.h"
@@ -148,21 +150,29 @@ void ABuildingBase::SpawnEnemy(int32 Place)
 		FVector LocOffset;
 		FRotator RotOffset;
 
+		// Configure rotational offset depending on building
+		if (Cast<ANationalBank>(this)) {
+			RotOffset = FRotator(0.f, 90.f, 0.f);
+		}
+		else if (Cast<AGeneralStore>(this)) {
+			RotOffset = FRotator(0.f, -90.f, 0.f);
+		}
+
+		// Configure spawn location and rotation depending on floor
 		if (Place < 2) {
 			LocOffset = (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorUpVector() * 10)
 				+ (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorForwardVector() * 10.0f);
-			RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 		}
 		else {
 			LocOffset = (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorUpVector() * 10)
 				+ (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorForwardVector() * 10.0f);
-			RotOffset = FRotator(0.0f, 90.0f, 0.0f);
 		}
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
 
 		SpawnedEnemy->SetWindowsPlace(Place);
+		SpawnedEnemy->SetEntryRotation(GetActorRotation() + RotOffset);
 		SpawnedEnemy->SetBuildingActor(this);
 		SpawnedEnemy->SetEnemyHandler(EnemyHandlerArray[Place]);
 		SpawnedEnemy->SetWindowSqueak(WindowSqueak);

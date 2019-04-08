@@ -30,6 +30,8 @@ AWindowEnemy::AWindowEnemy() {
 
 	WindowsPlace = 3;
 
+	EntryRotation = FRotator(0.f, 0.f, 0.f);
+
 	BuildingActor = nullptr;
 
 	// Find the rifle class in content browser
@@ -59,9 +61,6 @@ void AWindowEnemy::BeginPlay()
 
 	FActorSpawnParameters ActorSpawnParams;
 	ARifle* SpawnedRifle = GetWorld()->SpawnActor<ARifle>(RifleClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
-
-	// WEnemy should look directly at Main Character when spawend otherwise LimitRotation will cause issues
-	SetActorRotation(FRotator(-20.0f, LookAtChar().Yaw, 0.0f));
 
 	// Enemy can't fire half a second after spawning
 	GetWorldTimerManager().SetTimer(FireDelayHandle, this, &AWindowEnemy::ResetFireDelay, 0.5f, false, 0.5f);
@@ -99,13 +98,18 @@ void AWindowEnemy::RotateToCharacter()
 {
 	// If window is on second floor the enemy will be more leaned towards ground
 	if (BuildingActor) {
-		if (LimitRotation()) {
-			if (WindowsPlace < 2) {
-				SetActorRotation(FRotator(-40.0f, LookAtChar().Yaw, 0.0f));
-			}
-			else {
-				SetActorRotation(FRotator(-20.0f, LookAtChar().Yaw, 0.0f));
-			}
+
+		float MinYawRot = EntryRotation.Yaw - 50.f;
+		float MaxYawRot = EntryRotation.Yaw + 50.f;
+
+		float CurrYawRot = LookAtChar().Yaw;
+		
+		// Limit the yaw rotation using Clamp
+		if (WindowsPlace < 2) {
+			SetActorRotation(FRotator(-40.0f, FMath::ClampAngle(CurrYawRot, MinYawRot, MaxYawRot), 0.0f));
+		}
+		else {
+			SetActorRotation(FRotator(-20.0f, FMath::ClampAngle(CurrYawRot, MinYawRot, MaxYawRot), 0.0f));
 		}
 	}
 	else {
@@ -134,31 +138,6 @@ void AWindowEnemy::DestroyChar()
 	LevelHandlerActor->WEnemyHandler();
 
 	Destroy();
-}
-
-bool AWindowEnemy::LimitRotation()
-{
-	FVector CharForwardVector = UKismetMathLibrary::GetForwardVector(LookAtChar());
-	FVector BuildingForwardVector;
-
-	if (Cast<ANationalBank>(BuildingActor)) {
-		BuildingForwardVector = BuildingActor->GetActorRightVector();
-	}
-	else if (Cast<AGeneralStore>(BuildingActor)) {
-		BuildingForwardVector = BuildingActor->GetActorRightVector() * -1.f;
-	}
-	else if (Cast<AHotel>(BuildingActor)) {
-		BuildingForwardVector = BuildingActor->GetActorForwardVector();
-	}
-
-	float Angle = FVector::DotProduct(CharForwardVector, BuildingForwardVector);
-	
-	if (Angle >= 0.5f) {
-		return true;
-	}
-	else {
-		return false;
-	}
 }
 
 void AWindowEnemy::DestroyAfterTime()

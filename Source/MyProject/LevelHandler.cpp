@@ -109,7 +109,6 @@ void ALevelHandler::BeginPlay()
 			GeneralStoreActor = *ActorItr;
 		}
 	}
-	SpawnSaloonEnemy(1);
 }
 
 // Called every frame

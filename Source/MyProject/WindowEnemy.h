@@ -36,6 +36,9 @@ private:
 	// Need to know the window it stands behind in order to adjust rotation
 	int32 WindowsPlace;
 
+	// Need to know the rotation when spawned in order to limit it properly
+	FRotator EntryRotation;
+
 	UPROPERTY()
 		class ABuildingBase* BuildingActor;
 
@@ -50,8 +53,6 @@ private:
 
 	void RotateToCharacter();
 
-	bool LimitRotation();
-
 public:
 
 	virtual void DestroyAfterTime() override;
@@ -59,4 +60,6 @@ public:
 	void SetWindowsPlace(int32 WindowsPlace) { this->WindowsPlace = WindowsPlace; }
 	
 	void SetBuildingActor(ABuildingBase* BuildingActor) { this->BuildingActor = BuildingActor; }
+
+	void SetEntryRotation(FRotator EntryRotation) { this->EntryRotation = EntryRotation; }
 };
