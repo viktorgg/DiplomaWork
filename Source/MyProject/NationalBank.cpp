@@ -2,9 +2,11 @@
 
 #include "NationalBank.h"
 #include "Windows.h"
-#include "Components/StaticMeshComponent.h"
+#include "MyProjectGameInstance.h"
 #include "WindowEnemy.h"
 #include "MyCharacter.h"
+#include "Runtime/Engine/Public/EngineUtils.h"
+#include "Components/StaticMeshComponent.h"
 #include "Engine/GameEngine.h"
 #include "Engine/World.h"
 
@@ -19,12 +21,19 @@ ANationalBank::ANationalBank() {
 void ANationalBank::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void ANationalBank::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	// Set the array in MyCharacter for memory deallocation
+	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (ActorItr) {
+			ActorItr->HotelEnemyHandlerArray = EnemyHandlerArray;
+		}
+	}
 }
 
 void ANationalBank::Tick(float DeltaTime)

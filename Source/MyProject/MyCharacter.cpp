@@ -397,8 +397,29 @@ void AMyCharacter::DestroyAfterTime()
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AMyCharacter::DestroyChar, 2, false, 2);
 }
 
-// Opens menu level
+// Opens menu level and deallocates memory
 void AMyCharacter::DestroyChar()
 {
+	for (FEnemyHandler* Struct : BankEnemyHandlerArray)
+	{
+		delete Struct;
+	}
+	for (FEnemyHandler* Struct : HotelEnemyHandlerArray)
+	{
+		delete Struct;
+	}
+	for (FEnemyHandler* Struct : StoreEnemyHandlerArray)
+	{
+		delete Struct;
+	}
+	for (FEnemyHandler* Struct : SaloonEnemyHandlerArray)
+	{
+		delete Struct;
+	}
+	for (FEnemyHandler* Struct : Saloon2EnemyHandlerArray)
+	{
+		delete Struct;
+	}
+
 	UGameplayStatics::OpenLevel(GetWorld(), TEXT("MenuLevel"));
 }

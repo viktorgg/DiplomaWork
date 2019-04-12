@@ -16,6 +16,7 @@
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
 
+
 // Sets default values
 ABuildingBase::ABuildingBase()
 {
@@ -110,11 +111,11 @@ void ABuildingBase::PostInitializeComponents()
 	WindowsChild4->CreateChildActor();
 
 	// Create structures for 5 possible enemies
-	TSharedPtr<FEnemyHandler> EnemyHandler = MakeShared<FEnemyHandler>();
-	TSharedPtr<FEnemyHandler> EnemyHandler2 = MakeShared<FEnemyHandler>();
-	TSharedPtr<FEnemyHandler> EnemyHandler3 = MakeShared<FEnemyHandler>();
-	TSharedPtr<FEnemyHandler> EnemyHandler4 = MakeShared<FEnemyHandler>();
-	TSharedPtr<FEnemyHandler> EnemyHandler5 = MakeShared<FEnemyHandler>();
+	FEnemyHandler* EnemyHandler = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler2 = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler3 = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler4 = new FEnemyHandler();
+	FEnemyHandler* EnemyHandler5 = new FEnemyHandler();
 
 	EnemyHandler->SetWindowsActor(Cast<AWindows>(WindowsChild->GetChildActor()));
 	EnemyHandler2->SetWindowsActor(Cast<AWindows>(WindowsChild2->GetChildActor()));
@@ -140,7 +141,7 @@ void ABuildingBase::Tick(float DeltaTime)
 // Spawn enemies just behind window or terrace
 void ABuildingBase::SpawnEnemy(int32 Place)
 {
-	if (!EnemyHandlerArray[Place]->GetEnemyActor() && EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed()) {
+	if (EnemyHandlerArray[Place] && !EnemyHandlerArray[Place]->GetEnemyActor() && EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed()) {
 		
 		EnemyHandlerArray[Place]->GetWindowsActor()->Open();
 

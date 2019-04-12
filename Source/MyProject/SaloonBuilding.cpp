@@ -24,6 +24,8 @@ ASaloonBuilding::ASaloonBuilding()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
+	SaloonIndex = 0;
+
 	MainBuildingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Main Building Mesh"));
 	RootComponent = MainBuildingMesh;
 
@@ -64,6 +66,18 @@ void ASaloonBuilding::BeginPlay()
 	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &ASaloonBuilding::OnEnterBox); 
 	// Calls OnLeaveBox when something leaves sphere
 	BoxCollision->OnComponentEndOverlap.AddDynamic(this, &ASaloonBuilding::OnLeaveBox);
+
+	// Set the array in MyCharacter for memory deallocation
+	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (ActorItr) {
+			if (SaloonIndex == 1) {
+				ActorItr->SaloonEnemyHandlerArray = SEnemyHandlerArray;
+			}
+			else if (SaloonIndex == 2) {
+				ActorItr->Saloon2EnemyHandlerArray = SEnemyHandlerArray;
+			}
+		}
+	}
 }
 
 void ASaloonBuilding::PostInitializeComponents()
@@ -71,9 +85,9 @@ void ASaloonBuilding::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	// Create structures for 3 possible enemies
-	TSharedPtr<FEnemyHandler> SEnemyHandler = MakeShared<FEnemyHandler>();
-	TSharedPtr<FEnemyHandler> SEnemyHandler2 = MakeShared<FEnemyHandler>();
-	TSharedPtr<FEnemyHandler> SEnemyHandler3 = MakeShared<FEnemyHandler>();
+	FEnemyHandler* SEnemyHandler = new FEnemyHandler();
+	FEnemyHandler* SEnemyHandler2 = new FEnemyHandler();
+	FEnemyHandler* SEnemyHandler3 = new FEnemyHandler();
 
 	//Inverted Directions, forward vector = right vector, right vector = forward vector
 	SEnemyHandler->SetInLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 180.0f)
@@ -99,7 +113,7 @@ void ASaloonBuilding::Tick(float DeltaTime)
 
 void ASaloonBuilding::SpawnEnemy(int32 Place)
 {
-	if (!SEnemyHandlerArray[Place]->GetEnemyActor()) {
+	if (SEnemyHandlerArray[Place] && !SEnemyHandlerArray[Place]->GetEnemyActor()) {
 
 		if (Place == 0) {		// Spawns behind bar
 			FActorSpawnParameters ActorSpawnParams;

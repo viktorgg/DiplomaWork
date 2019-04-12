@@ -29,11 +29,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Array to store structure of every enemy
-	TArray<TSharedPtr<FEnemyHandler>> SEnemyHandlerArray;
+	TArray<FEnemyHandler*> SEnemyHandlerArray;
 
 	void SpawnEnemy(int32 Place);
 
 private:
+
+	int32 SaloonIndex;
 	
 	UPROPERTY()
 		UClass* WindowEnemyClass;
@@ -58,6 +60,8 @@ private:
 
 public:
 
-	TArray<TSharedPtr<FEnemyHandler>> GetSEnemyHandlerArray() const { return SEnemyHandlerArray; }
+	void SetSaloonIndex(int32 SaloonIndex) { this->SaloonIndex = SaloonIndex; }
+
+	TArray<FEnemyHandler*> GetSEnemyHandlerArray() const { return SEnemyHandlerArray; }
 
 };

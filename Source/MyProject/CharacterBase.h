@@ -77,7 +77,7 @@ protected:
 	UPROPERTY()
 		class USoundCue* WindowSqueak;
 
-	TSharedPtr<FEnemyHandler> EnemyHandler;
+	FEnemyHandler* EnemyHandler;
 
 	void ResetHitDelay();
 
@@ -164,7 +164,7 @@ public:
 		bool GetIsHit() const { return bIsHit; }
 	void SetIsHit(bool bIsHit);
 
-	void SetEnemyHandler(TSharedPtr<FEnemyHandler> EnemyHandler) { this->EnemyHandler = EnemyHandler; }
+	void SetEnemyHandler(FEnemyHandler* EnemyHandler) { this->EnemyHandler = EnemyHandler; }
 
 	void SetWindowSqueak(USoundCue* WindowSqueak) { this->WindowSqueak = WindowSqueak; }
 };

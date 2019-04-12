@@ -35,6 +35,13 @@ public:
 
 	void ZoomedKills(float Distance);
 
+	// References to buildings arrays in order to deallocate memory
+	TArray<FEnemyHandler*> BankEnemyHandlerArray;
+	TArray<FEnemyHandler*> StoreEnemyHandlerArray;
+	TArray<FEnemyHandler*> HotelEnemyHandlerArray;
+	TArray<FEnemyHandler*> SaloonEnemyHandlerArray;
+	TArray<FEnemyHandler*> Saloon2EnemyHandlerArray;
+
 private:
 
 	int32 KilledEnemies;

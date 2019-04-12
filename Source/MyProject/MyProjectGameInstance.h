@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "BuildingBase.h"
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "MyProjectGameInstance.generated.h"
@@ -32,6 +33,4 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 		TEnumAsByte<GameDifficulty> DifficultyAmount;
-	
-	
 };

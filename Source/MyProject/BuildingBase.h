@@ -119,11 +119,11 @@ public:
 	virtual void SpawnEnemy(int32 Place);
 
 	// Array to hold structure of every enemy building position
-	TArray<TSharedPtr<FEnemyHandler>> EnemyHandlerArray;
+	TArray<FEnemyHandler*> EnemyHandlerArray;
 
 	UClass* GetWindowEnemyClass() const { return WindowEnemyClass; }
 
-	TArray<TSharedPtr<FEnemyHandler>> GetEnemyHandlerArray() const { return EnemyHandlerArray; }
+	TArray<FEnemyHandler*> GetEnemyHandlerArray() const { return EnemyHandlerArray; }
 
 	UChildActorComponent* GetWindowsChild() const { return WindowsChild; }
 

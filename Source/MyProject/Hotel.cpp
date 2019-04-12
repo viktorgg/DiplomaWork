@@ -1,10 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Hotel.h"
+#include "MyCharacter.h"
 #include "Windows.h"
 #include "WindowEnemy.h"
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Public/EngineUtils.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Engine/World.h"
 
@@ -26,6 +28,13 @@ void AHotel::BeginPlay()
 void AHotel::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	// Set the array in MyCharacter for memory deallocation
+	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (ActorItr) {
+			ActorItr->HotelEnemyHandlerArray = EnemyHandlerArray;
+		}
+	}
 }
 
 void AHotel::Tick(float DeltaTime)

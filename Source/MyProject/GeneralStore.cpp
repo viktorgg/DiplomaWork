@@ -1,8 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "GeneralStore.h"
+#include "MyCharacter.h"
 #include "Windows.h"
 #include "WindowEnemy.h"
+#include "Runtime/Engine/Public/EngineUtils.h"
 #include "Engine/GameEngine.h"
 #include "Engine/World.h"
 
@@ -23,6 +25,13 @@ void AGeneralStore::BeginPlay()
 void AGeneralStore::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	// Set the array in MyCharacter for memory deallocation
+	for (TActorIterator<AMyCharacter> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (ActorItr) {
+			ActorItr->BankEnemyHandlerArray = EnemyHandlerArray;
+		}
+	}
 }
 
 void AGeneralStore::Tick(float DeltaTime)

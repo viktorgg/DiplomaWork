@@ -128,7 +128,7 @@ void AWindowEnemy::DestroyChar()
 
 	EnemyHandler->SetEnemyActor(nullptr);
 
-	if (EnemyHandler->GetWindowsActor()) {
+	if (EnemyHandler && EnemyHandler->GetWindowsActor()) {
 		EnemyHandler->GetWindowsActor()->Close();
 
 		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;

@@ -89,7 +89,9 @@ void ALevelHandler::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), SaloonBuildingClass, SaloonArray);
 	SaloonArray.Sort();
 	SaloonBuildingActor = Cast<ASaloonBuilding>(SaloonArray[1]);
+	SaloonBuildingActor->SetSaloonIndex(1);
 	SaloonBuildingActor2 = Cast<ASaloonBuilding>(SaloonArray[0]);
+	SaloonBuildingActor2->SetSaloonIndex(2);
 
 	// Get Bank from level
 	for (TActorIterator<ANationalBank> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
