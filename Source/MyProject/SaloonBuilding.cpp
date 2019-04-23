@@ -149,6 +149,7 @@ void ASaloonBuilding::OnEnterBox(UPrimitiveComponent * OverlappedComp, AActor * 
 		for (TActorIterator<AGroundEnemy> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
 			if (ActorItr) {
 				ActorItr->SetDistanceToWalk(200.f);
+				ActorItr->SetRotSpeed(ActorItr->GetRotSpeed() * 2.f);
 			}
 		}
 		// Spawn extra GEnemy when difficulty isn't easy
@@ -169,6 +170,7 @@ void ASaloonBuilding::OnLeaveBox(UPrimitiveComponent * OverlappedComp, AActor * 
 		for (TActorIterator<AGroundEnemy> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
 			if (ActorItr) {
 				ActorItr->SetDistanceToWalk(500.f);
+				ActorItr->SetRotSpeed(ActorItr->GetRotSpeed() / 2.f);
 			}
 		}
 	}

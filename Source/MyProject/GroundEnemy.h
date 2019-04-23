@@ -27,7 +27,10 @@ protected:
 	UPROPERTY()
 		UClass* PistolClass;
 
+	//bool bShouldMove;
 	bool bIsRotating;
+
+	float RotSpeed;
 
 	UPROPERTY(EditAnywhere)
 		float DistanceToWalk;
@@ -50,7 +53,6 @@ protected:
 
 	float LineTrace();
 
-
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -61,4 +63,7 @@ public:
 		bool GetIsRotating() const { return bIsRotating; }
 
 	void SetDistanceToWalk(float DistanceToWalk) { this->DistanceToWalk = DistanceToWalk; }
+
+	float GetRotSpeed() { return RotSpeed; }
+	void SetRotSpeed(float RotSpeed) { this->RotSpeed = RotSpeed; }
 };

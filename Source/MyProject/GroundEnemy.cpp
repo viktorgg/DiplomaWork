@@ -24,7 +24,8 @@ AGroundEnemy::AGroundEnemy() {
 	bHaveRifle = true;
 	bIsRotating = false;
 
-	DistanceToWalk = 500.f;	// Distance to reach between him and player 
+	RotSpeed = 2.5f;
+	DistanceToWalk = FMath::RandRange(450.f, 750.f);	// Distance to reach between him and player 
 
 	// Find the revolver class in content browser
 	static ConstructorHelpers::FClassFinder<ARevolver>
@@ -64,6 +65,8 @@ void AGroundEnemy::Tick(float DeltaTime)
 
 void AGroundEnemy::MoveForward(float Input)
 {
+	Rotate(LineTrace());
+
 	if (GetDistanceToMain() >= DistanceToWalk) {
 		ForwardInput = 1.f;
 		AddActorWorldOffset(GetActorForwardVector() * CharacterMovement->MaxWalkSpeed * GetWorld()->GetDeltaSeconds());
@@ -71,7 +74,8 @@ void AGroundEnemy::MoveForward(float Input)
 	else {
 		ForwardInput = 0.f;
 	}
-	Rotate(LineTrace());
+	// Check if character should play rotating animation
+	StationaryRotation();
 }
 
 void AGroundEnemy::Fire()
@@ -100,7 +104,7 @@ float AGroundEnemy::GetDistanceToMain()
 
 void AGroundEnemy::RotateToCharacter()
 {
-	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, 120.f));
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), LookAtChar(), GetWorld()->DeltaTimeSeconds, RotSpeed * 40.f));
 }
 
 void AGroundEnemy::DestroyAfterTime()
@@ -119,10 +123,10 @@ void AGroundEnemy::StationaryRotation()
 		FVector MainCharDirection = MainCharacterActor->GetVelocity();
 
 		MainCharDirection /= MainCharDirection.Size();
-	
+
 		// Calculate angle between the MovementDirection and ActorForwardVector vectors
 		float Angle = UKismetMathLibrary::DegAcos(FVector::DotProduct(MainCharDirection, GetActorForwardVector()));
-		
+
 		if ((UKismetMathLibrary::Abs(Angle) >= 45.f) && (UKismetMathLibrary::Abs(Angle) <= 135.f)) {
 			bIsRotating = true;
 		}
@@ -131,10 +135,8 @@ void AGroundEnemy::StationaryRotation()
 
 void AGroundEnemy::Rotate(float Direction)
 {
-	StationaryRotation();
-
 	if (Direction != 0.f) {
-		AddActorWorldRotation(FRotator(0.f, 1000.f * Direction * GetWorld()->DeltaTimeSeconds, 0.f));
+		AddActorWorldRotation(FRotator(0.f, Direction * RotSpeed, 0.f));
 	}
 	else {
 		RotateToCharacter();
@@ -155,14 +157,14 @@ float AGroundEnemy::LineTrace()
 {
 	FHitResult OutHitFront, OutHitFrontL, OutHitFrontR;
 
-	FVector StartLocFront = GetActorLocation();
-	FVector EndLocFront = (GetActorForwardVector() * 250.f) + StartLocFront;
+	FVector StartLocFront = GetActorLocation() + GetActorForwardVector();
+	FVector EndLocFront = (GetActorForwardVector() * 225.f) + StartLocFront;
 
 	FVector StartLocFrontL = (GetActorRightVector() * -1.f * 50.f) + StartLocFront;
-	FVector EndLocFrontL = (GetActorForwardVector() * 250.f) + StartLocFrontL;
+	FVector EndLocFrontL = (GetActorForwardVector() * 225.f) + StartLocFrontL;
 
 	FVector StartLocFrontR = (GetActorRightVector() * 50.f) + StartLocFront;
-	FVector EndLocFrontR = (GetActorForwardVector() * 250.f) + StartLocFrontR;
+	FVector EndLocFrontR = (GetActorForwardVector() * 225.f) + StartLocFrontR;
 
 	float DistanceLeft = 0.f;
 	float DistanceRight = 0.f;
@@ -175,7 +177,7 @@ float AGroundEnemy::LineTrace()
 
 	// Start rotating unless Main Char is in front
 	if ((OutHitFront.GetActor() != GetMainCharacterActor()) && (OutHitFrontL.GetActor() != GetMainCharacterActor()) && (OutHitFrontR.GetActor() != GetMainCharacterActor())) {
-		
+
 		if (OutHitFrontL.GetActor() != this) {
 			DistanceLeft = OutHitFrontL.Distance;
 		}
@@ -196,3 +198,4 @@ float AGroundEnemy::LineTrace()
 		return 0.f;
 	}
 }
+

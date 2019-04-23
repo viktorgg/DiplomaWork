@@ -56,7 +56,6 @@ void ASaloonGroundEnemy::PlaySound()
 void ASaloonGroundEnemy::MoveForward(float Input)
 {
 	if (!bIsKicking) {
-
 		Super::MoveForward(NULL);
 	}
 	else {
