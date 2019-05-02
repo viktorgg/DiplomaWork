@@ -14,6 +14,7 @@
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 #include "Runtime/Core/Public/Templates/SharedPointer.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
@@ -25,6 +26,8 @@ ASaloonBuilding::ASaloonBuilding()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	SaloonIndex = 0;
+
+	bHasEntered = false;
 
 	MainBuildingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Main Building Mesh"));
 	RootComponent = MainBuildingMesh;
@@ -145,13 +148,9 @@ void ASaloonBuilding::SpawnEnemy(int32 Place)
 void ASaloonBuilding::OnEnterBox(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (OtherActor && Cast<AMyCharacter>(OtherActor)) {
-		// Get all GEnemies from level
-		for (TActorIterator<AGroundEnemy> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
-			if (ActorItr) {
-				ActorItr->SetDistanceToWalk(200.f);
-				ActorItr->SetRotSpeed(ActorItr->GetRotSpeed() * 2.f);
-			}
-		}
+		// bHasEntered = true;
+
+		GetWorldTimerManager().SetTimer(GenemiesDistanceHandle, this, &ASaloonBuilding::SetGEnemiesInDistance, 2, true, 1);
 		// Spawn extra GEnemy when difficulty isn't easy
 		for (TActorIterator<ALevelHandler> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
 			if (ActorItr) {
@@ -166,12 +165,34 @@ void ASaloonBuilding::OnEnterBox(UPrimitiveComponent * OverlappedComp, AActor * 
 void ASaloonBuilding::OnLeaveBox(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor && Cast<AMyCharacter>(OtherActor)) {
-		// Get all GEnemies from level
-		for (TActorIterator<AGroundEnemy> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
-			if (ActorItr) {
-				ActorItr->SetDistanceToWalk(500.f);
-				ActorItr->SetRotSpeed(ActorItr->GetRotSpeed() / 2.f);
+		// Stops timer
+		GetWorldTimerManager().ClearTimer(GenemiesDistanceHandle);
+		// bHasEntered = false;
+
+		SetGEnemiesOutDistance();
+	}
+}
+
+void ASaloonBuilding::SetGEnemiesInDistance()
+{
+	// Get all GEnemies from level
+	for (TActorIterator<AGroundEnemy> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (ActorItr) {
+			ActorItr->SetDistanceToWalk(FMath::RandRange(200.f, 300.f));
+			if (ActorItr->GetRotSpeed() != 5.f) {
+				ActorItr->SetRotSpeed(ActorItr->GetRotSpeed() * 2.f);
 			}
+		}
+	}
+}
+
+void ASaloonBuilding::SetGEnemiesOutDistance()
+{
+	// Get all GEnemies from level
+	for (TActorIterator<AGroundEnemy> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (ActorItr) {
+			ActorItr->SetDistanceToWalk(FMath::RandRange(450.f, 750.f));
+			ActorItr->SetRotSpeed(ActorItr->GetRotSpeed() / 2.f);
 		}
 	}
 }

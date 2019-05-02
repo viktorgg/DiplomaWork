@@ -36,6 +36,11 @@ public:
 private:
 
 	int32 SaloonIndex;
+
+	bool bHasEntered;
+
+	// Timer to handle modification of GEnemies' distance
+	FTimerHandle GenemiesDistanceHandle;
 	
 	UPROPERTY()
 		UClass* WindowEnemyClass;
@@ -57,6 +62,10 @@ private:
 
 	UFUNCTION()
 		void OnLeaveBox(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	void SetGEnemiesInDistance();
+
+	void SetGEnemiesOutDistance();
 
 public:
 

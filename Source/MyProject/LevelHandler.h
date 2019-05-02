@@ -40,10 +40,14 @@ private:
 	enum WEnemyBuilding { Bank, Hotel, Store, Saloon, Saloon2 };
 	WEnemyBuilding WEBuilding;
 
-	FVector GEnemyStart = FVector(2910.f, -722.f, 205.f);
-	FVector GEnemyBarn = FVector(1104.f, 2335.f, 205.f);
-	FVector GEnemyEnd = FVector(3610.f, 3633.f, 205.f);
+	FVector GEnemyStart = FVector(2910.f, -722.f, 207.f);
+	FVector GEnemyBarn = FVector(1104.f, 2335.f, 207.f);
+	FVector GEnemyEnd = FVector(3610.f, 3633.f, 207.f);
 
+	// Timer to handle day and night cycle
+	FTimerHandle DayDurationHandle;
+
+	// Timers to handle WEnemies spawn consistency
 	FTimerHandle WEnemyHandle;
 	FTimerHandle HotelTerraceHandle;
 	FTimerHandle SaloonOutHandle;
@@ -106,6 +110,8 @@ private:
 
 	UFUNCTION()
 		virtual void OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void SetLampState();
 
 public:
 

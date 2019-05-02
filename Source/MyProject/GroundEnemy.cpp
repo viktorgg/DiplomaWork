@@ -25,7 +25,8 @@ AGroundEnemy::AGroundEnemy() {
 	bIsRotating = false;
 
 	RotSpeed = 2.5f;
-	DistanceToWalk = FMath::RandRange(450.f, 750.f);	// Distance to reach between him and player 
+	// Distance to reach between him and player 
+	DistanceToWalk = FMath::RandRange(450.f, 750.f);	
 
 	// Find the revolver class in content browser
 	static ConstructorHelpers::FClassFinder<ARevolver>
@@ -69,6 +70,7 @@ void AGroundEnemy::MoveForward(float Input)
 
 	if (GetDistanceToMain() >= DistanceToWalk) {
 		ForwardInput = 1.f;
+
 		AddActorWorldOffset(GetActorForwardVector() * CharacterMovement->MaxWalkSpeed * GetWorld()->GetDeltaSeconds());
 	}
 	else {

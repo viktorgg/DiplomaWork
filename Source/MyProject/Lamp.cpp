@@ -15,7 +15,7 @@ ALamp::ALamp()
 	PrimaryActorTick.bCanEverTick = true;
 
 	bIfTurnOn = false;
-	MaxIntensity = 10000.f;
+	MaxIntensity = 2750.f;
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
@@ -52,11 +52,11 @@ void ALamp::Tick(float DeltaTime)
 
 void ALamp::TurnOnLight()
 {
-	PointLight->SetIntensity(FMath::FInterpConstantTo(PointLight->Intensity, MaxIntensity, GetWorld()->GetDeltaSeconds(), 500.f));
+	PointLight->SetIntensity(FMath::FInterpConstantTo(PointLight->Intensity, MaxIntensity, GetWorld()->GetDeltaSeconds(), 200.f));
 }
 
 void ALamp::TurnOffLight()
 {
-	PointLight->SetIntensity(FMath::FInterpConstantTo(PointLight->Intensity, 0.f, GetWorld()->GetDeltaSeconds(), 500.f));
+	PointLight->SetIntensity(FMath::FInterpConstantTo(PointLight->Intensity, 0.f, GetWorld()->GetDeltaSeconds(), 200.f));
 }
 

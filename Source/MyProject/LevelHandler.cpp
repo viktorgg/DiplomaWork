@@ -8,6 +8,7 @@
 #include "GeneralStore.h"
 #include "MyCharacter.h"
 #include "Windows.h"
+#include "Lamp.h"
 #include "MyProjectGameInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -376,30 +377,46 @@ void ALevelHandler::OnEnterBox(UPrimitiveComponent* OverlappedComp, AActor* Othe
 			// Configure difficulty variables
 			if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Easy) {
 				// Spawns a window enemy every minute
-				GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 60.0f, true, 7.0f);
+				GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 60.f, true, 7.f);
 			}
 			else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Medium) {
 				// Spawns a window enemy every half minute
-				GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 30.0f, true, 7.0f);
+				GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 30.f, true, 7.f);
 			}
 			else if (Cast<UMyProjectGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->DifficultyAmount == Hard) {
 				// Spawns a window enemy every quarter minute
-				GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 15.0f, true, 7.0f);
+				GetWorldTimerManager().SetTimer(WEnemyHandle, this, &ALevelHandler::WEnemyHandler, 15.f, true, 7.f);
 			}
 
 			// Tries to spawn an enemy at hotel terrace every 20 seconds
 			HotelTerraceDel.BindUFunction(this, FName("SpawnHotelEnemy"), 4);
-			GetWorldTimerManager().SetTimer(HotelTerraceHandle, HotelTerraceDel, 20.0f, true, 7.0f);
+			GetWorldTimerManager().SetTimer(HotelTerraceHandle, HotelTerraceDel, 20.f, true, 7.f);
 
 			// Tries to spawn an enemy at saloon terrace every 20 seconds
 			SaloonOutDel.BindUFunction(this, FName("SpawnSaloonEnemy"), 1);
-			GetWorldTimerManager().SetTimer(SaloonOutHandle, SaloonOutDel, 20.0f, true, 7.0f);
+			GetWorldTimerManager().SetTimer(SaloonOutHandle, SaloonOutDel, 20.f, true, 7.f);
 
 			// Tries to spawn an enemy at saloon terrace every 20 seconds
 			SaloonOutDel2.BindUFunction(this, FName("SpawnSaloonEnemy2"), 1);
-			GetWorldTimerManager().SetTimer(SaloonOutHandle2, SaloonOutDel2, 20.0f, true, 7.0f);
+			GetWorldTimerManager().SetTimer(SaloonOutHandle2, SaloonOutDel2, 20.f, true, 7.f);
+
+			GetWorldTimerManager().SetTimer(DayDurationHandle, this, &ALevelHandler::SetLampState, 70.f, true, 50.f);
 
 			bEntered = true;
+		}
+	}
+}
+
+void ALevelHandler::SetLampState()
+{
+	for (TActorIterator<ALamp> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (ActorItr) {
+			if (ActorItr->GetLampState()) {
+				ActorItr->SetLampState(false);
+			}
+			else {
+				ActorItr->SetLampState(true);
+			}
 		}
 	}
 }

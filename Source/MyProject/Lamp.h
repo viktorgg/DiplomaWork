@@ -40,5 +40,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 		class UPointLightComponent* PointLight;
+
+public:
+
+	UFUNCTION(BlueprintCallable)
+		bool GetLampState() const { return bIfTurnOn; }
+	void SetLampState(bool bIfTurnOn) { this->bIfTurnOn = bIfTurnOn; };
 	
 };
