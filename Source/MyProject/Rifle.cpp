@@ -117,7 +117,7 @@ void ARifle::SpawnProjectile()
 
 void ARifle::SpawnEmitter()
 {
-	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.1f, 0.1f, 0.1f));
+	UGameplayStatics::SpawnEmitterAtLocation(this, FireExplosion, GunMesh->GetSocketLocation("Muzzle"), GetActorRotation(), FVector(0.07f, 0.07f, 0.07f));
 	if (Cast<AMyCharacter>(CharacterActor)) {
 
 		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;

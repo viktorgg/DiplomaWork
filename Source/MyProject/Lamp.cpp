@@ -52,11 +52,11 @@ void ALamp::Tick(float DeltaTime)
 
 void ALamp::TurnOnLight()
 {
-	PointLight->SetIntensity(FMath::FInterpConstantTo(PointLight->Intensity, MaxIntensity, GetWorld()->GetDeltaSeconds(), 200.f));
+	PointLight->SetIntensity(FMath::FInterpConstantTo(PointLight->Intensity, MaxIntensity, GetWorld()->GetDeltaSeconds(), 100.f));
 }
 
 void ALamp::TurnOffLight()
 {
-	PointLight->SetIntensity(FMath::FInterpConstantTo(PointLight->Intensity, 0.f, GetWorld()->GetDeltaSeconds(), 200.f));
+	PointLight->SetIntensity(FMath::FInterpConstantTo(PointLight->Intensity, 0.f, GetWorld()->GetDeltaSeconds(), 100.f));
 }
 
