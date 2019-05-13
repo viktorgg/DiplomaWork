@@ -340,7 +340,7 @@ void AMyCharacter::ZoomedKills(float Distance)
 		RifleActor->SetActorHiddenInGame(true);
 	}
 	// Generate new FOV based on enemy's distance from player
-	float NewFOV = 30000 / (Distance / 1.1f);
+	float NewFOV = 27000.f / Distance;
 
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	GetCamera()->SetFieldOfView(NewFOV);

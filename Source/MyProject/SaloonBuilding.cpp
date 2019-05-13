@@ -93,13 +93,13 @@ void ASaloonBuilding::PostInitializeComponents()
 	FEnemyHandler* SEnemyHandler3 = new FEnemyHandler();
 
 	//Inverted Directions, forward vector = right vector, right vector = forward vector
-	SEnemyHandler->SetInLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 180.0f)
-		+ (MainBuildingMesh->GetRightVector() * 365.0f) + (MainBuildingMesh->GetUpVector() * -181.0f)));
+	SEnemyHandler->InLoc = FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 180.0f)
+		+ (MainBuildingMesh->GetRightVector() * 365.0f) + (MainBuildingMesh->GetUpVector() * -181.0f));
 
-	SEnemyHandler2->SetOutLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 4.0f)
-		+ (MainBuildingMesh->GetRightVector() * -510.0f) + (MainBuildingMesh->GetUpVector() * 137.0f)));
+	SEnemyHandler2->OutLoc = FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 4.0f)
+		+ (MainBuildingMesh->GetRightVector() * -510.0f) + (MainBuildingMesh->GetUpVector() * 137.0f));
 
-	SEnemyHandler3->SetDoorLoc(FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetRightVector() * -100.0f) + (MainBuildingMesh->GetUpVector() * -200.0f)));
+	SEnemyHandler3->DoorLoc = FVector(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetRightVector() * -100.0f) + (MainBuildingMesh->GetUpVector() * -200.0f));
 
 	// Add the structs to array
 	SEnemyHandlerArray.Add(SEnemyHandler);
@@ -116,30 +116,30 @@ void ASaloonBuilding::Tick(float DeltaTime)
 
 void ASaloonBuilding::SpawnEnemy(int32 Place)
 {
-	if (SEnemyHandlerArray[Place] && !SEnemyHandlerArray[Place]->GetEnemyActor()) {
+	if (SEnemyHandlerArray[Place] && !SEnemyHandlerArray[Place]->EnemyActor) {
 
 		if (Place == 0) {		// Spawns behind bar
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, SEnemyHandlerArray[Place]->GetInLoc(), GetActorRotation(), ActorSpawnParams);
+			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, SEnemyHandlerArray[Place]->InLoc, GetActorRotation(), ActorSpawnParams);
 
-			SEnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
+			SEnemyHandlerArray[Place]->EnemyActor = SpawnedEnemy;
 			SpawnedEnemy->SetEnemyHandler(SEnemyHandlerArray[Place]);
 		}
 		else if (Place == 1) {		// Spawns on terrace
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, SEnemyHandlerArray[Place]->GetOutLoc(), GetActorRotation(), ActorSpawnParams);
+			AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, SEnemyHandlerArray[Place]->OutLoc, GetActorRotation(), ActorSpawnParams);
 
-			SEnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
+			SEnemyHandlerArray[Place]->EnemyActor = SpawnedEnemy;
 			SpawnedEnemy->SetEnemyHandler(SEnemyHandlerArray[Place]);
 		}
 		else if (Place == 2) {		// Spawns behind door
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			ASaloonGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<ASaloonGroundEnemy>(SaloonGroundEnemyClass, SEnemyHandlerArray[Place]->GetDoorLoc(), GetActorRotation() + FRotator(0.0f, -90.0f, 0.0f), ActorSpawnParams);
+			ASaloonGroundEnemy* SpawnedEnemy = GetWorld()->SpawnActor<ASaloonGroundEnemy>(SaloonGroundEnemyClass, SEnemyHandlerArray[Place]->DoorLoc, GetActorRotation() + FRotator(0.0f, -90.0f, 0.0f), ActorSpawnParams);
 
-			SEnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
+			SEnemyHandlerArray[Place]->EnemyActor = SpawnedEnemy;
 			SpawnedEnemy->SetEnemyHandler(SEnemyHandlerArray[Place]);
 		}
 	}

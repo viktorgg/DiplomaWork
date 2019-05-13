@@ -67,7 +67,7 @@ void ASaloonGroundEnemy::DestroyChar()
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 
-	EnemyHandler->SetEnemyActor(nullptr);
+	EnemyHandler->EnemyActor = nullptr;
 
 	Destroy();
 }

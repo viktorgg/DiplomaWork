@@ -117,11 +117,11 @@ void ABuildingBase::PostInitializeComponents()
 	FEnemyHandler* EnemyHandler4 = new FEnemyHandler();
 	FEnemyHandler* EnemyHandler5 = new FEnemyHandler();
 
-	EnemyHandler->SetWindowsActor(Cast<AWindows>(WindowsChild->GetChildActor()));
-	EnemyHandler2->SetWindowsActor(Cast<AWindows>(WindowsChild2->GetChildActor()));
-	EnemyHandler3->SetWindowsActor(Cast<AWindows>(WindowsChild3->GetChildActor()));
-	EnemyHandler4->SetWindowsActor(Cast<AWindows>(WindowsChild4->GetChildActor()));
-	EnemyHandler5->SetTerraceLoc(MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 580.0f) + (MainBuildingMesh->GetUpVector() * 100.0f));
+	EnemyHandler->WindowsActor = Cast<AWindows>(WindowsChild->GetChildActor());
+	EnemyHandler2->WindowsActor = Cast<AWindows>(WindowsChild2->GetChildActor());
+	EnemyHandler3->WindowsActor = Cast<AWindows>(WindowsChild3->GetChildActor());
+	EnemyHandler4->WindowsActor = Cast<AWindows>(WindowsChild4->GetChildActor());
+	EnemyHandler5->TerraceLoc = MainBuildingMesh->GetComponentLocation() + (MainBuildingMesh->GetForwardVector() * 580.0f) + (MainBuildingMesh->GetUpVector() * 100.0f);
 
 	// Add the structs to array
 	EnemyHandlerArray.Add(EnemyHandler);
@@ -141,12 +141,12 @@ void ABuildingBase::Tick(float DeltaTime)
 // Spawn enemies just behind window or terrace
 void ABuildingBase::SpawnEnemy(int32 Place)
 {
-	if (EnemyHandlerArray[Place] && !EnemyHandlerArray[Place]->GetEnemyActor() && EnemyHandlerArray[Place]->GetWindowsActor()->GetIsClosed()) {
+	if (EnemyHandlerArray[Place] && !EnemyHandlerArray[Place]->EnemyActor && EnemyHandlerArray[Place]->WindowsActor->GetIsClosed()) {
 		
-		EnemyHandlerArray[Place]->GetWindowsActor()->Open();
+		EnemyHandlerArray[Place]->WindowsActor->Open();
 
 		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation(), VolumeControl, WindowSqueak->GetPitchMultiplier());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandlerArray[Place]->WindowsActor->GetActorLocation(), VolumeControl, WindowSqueak->GetPitchMultiplier());
 
 		FVector LocOffset;
 		FRotator RotOffset;
@@ -161,23 +161,23 @@ void ABuildingBase::SpawnEnemy(int32 Place)
 
 		// Configure spawn location and rotation depending on floor
 		if (Place < 2) {
-			LocOffset = (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorUpVector() * 10)
-				+ (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorForwardVector() * 10.0f);
+			LocOffset = (EnemyHandlerArray[Place]->WindowsActor->GetActorRightVector() * -25.0f) + (EnemyHandlerArray[Place]->WindowsActor->GetActorUpVector() * 10)
+				+ (EnemyHandlerArray[Place]->WindowsActor->GetActorForwardVector() * 10.0f);
 		}
 		else {
-			LocOffset = (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorUpVector() * 10)
-				+ (EnemyHandlerArray[Place]->GetWindowsActor()->GetActorForwardVector() * 10.0f);
+			LocOffset = (EnemyHandlerArray[Place]->WindowsActor->GetActorRightVector() * -35.0f) + (EnemyHandlerArray[Place]->WindowsActor->GetActorUpVector() * 10)
+				+ (EnemyHandlerArray[Place]->WindowsActor->GetActorForwardVector() * 10.0f);
 		}
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place]->GetWindowsActor()->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
+		AWindowEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AWindowEnemy>(WindowEnemyClass, EnemyHandlerArray[Place]->WindowsActor->GetActorLocation() + LocOffset, GetActorRotation() + RotOffset, ActorSpawnParams);
 
 		SpawnedEnemy->SetWindowsPlace(Place);
 		SpawnedEnemy->SetEntryRotation(GetActorRotation() + RotOffset);
 		SpawnedEnemy->SetBuildingActor(this);
 		SpawnedEnemy->SetEnemyHandler(EnemyHandlerArray[Place]);
 		SpawnedEnemy->SetWindowSqueak(WindowSqueak);
-		EnemyHandlerArray[Place]->SetEnemyActor(SpawnedEnemy);
+		EnemyHandlerArray[Place]->EnemyActor = SpawnedEnemy;
 	}
 }
 

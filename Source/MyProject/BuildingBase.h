@@ -8,13 +8,8 @@
 
 
 // Structure to hold information about enemy and it's window
-USTRUCT()
 struct FEnemyHandler
 {
-	GENERATED_USTRUCT_BODY()
-
-private:
-
 	UPROPERTY()
 		class AWindows* WindowsActor;
 
@@ -28,26 +23,6 @@ private:
 	FVector InLoc;
 	FVector DoorLoc;
 	FVector OutLoc;
-
-public:
-
-	AWindows* GetWindowsActor() const { return WindowsActor; }
-	void SetWindowsActor(AWindows* WindowsActor) { this->WindowsActor = WindowsActor; }
-
-	ACharacterBase* GetEnemyActor() { return EnemyActor; }
-	void SetEnemyActor(ACharacterBase* EnemyActor) { this->EnemyActor = EnemyActor; }
-
-	FVector GetTerraceLoc() const { return TerraceLoc; }
-	void SetTerraceLoc(FVector TerraceLoc) { this->TerraceLoc = TerraceLoc; }
-
-	FVector GetInLoc() const { return InLoc; }
-	void SetInLoc(FVector InLoc) { this->InLoc = InLoc; }
-
-	FVector GetDoorLoc() const { return DoorLoc; }
-	void SetDoorLoc(FVector DoorLoc) { this->DoorLoc = DoorLoc; }
-
-	FVector GetOutLoc() const { return OutLoc; }
-	void SetOutLoc(FVector OutLoc) { this->OutLoc = OutLoc; }
 
 	FEnemyHandler() {
 		WindowsActor = nullptr;

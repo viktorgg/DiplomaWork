@@ -126,13 +126,13 @@ void AWindowEnemy::DestroyChar()
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 
-	EnemyHandler->SetEnemyActor(nullptr);
+	EnemyHandler->EnemyActor = nullptr;
 
-	if (EnemyHandler && EnemyHandler->GetWindowsActor()) {
-		EnemyHandler->GetWindowsActor()->Close();
+	if (EnemyHandler && EnemyHandler->WindowsActor) {
+		EnemyHandler->WindowsActor->Close();
 
 		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandler->GetWindowsActor()->GetActorLocation(), VolumeControl, WindowSqueak->GetPitchMultiplier());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindowSqueak, EnemyHandler->WindowsActor->GetActorLocation(), VolumeControl, WindowSqueak->GetPitchMultiplier());
 	}
 
 	LevelHandlerActor->WEnemyHandler();

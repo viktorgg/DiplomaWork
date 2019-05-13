@@ -285,7 +285,7 @@ bool ALevelHandler::IfEnemyInSight(FVector Loc)
 
 void ALevelHandler::SpawnBankEnemy(int32 Place)
 {
-	if (!NationalBankActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed()) {
+	if (!NationalBankActor->GetEnemyHandlerArray()[Place]->WindowsActor->GetIsClosed()) {
 		WEnemyHandler();
 	}
 	else {
@@ -296,11 +296,11 @@ void ALevelHandler::SpawnBankEnemy(int32 Place)
 void ALevelHandler::SpawnHotelEnemy(int32 Place)
 {
 	if (Place == 4) {
-		if (IfEnemyInSight(HotelActor->GetEnemyHandlerArray()[Place]->GetTerraceLoc())) {
+		if (IfEnemyInSight(HotelActor->GetEnemyHandlerArray()[Place]->TerraceLoc)) {
 			HotelActor->SpawnEnemy(Place);
 		}
 	}
-	else if (!HotelActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed()) {
+	else if (!HotelActor->GetEnemyHandlerArray()[Place]->WindowsActor->GetIsClosed()) {
 		WEnemyHandler();
 	}
 	else {
@@ -310,7 +310,7 @@ void ALevelHandler::SpawnHotelEnemy(int32 Place)
 
 void ALevelHandler::SpawnStoreEnemy(int32 Place)
 {
-	if (!GeneralStoreActor->GetEnemyHandlerArray()[Place]->GetWindowsActor()->GetIsClosed()) {
+	if (!GeneralStoreActor->GetEnemyHandlerArray()[Place]->WindowsActor->GetIsClosed()) {
 		WEnemyHandler();
 	}
 	else {
@@ -321,11 +321,11 @@ void ALevelHandler::SpawnStoreEnemy(int32 Place)
 void ALevelHandler::SpawnSaloonEnemy(int32 Place)
 {
 	if (Place == 1) {
-		if (IfEnemyInSight(SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->GetOutLoc())) {
+		if (IfEnemyInSight(SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->OutLoc)) {
 			SaloonBuildingActor->SpawnEnemy(Place);
 		}
 	}
-	else if (SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->GetEnemyActor()) {
+	else if (SaloonBuildingActor->GetSEnemyHandlerArray()[Place]->EnemyActor) {
 		WEnemyHandler();
 	}
 	else {
@@ -336,11 +336,11 @@ void ALevelHandler::SpawnSaloonEnemy(int32 Place)
 void ALevelHandler::SpawnSaloonEnemy2(int32 Place)
 {
 	if (Place == 1) {
-		if (IfEnemyInSight(SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->GetOutLoc())) {
+		if (IfEnemyInSight(SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->OutLoc)) {
 			SaloonBuildingActor2->SpawnEnemy(Place);
 		}
 	}
-	else if (SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->GetEnemyActor()) {
+	else if (SaloonBuildingActor2->GetSEnemyHandlerArray()[Place]->EnemyActor) {
 		WEnemyHandler();
 	}
 	else {
