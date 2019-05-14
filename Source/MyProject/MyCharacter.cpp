@@ -69,6 +69,15 @@ AMyCharacter::AMyCharacter()
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("SlowMo Cue Not Found In MyChar!")));
 	}
+	// Find the Unholster cue in content browser by reference
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		CueAsset2(TEXT("SoundCue'/Game/Assets/Sound/UnholsterCue.UnholsterCue'"));
+	if (CueAsset2.Succeeded() == true) {
+		UnholsterWeapon = CueAsset2.Object;
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Unholster Cue Not Found In MyChar!")));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -284,6 +293,9 @@ void AMyCharacter::ChangeToPistol()
 			GetRifleActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
 		}
 		WInHand = Pistol;
+
+		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
+		UGameplayStatics::PlaySound2D(GetWorld(), UnholsterWeapon, VolumeControl, UnholsterWeapon->GetPitchMultiplier());
 	}
 }
 
@@ -300,6 +312,9 @@ void AMyCharacter::ChangeToRifle()
 			GetPistolActor()->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 		}
 		WInHand = Rifle;
+
+		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
+		UGameplayStatics::PlaySound2D(GetWorld(), UnholsterWeapon, VolumeControl, UnholsterWeapon->GetPitchMultiplier());
 	}
 }
 

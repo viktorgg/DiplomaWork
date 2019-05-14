@@ -63,6 +63,8 @@ private:
 	bool bSlowMo;
 	UPROPERTY()
 		class USoundCue* SlowMoWoosh;
+	UPROPERTY()
+		class USoundCue* UnholsterWeapon;
 
 	WeaponInHand WInHand;
 

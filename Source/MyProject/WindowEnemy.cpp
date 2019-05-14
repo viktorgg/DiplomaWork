@@ -143,7 +143,7 @@ void AWindowEnemy::DestroyChar()
 void AWindowEnemy::DestroyAfterTime()
 {
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AWindowEnemy::DestroyChar, 1, false, 1);
-	if (FMath::RandRange(0, 100) <= 20) {
+	if (FMath::RandRange(0, 100) <= 35) {
 
 		float VolumeControl = Cast<UMyProjectGameInstance>(GetWorld()->GetGameInstance())->VolumeControl;
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Scream, GetActorLocation(), VolumeControl, Scream->GetPitchMultiplier());
